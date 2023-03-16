@@ -1,0 +1,21 @@
+output:
+  type: 'telegram'
+  stdout: true
+caldav:
+  url: 'http://127.0.0.1:18476'
+  calendars:
+    - url: '/d/5cbae8f0-5881-c7a2-4cbb-c5c1ba05bc25/'
+  username: 'x'
+  password: 'x'
+  offset_days: 1
+  number_days: 2
+  current_day_override: "2022-12-31"
+format:
+  time_locale: "de_DE.utf8"
+  timezone: "Europe/Berlin"
+  show_calendar_name: false
+  show_location: true
+  show_description: false
+  cutoff_description: 0
+  header_txt: ""
+  footer_txt: "here is the footer"

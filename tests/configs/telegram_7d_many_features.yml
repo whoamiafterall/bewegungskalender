@@ -1,0 +1,26 @@
+output:
+  type: 'telegram'
+  stdout: true
+caldav:
+  url: 'http://127.0.0.1:18476'
+  calendars:
+    - url: '/d/5cbae8f0-5881-c7a2-4cbb-c5c1ba05bc25/'
+      name: 'Test calendar 1'
+    - url: '/d/701e875a-44ca-97df-0140-bbb36dc26a9b/'
+  username: 'x'
+  password: 'x'
+  offset_days: 2
+  number_days: 7
+  current_day_override: "2022-12-29"
+format:
+  time_locale: "de_DE.utf8"
+  timezone: "Europe/Berlin"
+  show_calendar_name: true
+  show_location: true
+  show_description: true
+  cutoff_description: 0
+  header_txt: "*Was passiert die nächsten Tage?*"
+  footer_txt: >
+    _Diese Nachricht wurde automatisch generiert\.
+    Im [Kalender](http://caldav.example)
+    können Termine hinzugefügt und geändert werden\._

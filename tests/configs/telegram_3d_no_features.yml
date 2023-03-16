@@ -1,0 +1,22 @@
+output:
+  type: 'telegram'
+  stdout: true
+caldav:
+  url: 'http://127.0.0.1:18476'
+  calendars:
+    - url: '/d/5cbae8f0-5881-c7a2-4cbb-c5c1ba05bc25/'
+    - url: '/d/701e875a-44ca-97df-0140-bbb36dc26a9b/'
+  username: 'x'
+  password: 'x'
+  offset_days: 0
+  number_days: 3
+  current_day_override: "2023-01-01"
+format:
+  time_locale: "de_DE.utf8"
+  timezone: "Europe/Berlin"
+  show_calendar_name: false
+  show_location: false
+  show_description: false
+  cutoff_description: 0
+  header_txt: ""
+  footer_txt: ""

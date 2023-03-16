@@ -1,0 +1,92 @@
+*Was passiert die nächsten Tage?*
+
+
+📅 *__Samstag__ 2022\-12\-31*
+
+*Multi\-All\-Day* \(Test calendar 1\)
+🌍 _with location_
+and description
+
+
+📅 *__Sonntag__ 2023\-01\-01*
+
+*Multi\-All\-Day* \(Test calendar 1\)
+🌍 _with location_
+and description
+
+*Single All\-Day* \(Test calendar 1\)
+
+__08:30__ *Long timed event* \(testing2\)
+🌍 _somewhere_
+here is the description
+of this
+beautiful
+event
+
+__09:00__ *Single Event* \(testing2\)
+
+
+📅 *__Montag__ 2023\-01\-02*
+
+*Multi\-All\-Day* \(Test calendar 1\)
+🌍 _with location_
+and description
+
+*Long timed event* \(testing2\)
+🌍 _somewhere_
+here is the description
+of this
+beautiful
+event
+
+__10:00__ *\-\>test \[s@\_\+\}* \(Test calendar 1\)
+🌍 _\]\|🔋/\~ \*&^'_
+"\#no\`for\.\!"\)\=\(
+
+
+📅 *__Dienstag__ 2023\-01\-03*
+
+*?* \(Test calendar 1\)
+
+*Multi\-All\-Day* \(Test calendar 1\)
+🌍 _with location_
+and description
+
+__00:00__ *Long timed event* \(testing2\)
+🌍 _somewhere_
+here is the description
+of this
+beautiful
+event
+
+__00:00__ *Recurring twice weekly* \(testing2\)
+🌍 _anywhere\.\.\._
+a weekly event should not have too much description, people will get tired of reading it every time
+
+__00:00__ *?* \(testing2\)
+
+__07:30__ *An event without time* \(testing2\)
+
+
+📅 *__Mittwoch__ 2023\-01\-04*
+
+*Multi\-All\-Day* \(Test calendar 1\)
+🌍 _with location_
+and description
+
+
+📅 *__Donnerstag__ 2023\-01\-05*
+
+*Midnight to following day* \(testing2\)
+
+
+📅 *__Freitag__ 2023\-01\-06*
+
+__00:00__ *Midnight to following day* \(testing2\)
+
+__00:00__ *Recurring twice weekly* \(testing2\)
+🌍 _anywhere\.\.\._
+a weekly event should not have too much description, people will get tired of reading it every time
+
+
+_Diese Nachricht wurde automatisch generiert\. Im [Kalender](http://caldav.example) können Termine hinzugefügt und geändert werden\._

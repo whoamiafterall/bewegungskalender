@@ -1,0 +1,8 @@
+version: "3.0"
+services:
+  radicale:
+    build: .
+    ports:
+      - "18476:18476"
+    volumes:
+      - "./radicale:/radicale"

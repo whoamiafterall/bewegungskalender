@@ -1,0 +1,31 @@
+output:
+  type: 'telegram' # 'telegram' or 'signal-cli'
+  token: '1234567890:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' # required for telegram
+  group_id: '1234567890' # required for telegram and signal-cli
+  executable: '/path/to/signal-cli' # required for signal-cli
+  user: '+1234567890' # required for signal-cli
+  config: '/path/to/signal-cli-config' # required for signal-cli
+  stdout: false # set to true to not send to chat service but print to stdout instead
+caldav: # configuration for your caldav server. Only tested with nextcloud so far
+  url: 'https://cloud.example.com/remote.php/dav/' # caldav endpoint; example for a nextcloud
+  calendars: # list of calendars to use, example for nextcloud
+    - url: 'calendars/USERNAME/CALENDAR-ONE/' # url is required
+      name: 'Calendar 1' # optional override for the calendar name
+    - url: 'calendars/USERNAME/CALENDAR-TWO/'
+  username: 'USERNAME'
+  password: 'PASSWORD'
+  offset_days: 1 # 0: post starts with today, 1: post starts with tomorrow, etc
+  number_days: 2 # number of days of which the events will be posted
+  current_day_override: false # write date quoted in iso 8601 format, e.g. "2023-01-01"
+format:
+  time_locale: "de_DE.utf8"
+  timezone: "Europe/Berlin"
+  create_emoji: true
+  show_calendar_name: false
+  show_location: true
+  show_description: true
+  cutoff_description: 0 # number of characters, after which description will be cutoff, if too long. 0 to disable cutoff
+  # header and footer are using telegram markdown_V2 syntax, see here for details:
+  # https://core.telegram.org/bots/api#markdownv2-style
+  header_txt: "*Upcoming events*"
+  footer_txt: "_This message was generated with [caldav2telegram](https://gitlab.com/iexos/caldav2telegram)\\._"

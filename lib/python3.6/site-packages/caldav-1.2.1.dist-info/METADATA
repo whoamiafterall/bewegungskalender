@@ -1,0 +1,56 @@
+Metadata-Version: 2.1
+Name: caldav
+Version: 1.2.1
+Summary: CalDAV (RFC4791) client library
+Home-page: https://github.com/python-caldav/caldav
+Author: Cyril Robert
+Author-email: cyril@hippie.io
+License: GPL
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: GNU General Public License (GPL)
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Topic :: Office/Business :: Scheduling
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+License-File: COPYING.APACHE
+License-File: COPYING.GPL
+Requires-Dist: vobject
+Requires-Dist: lxml
+Requires-Dist: requests
+Requires-Dist: icalendar
+Requires-Dist: recurring-ical-events (>=2.0.0)
+Requires-Dist: pytz
+Requires-Dist: tzlocal
+Provides-Extra: test
+Requires-Dist: pytest ; extra == 'test'
+Requires-Dist: pytest-coverage ; extra == 'test'
+Requires-Dist: icalendar ; extra == 'test'
+Requires-Dist: coverage ; extra == 'test'
+Requires-Dist: tzlocal ; extra == 'test'
+Requires-Dist: pytz ; extra == 'test'
+Requires-Dist: xandikos ; extra == 'test'
+Requires-Dist: radicale ; extra == 'test'
+
+# caldav
+
+This project is a CalDAV ([RFC4791](http://www.ietf.org/rfc/rfc4791.txt)) client library for Python.
+
+Features:
+
+ * create, modify calendar
+ * create, update and delete event
+ * search events by dates
+ * etc.
+
+See the file [examples/basic_usage_examples.py](examples/basic_usage_examples.py) to get started.
+
+Links:
+
+ * [Pypi](https://pypi.org/project/caldav)
+ * [Documentation](docs/source/index.rst) - should be automatically mirrored on https://caldav.readthedocs.io/en/latest/
+
+Licences:
+
+Caldav is dual-licensed under the [GNU GENERAL PUBLIC LICENSE Version 3](COPYING.GPL) and the [Apache License 2.0](COPYING.APACHE).
