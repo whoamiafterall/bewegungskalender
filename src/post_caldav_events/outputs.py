@@ -24,8 +24,14 @@ class TextMsg:
         date = day.strftime('%d\.%m')
         return weekday + " " + date
 
-    def create_header(self, header_txt, start_day, end_day):
-        self.msg += f"📅 " + header_txt + " \(" + self.create_date(start_day) + " \- " + self.create_date(end_day) + "\)\n"
+    def create_header(self, start_day, end_day):
+        self.msg += f"📅 *Was passiert vom " + self.create_date(start_day) + " \- " + self.create_date(end_day) + "?*\n"
+
+    def create_footer(self):
+        self.msg += "🌐 *Links & Hinweise:*\n"
+        self.msg += "\- [Monatsansicht öffnen](https://cloud.systemli.org/apps/calendar/p/zJsbBZJSQLCfkSsQ-gGA9ttt2T6PQgcKq-Brn9ook4EJWMx3ki-a7nAXkDxDETZJm58-df5QdyrBKa6H9Kpa-NpegYZLCqZjpxMa2-Rgk2wiaFQtLXGa5W-GeG6jNfCLSENW2Fs/dayGridMonth/now)\n"
+        self.msg += "\- [Listenansicht öffnen](https://cloud.systemli.org/apps/calendar/p/zJsbBZJSQLCfkSsQ-gGA9ttt2T6PQgcKq-Brn9ook4EJWMx3ki-a7nAXkDxDETZJm58-df5QdyrBKa6H9Kpa-NpegYZLCqZjpxMa2-Rgk2wiaFQtLXGa5W-GeG6jNfCLSENW2Fs/listMonth/now)\n"
+        self.msg += "\- [Mehr Infos, Legende & Termine eintragen](https://klimax.online/bewegungskalender)\n\n"
 
     def create_calendar_header(self, calendar_name):
         if calendar_name == 'Konferenzen & Treffen':
@@ -43,13 +49,6 @@ class TextMsg:
         else:
             self.msg += f"🔍 "
         self.msg += f"{calendar_name} \n"
-
-    def create_footer(self):
-        self.msg += "🌐 *Links & Hinweise:*\n"
-        self.msg += "\- [Monatsansicht öffnen](https://cloud.systemli.org/apps/calendar/p/zJsbBZJSQLCfkSsQ-gGA9ttt2T6PQgcKq-Brn9ook4EJWMx3ki-a7nAXkDxDETZJm58-df5QdyrBKa6H9Kpa-NpegYZLCqZjpxMa2-Rgk2wiaFQtLXGa5W-GeG6jNfCLSENW2Fs/dayGridMonth/now)\n"
-        self.msg += "\- [Listenansicht öffnen](https://cloud.systemli.org/apps/calendar/p/zJsbBZJSQLCfkSsQ-gGA9ttt2T6PQgcKq-Brn9ook4EJWMx3ki-a7nAXkDxDETZJm58-df5QdyrBKa6H9Kpa-NpegYZLCqZjpxMa2-Rgk2wiaFQtLXGa5W-GeG6jNfCLSENW2Fs/listMonth/now)\n"
-        self.msg += "\- [Mehr Infos, Legende & Termine eintragen](https://klimax.online/bewegungskalender)\n\n"
-        self.msg += "_Diese Nachricht wurde mit [bewegungskalender2telegram](https://github.com/whoamiafterall/bewegungskalender2telegram) generiert\\._"
 
     def create_day_header(self, weekday, date):
         self.msg += "{weekday} - {date}"
@@ -95,9 +94,8 @@ class TextMsg:
         message layout more refactoring is necessary
         """
         locale.setlocale(locale.LC_TIME, self.config['format']['time_locale'])
-        if self.config["format"]["header_txt"]:
-            self.create_header(self.config["format"]["header_txt"], start_day, end_day)
-            self.create_seperation()
+        self.create_header(start_day, end_day)
+        self.create_seperation()
         for calendar_name, events in calendar_events.items():
             if events:
                 self.create_calendar_header(calendar_name)
@@ -180,16 +178,16 @@ class TelegramMarkdownv2Msg(TextMsg):
                 link = None
         # Create start_time string with create_datetime_string
         if event['all_day']:
-            start_time = self.create_datetime_string(event['start'], '%d\.')
+            start_time = self.create_datetime_string(event['start'], '%d\.%m')
         else:
-            start_time = self.create_datetime_string(event['start'], '%d\. \(%H:%M\)')
+            start_time = self.create_datetime_string(event['start'], '%d\.%m \(%H:%M')
         # Create end_time string with create_datetime_string
         if event['start'] == event['end'] or (event['start'] + datetime.timedelta(days=1)) == event['end']:
-            end_time = None
+            end_time = ")"
         elif (event['start'] + datetime.timedelta(days=1)) > event['end']:
-            end_time = self.create_datetime_string(event['end'], '\(\- %H:%M\)')
+            end_time = self.create_datetime_string(event['end'], '\- %H:%M\)')
         else:
-            end_time = self.create_datetime_string(event['end'], '\(\- %d\.\)')
+            end_time = self.create_datetime_string(event['end'], '\- %d\.%m')
         if start_time:
             self.msg += f"\- __{start_time}__"
         if end_time:
@@ -213,5 +211,9 @@ class TelegramMarkdownv2Msg(TextMsg):
 
     def send(self):
         import telegram
-        self.bot.send_message(text=self.msg, chat_id=self.config['output']['group_id'], parse_mode=telegram.ParseMode.MARKDOWN_V2, disable_web_page_preview=True)
+        if len(self.msg) < 4096:
+            self.bot.send_message(text=self.msg, chat_id=self.config['output']['group_id'], parse_mode=telegram.ParseMode.MARKDOWN_V2, disable_web_page_preview=True)
+        else:
+            print("Message too long for Telegram.")
+            print (len(self.msg))
         return
