@@ -45,18 +45,17 @@ def get_week_events(calendar, start_day, end_day):
                         all_day = start_dt <= q_start_dt and end_dt >= q_end_dt
                     else:
                         all_day = start_dt <= q_start_dt
-                    if start_dt < q_start_dt:
-                        start_dt = q_start_dt
                 if all_day and end_dt == start_dt:
                     continue
-                events.append({
-                    'summary': component.get('summary'),
-                    'location': component.get('location'),
-                    'description': component.get('description'),
-                    'start': start_dt,
-                    'end': end_dt,
-                    'all_day': all_day,
-                    })
+                if not start_dt < q_start_dt:
+                    events.append({
+                        'summary': component.get('summary'),
+                        'location': component.get('location'),
+                        'description': component.get('description'),
+                        'start': start_dt,
+                        'end': end_dt,
+                        'all_day': all_day,
+                        })
     # TODO sort by start
     sorted_events = []
     sorted_events += sorted([e for e in events], key=lambda d: d['start'])

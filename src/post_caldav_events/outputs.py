@@ -15,6 +15,10 @@ class TextMsg:
     def create_space(self):
         self.msg += ("\n")
 
+
+    def create_datetime_string(self, datetime_value, format):
+        return datetime_value.astimezone(pytz.timezone(self.config['format']['timezone'])).strftime(format)
+
     def create_date(self, day):
         weekday = day.strftime('%a')
         date = day.strftime('%d\.%m')
@@ -68,22 +72,7 @@ class TextMsg:
         self.msg += "==================\n\n"
 
     def create_event(self, event):
-        if event['all_day']:
-            start_time = event['start'].astimezone(pytz.timezone(self.config['format']['timezone'])).strftime('%a \(%d\.\) ')
-        else:
-            start_time = event['start'].astimezone(pytz.timezone(self.config['format']['timezone'])).strftime('%a \(%d\.\) %H:%M ')
-        if event['start'] == event['end'] or (event['start'] + datetime.timedelta(days=1)) == event['end']:
-            end_time = None
-        elif (event['start'] + datetime.timedelta(days=1)) > event['end']:
-            end_time = event['end'].astimezone(pytz.timezone(self.config['format']['timezone'])).strftime('\- %H:%M ')
-        else:
-            end_time = event['end'].astimezone(pytz.timezone(self.config['format']['timezone'])).strftime('\- %a \(%d\.\) ')
-        if not event['summary']:
-            event['summary'] = "?"
-        link = None
-        if event['description']:
-            link = re.search("(?P<url>https?://[^\s]+)", event['description']).group("url")
-        self.create_event_header(event['summary'], start_time, end_time, link)
+        self.create_event_header(event)
         if event['location'] and self.config['format']['show_location']:
             self.create_event_location(event['location'])
         if event['description'] and self.config['format']['show_description']:
@@ -178,17 +167,39 @@ class TelegramMarkdownv2Msg(TextMsg):
             self.msg += f"🔍 "
         self.msg += f"*{self.sanatize(calendar_name)}* \n"
 
-    def create_event_header(self, summary, start_time=None, end_time=None, link=None):
+    def create_event_header(self, event):
+        if not event['summary']:
+            event['summary'] = "?"
+        else:
+            summary = event['summary']
+        link = None
+        if event['description'] != None:
+            try:
+                link = re.search("(?P<url>https?://[^\s]+)", event['description']).group("url")
+            except AttributeError:
+                link = None
+        # Create start_time string with create_datetime_string
+        if event['all_day']:
+            start_time = self.create_datetime_string(event['start'], '%d\.')
+        else:
+            start_time = self.create_datetime_string(event['start'], '%d\. \(%H:%M\)')
+        # Create end_time string with create_datetime_string
+        if event['start'] == event['end'] or (event['start'] + datetime.timedelta(days=1)) == event['end']:
+            end_time = None
+        elif (event['start'] + datetime.timedelta(days=1)) > event['end']:
+            end_time = self.create_datetime_string(event['end'], '\(\- %H:%M\)')
+        else:
+            end_time = self.create_datetime_string(event['end'], '\(\- %d\.\)')
         if start_time:
             self.msg += f"\- __{start_time}__"
         if end_time:
-            self.msg += f"__ {end_time}:__ "
+            self.msg += f"__ {end_time}:__"
         else:
             self.msg += f"__:__ "
         if link != None:
-            self.msg += f"[{self.sanatize(summary)}]({link})"
+            self.msg += f" [{self.sanatize(summary)}]({link})"
         else:
-            self.msg += f"{self.sanatize(summary)}"
+            self.msg += f" {self.sanatize(summary)}"
         self.msg += "\n"
 
     def create_event_location(self, s):
@@ -202,5 +213,5 @@ class TelegramMarkdownv2Msg(TextMsg):
 
     def send(self):
         import telegram
-        self.bot.send_message(text=self.msg, chat_id=self.config['output']['group_id'], parse_mode=telegram.ParseMode.MARKDOWN_V2)
+        self.bot.send_message(text=self.msg, chat_id=self.config['output']['group_id'], parse_mode=telegram.ParseMode.MARKDOWN_V2, disable_web_page_preview=True)
         return
