@@ -176,11 +176,6 @@ class TelegramMarkdownv2Msg(TextMsg):
                 link = re.search("(?P<url>https?://[^\s]+)", event['description']).group("url")
             except AttributeError:
                 link = None
-        # Create start_time string with create_datetime_string
-        if event['all_day']:
-            start_time = self.create_datetime_string(event['start'], '%d\.%m')
-        else:
-            start_time = self.create_datetime_string(event['start'], '%d\.%m \(%H:%M')
         # Create end_time string with create_datetime_string
         if event['start'] == event['end'] or (event['start'] + datetime.timedelta(days=1)) == event['end']:
             end_time = None
@@ -188,12 +183,20 @@ class TelegramMarkdownv2Msg(TextMsg):
             end_time = self.create_datetime_string(event['end'], '\- %H:%M\)')
         else:
             end_time = self.create_datetime_string(event['end'], '\- %d\.%m')
+        # Create start_time string with create_datetime_string
+        start_day = self.create_datetime_string(event['start'], '%d\.%m')
+        start_time = None
+        if not event['all_day']:
+            if not end_time == None:
+                start_time = self.create_datetime_string(event['start'], '\(%H:%M')
+            else:
+                start_time = self.create_datetime_string(event['start'], '\(%H:%M\)')
         if start_time:
-            self.msg += f"\- __{start_time}__"
+            self.msg += f"\- __{start_day}__{start_time}"
         if end_time:
-            self.msg += f"__ {end_time}:__"
+            self.msg += f" {end_time}:"
         else:
-            self.msg += f"__:__ "
+            self.msg += f": "
         if link != None:
             self.msg += f" [{self.sanatize(summary)}]({link})"
         else:
