@@ -183,7 +183,7 @@ class TelegramMarkdownv2Msg(TextMsg):
             start_time = self.create_datetime_string(event['start'], '%d\.%m \(%H:%M')
         # Create end_time string with create_datetime_string
         if event['start'] == event['end'] or (event['start'] + datetime.timedelta(days=1)) == event['end']:
-            end_time = ")"
+            end_time = "\)"
         elif (event['start'] + datetime.timedelta(days=1)) > event['end']:
             end_time = self.create_datetime_string(event['end'], '\- %H:%M\)')
         else:
