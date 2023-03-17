@@ -196,7 +196,7 @@ class TelegramMarkdownv2Msg(TextMsg):
         else:
             self.msg += f"\- __{start_day}__"
         if end_time:
-            self.msg += f"_ {end_time}_:"
+            self.msg += f" _{end_time}_:"
         else:
             self.msg += f": "
         if link != None:

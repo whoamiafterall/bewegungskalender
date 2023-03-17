@@ -23,44 +23,45 @@ def get_week_events(calendar, start_day, end_day):
     q_start_dt = date_to_datetime(start_day)
     q_end_dt = date_to_datetime(end_day)
     events = []
-    for event in calendar.date_search(q_start_dt, q_end_dt):
-        gevent = icalendar.Event.from_ical(event.data)
-        for component in gevent.walk():
-            if component.name == "VEVENT":
-                start_dt = component.get('dtstart').dt
-                try:
-                    end_dt = component.get('dtend').dt
-                    if not isinstance(end_dt, datetime.datetime):
-                        end_dt = date_to_datetime(end_dt)
+    try:
+        for event in calendar.date_search(q_start_dt, q_end_dt):
+            gevent = icalendar.Event.from_ical(event.data)
+            for component in gevent.walk():
+                if component.name == "VEVENT":
+                    start_dt = component.get('dtstart').dt
+                    try:
+                        end_dt = component.get('dtend').dt
+                        if not isinstance(end_dt, datetime.datetime):
+                            end_dt = date_to_datetime(end_dt)
+                        else:
+                            end_dt = end_dt.astimezone(pytz.timezone(config['format']['timezone']))
+                    except AttributeError:
+                        end_dt = None
+                    if not isinstance(start_dt, datetime.datetime):
+                        start_dt = date_to_datetime(start_dt)
+                        all_day = True
                     else:
-                        end_dt = end_dt.astimezone(pytz.timezone(config['format']['timezone']))
-                except AttributeError:
-                    end_dt = None
-                if not isinstance(start_dt, datetime.datetime):
-                    start_dt = date_to_datetime(start_dt)
-                    all_day = True
-                else:
-                    start_dt = start_dt.astimezone(pytz.timezone(config['format']['timezone']))
-                    if end_dt:
-                        all_day = start_dt <= q_start_dt and end_dt >= q_end_dt
-                    else:
-                        all_day = start_dt <= q_start_dt
-                if all_day and end_dt == start_dt:
-                    continue
-                if not start_dt < q_start_dt:
-                    events.append({
-                        'summary': component.get('summary'),
-                        'location': component.get('location'),
-                        'description': component.get('description'),
-                        'start': start_dt,
-                        'end': end_dt,
-                        'all_day': all_day,
-                        })
-    # TODO sort by start
+                        start_dt = start_dt.astimezone(pytz.timezone(config['format']['timezone']))
+                        if end_dt:
+                            all_day = start_dt <= q_start_dt and end_dt >= q_end_dt
+                        else:
+                            all_day = start_dt <= q_start_dt
+                    if all_day and end_dt == start_dt:
+                        continue
+                    if not start_dt < q_start_dt:
+                        events.append({
+                            'summary': component.get('summary'),
+                            'location': component.get('location'),
+                            'description': component.get('description'),
+                            'start': start_dt,
+                            'end': end_dt,
+                            'all_day': all_day,
+                            })
+    except ConnectionError:
+        print("Connection to Nextcloud failed.")
     sorted_events = []
     sorted_events += sorted([e for e in events], key=lambda d: d['start'])
     return sorted_events
-
 
 def create_message_text(msg):
     if config['caldav']['current_day_override']:
