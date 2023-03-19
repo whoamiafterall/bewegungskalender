@@ -40,6 +40,8 @@ class TextMsg:
             self.msg += f"🟢 "
         elif calendar_name == 'Jahres & Gedenktage':
             self.msg += f"🟠 "
+        elif calendar_name == 'Prozesse & Repression':
+            self.msg += f"🟡 "
         elif calendar_name == 'System-Events & Termine':
             self.msg += f"🔴 "
         elif calendar_name == 'Camps & Festivals':
@@ -155,6 +157,8 @@ class TelegramMarkdownv2Msg(TextMsg):
             self.msg += f"🟢 "
         elif calendar_name == 'Jahres & Gedenktage':
             self.msg += f"🟠 "
+        elif calendar_name == 'Prozesse & Repression':
+            self.msg += f"🟡 "
         elif calendar_name == 'System-Events & Termine':
             self.msg += f"🔴 "
         elif calendar_name == 'Camps & Festivals':
