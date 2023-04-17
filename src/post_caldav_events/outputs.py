@@ -15,7 +15,6 @@ class TextMsg:
     def create_space(self):
         self.msg += ("\n")
 
-
     def create_datetime_string(self, datetime_value, format):
         return datetime_value.astimezone(pytz.timezone(self.config['format']['timezone'])).strftime(format)
 
@@ -25,7 +24,7 @@ class TextMsg:
         return weekday + " " + date
 
     def create_header(self, start_day, end_day):
-        self.msg += f"📅 *Was passiert vom " + self.create_date(start_day) + " \- " + self.create_date(end_day) + "?*\n"
+        self.msg += f"📅 *Termine von" + self.create_date(start_day) + " \- " + self.create_date(end_day) + "?*\n"
 
     def create_footer(self):
         self.msg += "🌐 *Links & Hinweise:*\n"
@@ -187,7 +186,7 @@ class TelegramMarkdownv2Msg(TextMsg):
         elif (event['start'] + datetime.timedelta(days=1)) > event['end']:
             end_time = self.create_datetime_string(event['end'], '\- %H:%M\)')
         else:
-            end_time = self.create_datetime_string(event['end'], '\(\- %d\.%m\)')
+            end_time = self.create_datetime_string(event['end'], '\- %d\.%m')
         # Create start_time string with create_datetime_string
         start_day = self.create_datetime_string(event['start'], '%d\.%m')
         start_time = None
@@ -197,11 +196,11 @@ class TelegramMarkdownv2Msg(TextMsg):
             else:
                 start_time = self.create_datetime_string(event['start'], '\(%H:%M\)')
         if start_time != None:
-            self.msg += f"__{start_day}__ _{start_time}_"
+            self.msg += f"{start_day} {start_time}"
         else:
-            self.msg += f"__{start_day}__"
+            self.msg += f"{start_day}"
         if end_time:
-            self.msg += f" _{end_time}_:"
+            self.msg += f" {end_time}:"
         else:
             self.msg += f": "
         if link != None:
