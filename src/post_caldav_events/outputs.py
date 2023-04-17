@@ -24,7 +24,7 @@ class TextMsg:
         return weekday + " " + date
 
     def create_header(self, start_day, end_day):
-        self.msg += f"📅 *Die Termine vom " + self.create_date(start_day) + " bis " + self.create_date(end_day) + "?*\n"
+        self.msg += f"📅 *Die Termine vom " + self.create_date(start_day) + " bis " + self.create_date(end_day) + "*\n"
 
     def create_footer(self):
         self.msg += "🌐 *Links & Hinweise:*\n"
