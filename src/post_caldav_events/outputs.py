@@ -29,10 +29,10 @@ class TextMsg:
 
     def create_footer(self):
         self.msg += "🌐 *Links & Hinweise:*\n"
-        self.msg += "\- [Monatsansicht öffnen](https://cloud.systemli.org/apps/calendar/p/zJsbBZJSQLCfkSsQ-gGA9ttt2T6PQgcKq-Brn9ook4EJWMx3ki-a7nAXkDxDETZJm58-df5QdyrBKa6H9Kpa-NpegYZLCqZjpxMa2-Rgk2wiaFQtLXGa5W-GeG6jNfCLSENW2Fs/dayGridMonth/now)\n"
-        self.msg += "\- [Listenansicht öffnen](https://cloud.systemli.org/apps/calendar/p/zJsbBZJSQLCfkSsQ-gGA9ttt2T6PQgcKq-Brn9ook4EJWMx3ki-a7nAXkDxDETZJm58-df5QdyrBKa6H9Kpa-NpegYZLCqZjpxMa2-Rgk2wiaFQtLXGa5W-GeG6jNfCLSENW2Fs/listMonth/now)\n"
-        self.msg += "\- [Mehr Infos, Legende & Termine eintragen](https://klimax.online/bewegungskalender)\n"
-        self.msg += "\- [Andere Kalender\-Projekte & Plattformen](https://pad.kanthaus.online/s/Bewegungskalender#Weitere-Kalender)\n\n"
+        self.msg += "[Monatsansicht](https://cloud.systemli.org/apps/calendar/p/zJsbBZJSQLCfkSsQ-gGA9ttt2T6PQgcKq-Brn9ook4EJWMx3ki-a7nAXkDxDETZJm58-df5QdyrBKa6H9Kpa-NpegYZLCqZjpxMa2-Rgk2wiaFQtLXGa5W-GeG6jNfCLSENW2Fs/dayGridMonth/now)\n"
+        self.msg += "[Listenansicht](https://cloud.systemli.org/apps/calendar/p/zJsbBZJSQLCfkSsQ-gGA9ttt2T6PQgcKq-Brn9ook4EJWMx3ki-a7nAXkDxDETZJm58-df5QdyrBKa6H9Kpa-NpegYZLCqZjpxMa2-Rgk2wiaFQtLXGa5W-GeG6jNfCLSENW2Fs/listMonth/now)\n"
+        self.msg += "[Website (Termine eintragen)](https://klimax.online/bewegungskalender)\n"
+        self.msg += "[Andere Kalender\-Projekte](https://pad.kanthaus.online/s/Bewegungskalender#Weitere-Kalender)\n\n"
 
     def create_calendar_header(self, calendar_name):
         if calendar_name == 'Konferenzen & Treffen':
@@ -71,7 +71,7 @@ class TextMsg:
         self.msg += f"🌐 {s}\n"
 
     def create_seperation(self):
-        self.msg += "==================\n\n"
+        self.msg += "\n\n"
 
     def create_event(self, event):
         self.create_event_header(event)
@@ -197,9 +197,9 @@ class TelegramMarkdownv2Msg(TextMsg):
             else:
                 start_time = self.create_datetime_string(event['start'], '\(%H:%M\)')
         if start_time != None:
-            self.msg += f"\- __{start_day}__ _{start_time}_"
+            self.msg += f"__{start_day}__ _{start_time}_"
         else:
-            self.msg += f"\- __{start_day}__"
+            self.msg += f"__{start_day}__"
         if end_time:
             self.msg += f" _{end_time}_:"
         else:
