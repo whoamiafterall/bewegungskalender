@@ -24,14 +24,14 @@ class TextMsg:
         return weekday + " " + date
 
     def create_header(self, start_day, end_day):
-        self.msg += f"📅 *Termine von" + self.create_date(start_day) + " \- " + self.create_date(end_day) + "?*\n"
+        self.msg += f"📅 *Die Termine vom " + self.create_date(start_day) + " bis " + self.create_date(end_day) + "?*\n"
 
     def create_footer(self):
         self.msg += "🌐 *Links & Hinweise:*\n"
-        self.msg += "[Monatsansicht](https://cloud.systemli.org/apps/calendar/p/zJsbBZJSQLCfkSsQ-gGA9ttt2T6PQgcKq-Brn9ook4EJWMx3ki-a7nAXkDxDETZJm58-df5QdyrBKa6H9Kpa-NpegYZLCqZjpxMa2-Rgk2wiaFQtLXGa5W-GeG6jNfCLSENW2Fs/dayGridMonth/now)\n"
-        self.msg += "[Listenansicht](https://cloud.systemli.org/apps/calendar/p/zJsbBZJSQLCfkSsQ-gGA9ttt2T6PQgcKq-Brn9ook4EJWMx3ki-a7nAXkDxDETZJm58-df5QdyrBKa6H9Kpa-NpegYZLCqZjpxMa2-Rgk2wiaFQtLXGa5W-GeG6jNfCLSENW2Fs/listMonth/now)\n"
-        self.msg += "[Website \(Termine eintragen\)](https://klimax.online/bewegungskalender)\n"
-        self.msg += "[Andere Kalender\-Projekte](https://pad.kanthaus.online/s/Bewegungskalender#Weitere-Kalender)\n\n"
+        self.msg += "[\- Monatsansicht](https://cloud.systemli.org/apps/calendar/p/zJsbBZJSQLCfkSsQ-gGA9ttt2T6PQgcKq-Brn9ook4EJWMx3ki-a7nAXkDxDETZJm58-df5QdyrBKa6H9Kpa-NpegYZLCqZjpxMa2-Rgk2wiaFQtLXGa5W-GeG6jNfCLSENW2Fs/dayGridMonth/now)\n"
+        self.msg += "[\- Listenansicht](https://cloud.systemli.org/apps/calendar/p/zJsbBZJSQLCfkSsQ-gGA9ttt2T6PQgcKq-Brn9ook4EJWMx3ki-a7nAXkDxDETZJm58-df5QdyrBKa6H9Kpa-NpegYZLCqZjpxMa2-Rgk2wiaFQtLXGa5W-GeG6jNfCLSENW2Fs/listMonth/now)\n"
+        self.msg += "[\- Website \(Termine eintragen\)](https://klimax.online/bewegungskalender)\n"
+        self.msg += "[\- Andere Kalender\-Projekte](https://pad.kanthaus.online/s/Bewegungskalender#Weitere-Kalender)\n\n"
 
     def create_calendar_header(self, calendar_name):
         if calendar_name == 'Konferenzen & Treffen':
@@ -184,7 +184,7 @@ class TelegramMarkdownv2Msg(TextMsg):
         if event['start'] == event['end'] or (event['start'] + datetime.timedelta(days=1)) == event['end']:
             end_time = None
         elif (event['start'] + datetime.timedelta(days=1)) > event['end']:
-            end_time = self.create_datetime_string(event['end'], '\- %H:%M\)')
+            end_time = self.create_datetime_string(event['end'], '\- %H:%M\)_')
         else:
             end_time = self.create_datetime_string(event['end'], '\- %d\.%m')
         # Create start_time string with create_datetime_string
@@ -192,9 +192,9 @@ class TelegramMarkdownv2Msg(TextMsg):
         start_time = None
         if not event['all_day']:
             if not end_time == None:
-                start_time = self.create_datetime_string(event['start'], '\(%H:%M')
+                start_time = self.create_datetime_string(event['start'], '_\(%H:%M')
             else:
-                start_time = self.create_datetime_string(event['start'], '\(%H:%M\)')
+                start_time = self.create_datetime_string(event['start'], '_\(%H:%M\)_')
         if start_time != None:
             self.msg += f"{start_day} {start_time}"
         else:
@@ -220,9 +220,9 @@ class TelegramMarkdownv2Msg(TextMsg):
 
     def send(self):
         import telegram
-    #    if len(self.msg) < 4096:
+    #    if len(self.msg) < 4096
         self.bot.send_message(text=self.msg, chat_id=self.config['output']['group_id'], parse_mode=telegram.ParseMode.MARKDOWN_V2, disable_web_page_preview=True)
         #else:
         #    print("Message too long for Telegram.")
-        #    print (len(self.msg))
+        print (len(self.msg))
         return
