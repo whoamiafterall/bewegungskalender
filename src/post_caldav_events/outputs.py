@@ -224,5 +224,5 @@ class TelegramMarkdownv2Msg(TextMsg):
             self.bot.send_message(text=self.msg, chat_id=self.config['output']['group_id'], parse_mode=telegram.ParseMode.MARKDOWN_V2, disable_web_page_preview=True)
         else:
             print("Message too long for Telegram.")
-            print (len(self.msg))
+        print (len(self.msg))
         return
