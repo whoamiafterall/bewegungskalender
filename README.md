@@ -5,10 +5,16 @@ This script fetches calendar events via caldav from a Nextcloud and posts them i
 
 ## Setup
 
-This is a WIP, it should be installable via `pip` in the future.
+This is a Work in Progress, it should be installable via `pip` in the future.
 
-You need to install the following python packages:
+### Setup in Virtual Environment
 
+1) `python3 -m venv <directory>`
+2) `source <directory>/bin/activate`
+3) `cd <directory>`
+4) `git clone https://github.com/whoamiafterall/bewegungskalender2telegram.git`
+5) `pip install --upgrade pip`
+6) `pip install` together with 
 - `PyYAML` (tested with `v6`)
 - `pytz`
 - `caldav` (`>= 0.10.1`)
@@ -25,7 +31,7 @@ For the telegram output, you will need to setup a telegram bot:
 * insert the token into your config file
 * invite the bot into a channel
 * run with `--get-telegram-updates` flag to get the id of that channel
-  * you might get the update for being added to a channel only once! If you miss it, remove the bot from that channel and add it again
+* you might get the update for being added to a channel only once! If you miss it, remove the bot from that channel and add it again
 * insert the correct `group_id` into your config file
 
 ### Setup Signal
@@ -38,7 +44,7 @@ Run the script via
 
 ```
 cd src
-python3 -m post_caldav_events.main
+python3 -m post\_caldav\_events.main
 ```
 
 To post regular updates, schedule it via cron or similar.
