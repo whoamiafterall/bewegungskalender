@@ -32,13 +32,8 @@ class TextMsg:
         self.msg += "[\- Listenansicht](https://cloud.systemli.org/apps/calendar/p/zJsbBZJSQLCfkSsQ-gGA9ttt2T6PQgcKq-Brn9ook4EJWMx3ki-a7nAXkDxDETZJm58-df5QdyrBKa6H9Kpa-NpegYZLCqZjpxMa2-Rgk2wiaFQtLXGa5W-GeG6jNfCLSENW2Fs/listMonth/now)\n"
         self.msg += "[\- Website \(Termine eintragen\)](https://klimax.online/bewegungskalender)\n"
         self.msg += "[\- Andere Kalender\-Projekte](https://pad.kanthaus.online/s/Bewegungskalender#Weitere-Kalender)\n\n"
-<<<<<<< HEAD
         self.msg += "[\- FAQ und Infos](https://pad.kanthaus.online/s/Bewegungskalender#)"
 
-=======
-        self.msg += "[\- FAQ & Infos](https://pad.kanthaus.online/s/Bewegungskalender#)"
-        
->>>>>>> da37f8e8d0d32a70694e65a59c0fa705cd42a98d
     def create_calendar_header(self, calendar_name):
         if calendar_name == 'Konferenzen & Treffen':
             self.msg += f"👥 "
