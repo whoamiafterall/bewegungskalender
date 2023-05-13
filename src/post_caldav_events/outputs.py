@@ -31,8 +31,8 @@ class TextMsg:
         self.msg += "[\- Monatsansicht](https://cloud.systemli.org/apps/calendar/p/zJsbBZJSQLCfkSsQ-gGA9ttt2T6PQgcKq-Brn9ook4EJWMx3ki-a7nAXkDxDETZJm58-df5QdyrBKa6H9Kpa-NpegYZLCqZjpxMa2-Rgk2wiaFQtLXGa5W-GeG6jNfCLSENW2Fs/dayGridMonth/now)\n"
         self.msg += "[\- Listenansicht](https://cloud.systemli.org/apps/calendar/p/zJsbBZJSQLCfkSsQ-gGA9ttt2T6PQgcKq-Brn9ook4EJWMx3ki-a7nAXkDxDETZJm58-df5QdyrBKa6H9Kpa-NpegYZLCqZjpxMa2-Rgk2wiaFQtLXGa5W-GeG6jNfCLSENW2Fs/listMonth/now)\n"
         self.msg += "[\- Website \(Termine eintragen\)](https://klimax.online/bewegungskalender)\n"
-        self.msg += "[\- Andere Kalender\-Projekte](https://pad.kanthaus.online/s/Bewegungskalender#Weitere-Kalender)\n\n"
-        self.msg += "[\- FAQ und Infos](https://pad.kanthaus.online/s/Bewegungskalender#)"
+        self.msg += "[\- Andere Kalender\-Projekte](https://pad.kanthaus.online/s/Bewegungskalender#Weitere-Kalender)\n"
+        self.msg += "[\- FAQ und weitere Infos](https://pad.kanthaus.online/s/Bewegungskalender#)\n"
 
     def create_calendar_header(self, calendar_name):
         if calendar_name == 'Konferenzen & Treffen':
@@ -148,8 +148,8 @@ class TelegramMarkdownv2Msg(TextMsg):
         updates = self.bot.get_updates()
         return "\n".join([str(u) for u in updates])
 
-    def create_day_header(self):
-        self.msg += f"*__{self.sanatize(weekday)}__ {self.sanatize(date)}*\n"
+  #  def create_day_header(self):
+  #      self.msg += f"*__{self.sanatize(weekday)}__ {self.sanatize(date)}*\n"
 
     def create_calendar_header(self, calendar_name):
         if calendar_name == 'Konferenzen & Treffen':
