@@ -221,9 +221,11 @@ class TelegramMarkdownv2Msg(TextMsg):
 
     def send(self):
         import telegram
-        if len(self.msg) < 6000:
+        import telegram.utils.helpers
+        print(self.msg)
+        if len(self.msg) < 9500:
             self.bot.send_message(text=self.msg, chat_id=self.config['output']['group_id'], parse_mode=telegram.ParseMode.MARKDOWN_V2, disable_web_page_preview=True)
         else:
-            print("Message too long for Telegram.")
+            print("Message too long for Telegram")
         print (len(self.msg))
         return
