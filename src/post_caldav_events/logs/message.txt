@@ -1,4 +1,4 @@
-📅 Die Termine vom Sa 17\.06 bis Fr 15\.09
+📅 Die Termine vom So 18\.06 bis Sa 16\.09
 
 🔴 System\-Events & Termine
 08\.09 \- 10\.09: [Hamburg Cruise Days](https://www.hamburgcruisedays.de/)
@@ -26,7 +26,6 @@
 
 🟢 Aktionstage & Demos
 17\.06: [Stop au Lyon\-Turin \(NoTAV\)](https://lessoulevementsdelaterre.org/blog/programme-de-la-saison-5)
-17\.06, \(13:30 \- 15:00\): [Rettet Hamburgs Natur](https://rettet-hh-natur.de/)
 20\.06: [Abolish Frontex Aktionstag](https://abolishfrontex.org/blog/2023/05/16/en-de-ar-fr-it-join-the-abolish-frontex-international-action-day-20-june-2023/#DE)
 22\.06, \(16:00 \- 19:00\): [Demo: Strukturwandel statt Kohlehandel](https://twitter.com/_C_Nazifrei/status/1668641077996257286)
 24\.06: [Tata Steel Mass Action \[NL\]](https://t.me/PvsPTataSteel)
@@ -35,6 +34,7 @@
 07\.07 \- 16\.07: [Kreuzweg für die Schöpfung: von Lützi nach Büchel](https://kreuzweg-gorleben-garzweiler.de/kreuzweg-buechel/)
 09\.07: [Start Altertour \(Radtour\) Frankreich](https://www.altercampagne.net/)
 29\.07 \- 13\.08: [Tour de Natur \(Radtour\)](https://tourdenatur.net/static/FRONT/index.html)
+15\.09: [Globaler Klimastreik FFF](https://fridaysforfuture.de/globaler-klimastreik/)
 
 👥 Konferenzen & Treffen
 15\.06 \- 18\.06: Strategiekonferenz der Klimagerechtigkeitsbewegung
@@ -73,7 +73,7 @@
 
 🟣 Workshops & Skillshares
 17\.06: [Queerfeministische Geschichte \- Aktivismus & Widerstand](https://feuerqualle.org/termine/)
-19\.06, \(17:45 \- 18:45\): [None of your business \? \– Über Fragen der Verantwortung für schmutzige Lieferketten](https://www.instagram.com/p/CtbArOPI-Fo/?utm_source=ig_web_copy_link&igshid=MzRlODBiNWFlZA==)
+19\.06, \(17:15 \- 18:15\): [Verantwortung für schmutzige Lieferketten](https://www.instagram.com/p/CtbArOPI-Fo/?utm_source=ig_web_copy_link&igshid=MzRlODBiNWFlZA==)
 26\.06, \(19:00 \- 20:30\): [Med\. & Austausch](https://t.me/AchtsamforFuture/)
 10\.07, \(19:00 \- 20:30\): [Med\. & Austausch](https://t.me/AchtsamforFuture/)
 13\.07 \- 20\.07: [Wandelung im Wald](https://www.wandelung.org/angebote/wandelung-im-wald/)
@@ -82,10 +82,7 @@
 14\.08, \(19:00 \- 20:30\): [Med\. & Austausch](https://t.me/AchtsamforFuture/)
 28\.08, \(19:00 \- 20:30\): [Med\. & Austausch](https://t.me/AchtsamforFuture/)
 11\.09, \(19:00 \- 20:30\): [Med\. & Austausch](https://t.me/AchtsamforFuture/)
-
-🟡 Prozesse & Repression
-16\.06: [P: CancelLej \(DHL/Flughafenausbau\)](https://www.repressionnichtzustellbar.com/)
-22\.06: \?
+15\.09 \- 17\.09: [Retreat Workshop](https://t.me/AchtsamforFuture/94)
 
 🌐 Links & Hinweise:
 [\- Monatsansicht](https://cloud.systemli.org/apps/calendar/p/zJsbBZJSQLCfkSsQ-gGA9ttt2T6PQgcKq-Brn9ook4EJWMx3ki-a7nAXkDxDETZJm58-df5QdyrBKa6H9Kpa-NpegYZLCqZjpxMa2-Rgk2wiaFQtLXGa5W-GeG6jNfCLSENW2Fs/dayGridMonth/now)

@@ -1,6 +1,6 @@
 import re
 import datetime
-from .utils import get_queryend, get_querystart
+from post_caldav_events.nextcloud.fetch import get_queryend, get_querystart
 
 def header(config:dict):
     header = f"📅 Die Termine vom " + date(get_querystart(config)) + " bis " + date(get_queryend(config,  get_querystart(config))) + "\n"

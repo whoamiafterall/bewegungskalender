@@ -13,12 +13,14 @@ def get_updates():
     updates = bot.get_updates()
     return "\n".join([str(u) for u in updates])
 
+def log_message(message):
+    logfile = open('post_caldav_events/logs/message.txt', 'w')
+    logfile.write(message)
+    logfile.close()
+
 def send(config, message):
     from telegram import ParseMode
-    print(message)
-    file1 = open('message.txt', 'w')
-    file1.write(message)
-    file1.close()
+    log_message(message)
     if len(message) < 9500:
         bot(config).send_message(text=message, chat_id=config['output']['group_id'], parse_mode=ParseMode.MARKDOWN_V2, disable_web_page_preview=True)
     else:

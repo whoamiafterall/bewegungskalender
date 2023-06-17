@@ -60,15 +60,16 @@ def fetch_events(config: dict):
     Returns a Map with an Array of Events mapped to each calendars name (string).
     See also "append_event" method to see which attributes are fetched of each event.
     """
-    davclient = caldav.DAVClient(url=config['caldav']['url'], username=config['caldav']['username'], password=config['caldav']['password']) 
+    try:
+        davclient = caldav.DAVClient(url=config['caldav']['url'], username=config['caldav']['username'], password=config['caldav']['password']) 
+    except ConnectionError:
+        print("Connection to Nextcloud failed.")
+        exit()
     event_lists = []
     calendar_names = []
     for caldavline in config['caldav']['calendars']:
-        try:
-            calendar = davclient.calendar(url=caldavline['url'])
-            calendar_names.append(get_calendar_name(calendar))
-            events = date_search(config, calendar)
-            event_lists.append(sorted([e for e in events], key=lambda d:d['start']))
-        except ConnectionError:
-            print("Connection to Nextcloud failed.")
+        calendar = davclient.calendar(url=caldavline['url'])
+        calendar_names.append(get_calendar_name(calendar))
+        events = date_search(config, calendar)
+        event_lists.append(sorted([e for e in events], key=lambda d:d['start']))
     return dict(zip(calendar_names, event_lists))
