@@ -1,4 +1,4 @@
-📅 Die Termine vom Mo 19\.06 bis So 17\.09
+📅 Die Termine vom Mi 21\.06 bis Di 19\.09
 
 🔴 System\-Events & Termine
 08\.09 \- 10\.09: [Hamburg Cruise Days](https://www.hamburgcruisedays.de/)
@@ -22,9 +22,9 @@
 29\.08: Bali Principles of Climate Justice
 01\.09: Weltfriedenstag/Antikriegstag
 10\.09: [Tag des Antifaschismus](http://www.tag-der-mahnung.de/)
+17\.09 \- 23\.09: Gedenken: Ausschreitungen Hoyerswerda
 
 🟢 Aktionstage & Demos
-17\.06: [Stop au Lyon\-Turin \(NoTAV\)](https://lessoulevementsdelaterre.org/blog/programme-de-la-saison-5)
 20\.06: [Abolish Frontex Aktionstag](https://abolishfrontex.org/blog/2023/05/16/en-de-ar-fr-it-join-the-abolish-frontex-international-action-day-20-june-2023/#DE)
 22\.06, \(16:00 \- 19:00\): [Demo: Strukturwandel statt Kohlehandel](https://twitter.com/_C_Nazifrei/status/1668641077996257286)
 24\.06: [Tata Steel Mass Action \[NL\]](https://t.me/PvsPTataSteel)
@@ -36,17 +36,14 @@
 15\.09: [Globaler Klimastreik FFF](https://fridaysforfuture.de/globaler-klimastreik/)
 
 👥 Konferenzen & Treffen
-15\.06 \- 18\.06: Strategiekonferenz der Klimagerechtigkeitsbewegung
-15\.06 \- 18\.06: [Jugendliche Ohne Grenzen Konferenz](http://jogspace.net/2023/03/24/demo-und-jog-konferenz-bei-der-imk-2023-in-berlin/)
 22\.06 \- 25\.06: [Forum for climate justice & financial regulation](https://www.endfossil.finance/)
 23\.06: [Abolition Beyond Border Konferenz](https://kampnagel.de/reihen/abolition-beyond-borders-collective-racial-capitalism-krisen-abolition)
 19\.07 \- 23\.07: [Internationales Anarchistisches Treffen](https://anarchy2023.org/en)
 07\.08 \- 12\.08: [Sommerakademie \(BUNDJugend\)](https://www.bundjugend-bw.de/termin/sommerakademie-2023/)
+17\.09 \- 23\.09: [ver\.di Bundeskongress](https://www.verdi.de/ueber-uns/bundeskongress-2023)
 
 🔵 Camps & Festivals
 15\.06 \- 26\.06: [Klima Camp Bochum](https://www.bo-alternativ.de/2023/06/09/klimacamp-bochum-2023/)
-15\.06 \- 18\.06: Hof mit Zukunft \- Aktivismus trifft Landwirtschaft
-17\.06 \- 19\.06: [Food Autonomy Festival \[Utrecht, NL\]](https://aseed.net/food-autonomy-festival/faf-7/)
 26\.06 \- 29\.06: [Klimagerechtigkeit & Dekoloniale Bildung](https://www.instagram.com/endfossil_ffm/)
 30\.06 \- 02\.07: [United for Future \(UFF\) \- Camp](https://bezirksklimakonferenz.de/dgb-bw/)
 01\.07 \- 08\.07: [Living Future Festival](https://livingfuture.community/inspirations-erfahrungswoche-2023/)
@@ -54,7 +51,7 @@
 06\.07 \- 09\.07: [Sommer, Sonne, Antifa](https://www.antifa.nrw/festival/)
 11\.07 \- 16\.07: [Les Passeurs d\'Humanité \- Festival](https://passeursdhumanite.com/)
 12\.07 \- 17\.07: [ClimateCamp Scotland](https://www.climatecampscotland.com/post/it-s-coming-12-17-july-2023)
-14\.07 \- 24\.07: [Klimacamp Sterki](https://sterkibleibt.de/)
+14\.07 \- 25\.07: [Klimacamp Sterki Bleibt\!](https://sterkibleibt.de/)
 20\.07 \- 24\.07: [Climate Justice Camp \(Greece\)](https://blocksurvey.io/survey/p/bc96dc07-4d98-4fd9-901d-ab39b8f72d95/r/o)
 23\.07 \- 30\.07: [Klimacamp mit Kindern](https://klimacampmitkindern.wordpress.com/)
 24\.07 \- 30\.07: [Krisis Sommercamp](https://www.krisis.org/sommercamp/)
@@ -71,8 +68,6 @@
 11\.09 \- 18\.09: Klimacamp Halle & Saaletal
 
 🟣 Workshops & Skillshares
-17\.06: [Queerfeministische Geschichte \- Aktivismus & Widerstand](https://feuerqualle.org/termine/)
-19\.06, \(17:15 \- 18:15\): [Verantwortung für schmutzige Lieferketten](https://www.instagram.com/p/CtbArOPI-Fo/?utm_source=ig_web_copy_link&igshid=MzRlODBiNWFlZA==)
 26\.06, \(19:00 \- 20:30\): [Med\. & Austausch](https://t.me/AchtsamforFuture/)
 10\.07, \(19:00 \- 20:30\): [Med\. & Austausch](https://t.me/AchtsamforFuture/)
 13\.07 \- 20\.07: [Wandelung im Wald](https://www.wandelung.org/angebote/wandelung-im-wald/)
@@ -90,3 +85,4 @@
 [\- Website \(mit Formular zum Termine eintragen\)](https://klimax.online/bewegungskalender)
 [\- Andere Kalender\-Projekte](https://pad.kanthaus.online/s/Bewegungskalender#Weitere-Kalender)
 [\- Mitmachen](https://pad.kanthaus.online/s/Bewegungskalender#Mitmachen-und-selbst-eintragen)
+[\- Matrix\-Kanal](https://matrix.to/#/#bewegungskalender:matrix.org) \=\> [Matrix\-Einführung](https://kurzelinks.de/matrix-intro)

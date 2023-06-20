@@ -26,6 +26,7 @@ def footer():
     footer += "[\- Website \(mit Formular zum Termine eintragen\)](https://klimax.online/bewegungskalender)\n"
     footer += "[\- Andere Kalender\-Projekte](https://pad.kanthaus.online/s/Bewegungskalender#Weitere-Kalender)\n"
     footer += "[\- Mitmachen](https://pad.kanthaus.online/s/Bewegungskalender#Mitmachen-und-selbst-eintragen)\n"
+   # footer += "[\- Matrix\-Kanal](https://matrix.to/#/#bewegungskalender:matrix.org) \=\> [Matrix\-Einführung](https://kurzelinks.de/matrix-intro)\n"
     return footer
 
 def date(day:datetime.date):
