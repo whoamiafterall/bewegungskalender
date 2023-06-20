@@ -63,7 +63,7 @@ class ParseWPForms(HTMLParser):
     def handle_data(self, data):
         if self.isformdata == True: self.formdata.append(data)
 
-    def handle_starttag(self, tag: str, attrs: list[tuple[str, str or None]]):
+    def handle_starttag(self, tag: str, attrs: list):
         if tag == "td": 
             for name, value in attrs: 
                 if name == 'style': 
