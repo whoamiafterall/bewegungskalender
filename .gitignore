@@ -1,4 +1,4 @@
 __pycache__
 config.yml
 .Radicale.cache
-src/post_caldav_events/logs/*
+src/post_caldav_events/logs/message.txt
