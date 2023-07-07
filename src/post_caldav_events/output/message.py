@@ -51,7 +51,7 @@ def endtime(start:datetime, end:datetime):
     elif (start + datetime.timedelta(days=1)) > end:
         return string(end, '%H:%M')
     else:
-        return string(end, '%d.%m')
+        return string(end, '%d.%m.')
     
 def markdown_title_link(event: dict):
     sum = markdownify(summary(event['summary']))
@@ -61,7 +61,7 @@ def markdown_title_link(event: dict):
 
 def time(event: dict):
     end = endtime(event['start'], event['end'])
-    startday = string(event['start'], '%d.%m')
+    startday = string(event['start'], '%d.%m.')
     time = string(event['start'], '%H:%M')
     if time == end or end == None:
         if time == "00:00":
