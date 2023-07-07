@@ -13,14 +13,15 @@ from post_caldav_events.output.umap import createMapData
 # Get Arguments from Commandline 
 def get_args (override_args = None):
     argparser = argparse.ArgumentParser(description='Fetch CalDav Events from a Nextcloud and send a Message to Telegram.')
-    argparser.add_argument("-c", "--config", dest='config_file', help='path to config file')
-    argparser.add_argument("-qs", "--query-start", dest='query_start', type=int, help='starting day to query events from CalDav server, 0 means today')
+    argparser.add_argument("-c", "--config", dest='config_file', help='path to config file, defaults to config.yml')
+    argparser.add_argument("-qs", "--query-start", dest='query_start', type=int, help='starting day to query events from CalDav server, 0/None means today')
     argparser.add_argument("-qe", "--query-end", dest='query_end', type=int, help='number of days to query events from CalDav server, starting from query-start')
     argparser.add_argument("-g", "--get-telegram-updates", dest='get_telegram_updates', help='get telegram id of channel', action='store_true')
     argparser.add_argument("-u", "--update-events", dest='update_events', help='check Mailbox for new events and add them to calendar', action='store_true')
     argparser.add_argument("-m", "--map", dest='update_map', help='create MapData in geojson from loaction entries of events', action='store_true')
     argparser.add_argument("-t", "--telegram", dest='send_telegram', help='send message to telegram', action='store_true')
-    argparser.set_defaults(config_file="config.yml", query_start=1, query_end=1)
+    argparser.add_argument("-tid", "--telegram-id", dest='telegram_id', help='override telegram_id from config - useful if you have a channel for testing and one for production')
+    argparser.set_defaults(config_file="config.yml", query_start=1, query_end=1, telegram_id=None)
     if override_args is None:
         args = argparser.parse_args()
     else:
@@ -36,8 +37,6 @@ def get_config(args, config = {}):
         print("Config File not Found")
     return config
 
-    return 
-
 # Main Function if run as standalone program
 def main(events = {}):
     args = get_args()
@@ -48,6 +47,7 @@ def main(events = {}):
         exit()
     if args.update_events:
         update_events(config)
+        exit()
     set_timezone(config)
     set_locale(config)
     querystart = datetime.datetime.now().date() + datetime.timedelta(days=args.query_start)
@@ -56,7 +56,8 @@ def main(events = {}):
     if args.update_map:
         createMapData(events)
     if args.send_telegram:
-        send_telegram(config, message(events, querystart, queryend, markdown=True))
+        telegram_id = config['telegram']['group_id'] if args.telegram_id is None else args.telegram_id
+        send_telegram(config, telegram_id, message(events, querystart, queryend, markdown=True))
     exit()
 
 # Run as Module or Standalone program

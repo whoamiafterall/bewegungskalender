@@ -18,14 +18,14 @@ def emoji(name:str):
     return emojis.get(name, '🔍 ')
 
 def footer():
-    footer = "📅 Weitere Termine:\n"
-    footer += "[\- Monatsansicht](https://cloud.systemli.org/apps/calendar/p/zJsbBZJSQLCfkSsQ-gGA9ttt2T6PQgcKq-Brn9ook4EJWMx3ki-a7nAXkDxDETZJm58-df5QdyrBKa6H9Kpa-NpegYZLCqZjpxMa2-Rgk2wiaFQtLXGa5W-GeG6jNfCLSENW2Fs/dayGridMonth/now)\n"
-    footer += "[\- Listenansicht](https://cloud.systemli.org/apps/calendar/p/zJsbBZJSQLCfkSsQ-gGA9ttt2T6PQgcKq-Brn9ook4EJWMx3ki-a7nAXkDxDETZJm58-df5QdyrBKa6H9Kpa-NpegYZLCqZjpxMa2-Rgk2wiaFQtLXGa5W-GeG6jNfCLSENW2Fs/listMonth/now)\n"
-    footer += "🌐 Dein Termin steht nicht drin?:\n"
-    footer += "[\- Website \(mit Formular zum Termine eintragen\)](https://klimax.online/bewegungskalender)\n"
-    footer += "[\- Andere Kalender\-Projekte](https://pad.kanthaus.online/s/Bewegungskalender#Weitere-Kalender)\n"
-    footer += "[\- Mitmachen](https://pad.kanthaus.online/s/Bewegungskalender#Mitmachen-und-selbst-eintragen)\n"
-   # footer += "[\- Matrix\-Kanal](https://matrix.to/#/#bewegungskalender:matrix.org) \=\> [Matrix\-Einführung](https://kurzelinks.de/matrix-intro)\n"
+    footer = "🗺️ [Neu: zur Karte](https://umap.openstreetmap.de/en/map/bewegungskalender-karte_42841#5/50.219/7.339)\n"
+    footer += "🗓️ [Monatsansicht](https://cloud.systemli.org/apps/calendar/p/zJsbBZJSQLCfkSsQ-gGA9ttt2T6PQgcKq-Brn9ook4EJWMx3ki-a7nAXkDxDETZJm58-df5QdyrBKa6H9Kpa-NpegYZLCqZjpxMa2-Rgk2wiaFQtLXGa5W-GeG6jNfCLSENW2Fs/dayGridMonth/now)\n"
+    footer += "📅 [Listenansicht](https://cloud.systemli.org/apps/calendar/p/zJsbBZJSQLCfkSsQ-gGA9ttt2T6PQgcKq-Brn9ook4EJWMx3ki-a7nAXkDxDETZJm58-df5QdyrBKa6H9Kpa-NpegYZLCqZjpxMa2-Rgk2wiaFQtLXGa5W-GeG6jNfCLSENW2Fs/listMonth/now)\n"
+    footer += "🌐 [Website \(mit Formular zum Termine eintragen\)](https://klimax.online/bewegungskalender)\n"
+#    footer += "👥 [Mitmachen](https://pad.kanthaus.online/s/Bewegungskalender#Mitmachen-und-selbst-eintragen)\n"
+    footer += "➡️ [Andere Kalender\-Projekte](https://pad.kanthaus.online/s/Bewegungskalender#Weitere-Kalender)\n"
+#    footer += "[m] [Matrix\-Kanal](https://matrix.to/#/#bewegungskalender:matrix.org)\n"
+#    footer += "❓ [Matrix\-Einführung](https://kurzelinks.de/matrix-intro)\n"
     return footer
 
 def date(day:datetime.date):
