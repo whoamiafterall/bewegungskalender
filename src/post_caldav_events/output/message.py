@@ -66,7 +66,7 @@ def time(event: dict):
     time = string(event['start'], '%H:%M')
     if time == end or end == None:
         if time == "00:00":
-            return f"{startday}:"
+            return f"{startday}"
         return f"{startday}, {time}"
     else:
         if time == "00:00":
