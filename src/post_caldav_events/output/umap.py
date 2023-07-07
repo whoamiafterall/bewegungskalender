@@ -30,7 +30,7 @@ def getCoords(location: str) -> list:
     return coords
 
 def createFeature(coords: list, event) -> Feature:
-    properties = {'Name': event['summary'], 'description': event['description'], }
+    properties = {'Name': f"[[{event['description']}|{event['summary']}]]"}
     return Feature(geometry=Point(coords), properties=properties)
 
 def createMapData(events: dict):

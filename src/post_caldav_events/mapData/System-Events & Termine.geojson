@@ -1,1 +1,1 @@
-{"features": [{"geometry": {"coordinates": [53.550341, 10.000654], "type": "Point"}, "properties": {"Name": "Hamburg Cruise Days", "description": "https://www.hamburgcruisedays.de/"}, "type": "Feature"}], "type": "FeatureCollection"}
+{"features": [{"geometry": {"coordinates": [53.550341, 10.000654], "type": "Point"}, "properties": {"Name": "[[https://www.hamburgcruisedays.de/|Hamburg Cruise Days]]"}, "type": "Feature"}], "type": "FeatureCollection"}
