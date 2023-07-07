@@ -48,7 +48,7 @@ def createMapData(events: dict):
             if coords is not None:
                 features.append(createFeature(coords, event))
         with open(f"post_caldav_events/mapData/{calendar_name}.geojson", "w") as f:
-            f.write(f"{FeatureCollection(features,)}")
+            f.write(f"{FeatureCollection(features)}")
     return
 
 '''
