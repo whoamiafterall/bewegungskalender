@@ -14,7 +14,7 @@ def get_telegram_updates():
     return "\n".join([str(u) for u in updates])
 
 def log_message(message):
-    with open('post_caldav_events/logs/message.txt', 'w') as logfile:
+    with open('post_caldav_events/logs/message.md', 'w') as logfile:
         logfile.write(message)
         logfile.close()
 
