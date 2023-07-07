@@ -7,6 +7,7 @@ from post_caldav_events.input.form import update_events
 from post_caldav_events.nextcloud.fetch import fetch_events, set_locale, set_timezone
 from post_caldav_events.output.message import message
 from post_caldav_events.output.telegram import send, get_updates
+from post_caldav_events.output.umap import createMapData
 
 # Get Arguments from Commandline 
 def get_args (override_args = None):
@@ -41,6 +42,7 @@ def main(events = {}):
     set_timezone(config)
     set_locale(config)
     events = fetch_events(config)
+    createMapData(events)
     send(config, message(events, config, True))
     exit()
 

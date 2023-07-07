@@ -38,6 +38,7 @@ def parse_event_data(vevent):
     values = {
         'summary': vevent.get('summary'),
         'description': vevent.get('description'),
+        'location': vevent.get('location'),
         'start': start, 
         'end': end,}
     return values
@@ -53,11 +54,11 @@ def date_search(config: dict, calendar:caldav.Calendar):
                 events.append(parse_event_data(component))
     return events
                 
-def fetch_events(config: dict):
+def fetch_events(config: dict) -> dict:
     """y
     Reads calendars specified in config.
     Fetches events from Nextcloud calendar by calendar using date_search.
-    Returns a Map with an Array of Events mapped to each calendars name (string).
+    Returns a dict with an Array of Events mapped to each calendars name (string).
     See also "append_event" method to see which attributes are fetched of each event.
     """
     try:
