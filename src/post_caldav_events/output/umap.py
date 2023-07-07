@@ -23,9 +23,9 @@ def getCoords(location: str) -> list:
         return None
     coords = []
     for key, value in result[0].items():
-        if key == 'lat':
-            coords.append(float(value))
         if key == 'lon':
+            coords.append(float(value))
+        if key == 'lat':
             coords.append(float(value))
     return coords
 
