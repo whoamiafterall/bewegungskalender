@@ -1,9 +1,8 @@
 import re
 import datetime
-from post_caldav_events.nextcloud.fetch import get_queryend, get_querystart
 
-def header(config:dict):
-    header = f"📅 Die Termine vom " + date(get_querystart(config)) + " bis " + date(get_queryend(config,  get_querystart(config))) + "\n"
+def header(query_start, query_end):
+    header = f"📅 Die Termine vom " + date(query_start) + " bis " + date(query_end) + "\n"
     return header
 
 def emoji(name:str):
@@ -83,11 +82,11 @@ def markdownify(text: str):
     translate_dict = {c: "\\" + c for c in escape_chars}
     return text.translate(str.maketrans(translate_dict))
     
-def message(events:dict, config:dict, markdown:bool):
+def message(events:dict, querystart: int, queryend: int, markdown:bool):
     """
     
     """
-    message = markdownify(header(config)) if markdown else header(config)
+    message = markdownify(header(querystart, queryend)) if markdown else header(querystart, queryend)
     for calendar_name, event_list in events.items():
         if event_list == []:
             continue

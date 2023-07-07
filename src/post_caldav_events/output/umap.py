@@ -59,19 +59,3 @@ def createMapData(events: dict):
             f.write(f"{FeatureCollection(features)}")
     return
 
-'''
-[{u'boundingbox': [u'51.5162200927734',
-   u'51.516357421875',
-   u'-0.120491504669189',
-   u'-0.12029179930687'],
-  u'class': u'place',
-  u'display_name': u'58, Parker Street, Holborn, St Giles, London Borough of Camden, London, Greater London, England, WC2, United Kingdom',
-  u'importance': 0.421,
-  u'lat': u'51.5162894',
-  u'licence': u'Data \xa9 OpenStreetMap contributors, ODbL 1.0. http://www.openstreetmap.org/copyright',
-  u'lon': u'-0.120392595530143',
-  u'osm_id': u'148391190',
-  u'osm_type': u'way',
-  u'place_id': u'83887926',
-  u'type': u'house'}]
-''' 
