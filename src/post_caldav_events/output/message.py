@@ -67,11 +67,11 @@ def time(event: dict):
     if time == end or end == None:
         if time == "00:00":
             return f"{startday}:"
-        return f"{startday}, {time}:"
+        return f"{startday}, {time}"
     else:
         if time == "00:00":
-            return f"{startday} - {end}:"
-        return f"{startday}, ({time} - {end}):"
+            return f"{startday} - {end}"
+        return f"{startday} ({time} - {end})"
    
 def markdownify(text: str):
     """

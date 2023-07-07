@@ -43,7 +43,7 @@ def main(events = {}):
     set_locale(config)
     events = fetch_events(config)
     createMapData(events)
-  #  send(config, message(events, config, True))
+    send(config, message(events, config, True))
     exit()
 
 # Run as Module or Standalone program
