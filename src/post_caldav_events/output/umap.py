@@ -22,8 +22,6 @@ def encode(location: str):
     return location
     
 def createPoint(location: str) -> MyPoint:
-    if location == "online" or location == "Online":
-        return None
     if location is not None:
         result = nominatim.query(query=encode(location), limit=1)
     else:
@@ -45,15 +43,15 @@ def createFeature(point: MyPoint, event: dict) -> Feature:
 
 def createMapData(events: dict):
     for calendar_name, event_list in events.items():
-        if calendar_name == "Jahres & Gedenktage":
-            continue
         if event_list == []:
             continue
         features = []
         for event in event_list:
             location = event['location']
             if location is None:
-                print(f"{event['summary']}: location is None")
+                print(f"{event['summary']}: location is None"); continue
+            if location == "online" or location == "Online":
+                print(f"{event['summary']}: location is online"); continue
             features.append(createFeature(createPoint(location), event))
         with open(f"post_caldav_events/mapData/{calendar_name}.geojson", "w") as f:
             f.write(f"{FeatureCollection(features)}")
