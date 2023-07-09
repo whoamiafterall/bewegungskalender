@@ -22,12 +22,9 @@ def encode(location: str):
     return location
     
 def createPoint(location: str) -> MyPoint:
-    if location is not None:
-        result = nominatim.query(query=encode(location), limit=1)
-    else:
-        return None
+    result = nominatim.query(query=encode(location), limit=1)
     if result == []:
-        print(location)
+        print(f"{location}: no Result found")
         return None
     for key, value in result[0].items():
         if key == 'lon':
@@ -43,6 +40,7 @@ def createFeature(point: MyPoint, event: dict) -> Feature:
 
 def createMapData(events: dict):
     for calendar_name, event_list in events.items():
+        print(); print(calendar_name)
         if event_list == []:
             continue
         features = []
