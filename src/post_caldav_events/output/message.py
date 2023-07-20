@@ -68,7 +68,7 @@ def time(event: dict):
             return f"{startday}"
         return f"{startday} {time}"
     else:
-        if time == "00:00" or (startday + datetime.timedelta(days=1)) < end:
+        if time == "00:00" or startday + datetime.timedelta(days=1) < end:
             return f"{startday} - {end}"
         return f"{startday} ({time} - {end})"
    
