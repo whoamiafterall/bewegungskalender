@@ -36,7 +36,7 @@ def createPoint(location: str) -> MyPoint:
     return None
 
 def createFeature(point: MyPoint, event: dict) -> Feature:
-    return Feature(geometry=point, properties={'ℹ️': event['summary'], '📅': time(event),'🌐': event['description']})
+    return Feature(geometry=point, properties={'ℹ️': event['summary'], '📅': time(event), '📌': event['location'], '🌐': event['description']})
 
 def createMapData(events: dict):
     for calendar_name, event_list in events.items():
