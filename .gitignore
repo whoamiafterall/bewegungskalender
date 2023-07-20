@@ -3,3 +3,4 @@ config.yml
 .Radicale.cache
 logs/
 src/post_caldav_events/logs/message.txt
+src/post_caldav_events/newsletter_recipients.txt

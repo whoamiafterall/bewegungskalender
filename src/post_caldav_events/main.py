@@ -9,6 +9,7 @@ from post_caldav_events.nextcloud.fetch import fetch_events, set_locale, set_tim
 from post_caldav_events.output.message import message
 from post_caldav_events.output.telegram import send_telegram, get_telegram_updates
 from post_caldav_events.output.umap import createMapData
+from post_caldav_events.output.newsletter import send_newsletter
 
 # Get Arguments from Commandline 
 def get_args (override_args = None):
@@ -19,6 +20,7 @@ def get_args (override_args = None):
     argparser.add_argument("-g", "--get-telegram-updates", dest='get_telegram_updates', help='get telegram id of channel', action='store_true')
     argparser.add_argument("-u", "--update-events", dest='update_events', help='check Mailbox for new events and add them to calendar', action='store_true')
     argparser.add_argument("-m", "--map", dest='update_map', help='create MapData in geojson from loaction entries of events', action='store_true')
+    argparser.add_argument("-n", "--newsletter", dest='send_newsletter', help='send email-newsletter', action='store_true')
     argparser.add_argument("-t", "--telegram", dest='send_telegram', help='send message to telegram', action='store_true')
     argparser.add_argument("-tid", "--telegram-id", dest='telegram_id', help='override telegram_id from config - useful if you have a channel for testing and one for production')
     argparser.set_defaults(config_file="config.yml", query_start=1, query_end=1, telegram_id=None)
@@ -55,6 +57,8 @@ def main(events = {}):
     events = fetch_events(config, querystart, queryend)
     if args.update_map:
         createMapData(events)
+    if args.send_newsletter:
+        send_newsletter(config, querystart, queryend, events)
     if args.send_telegram:
         telegram_id = config['telegram']['group_id'] if args.telegram_id is None else args.telegram_id
         send_telegram(config, telegram_id, message(events, querystart, queryend, markdown=True))

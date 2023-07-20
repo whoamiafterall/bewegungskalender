@@ -7,7 +7,7 @@ import datetime
 
 def connect_imap(config: dict) -> imaplib.IMAP4_SSL:
     "returns an IMAP4_SSL-Client connected to server specified in config."
-    try: imap = imaplib.IMAP4_SSL(config['input']['server'], config['input']['imap_port']); return imap
+    try: imap = imaplib.IMAP4_SSL(config['mail']['server'], config['mail']['imap_port']); return imap
     except ConnectionError: return None
 
 def get_davclient(config:dict) -> caldav.DAVClient:
@@ -16,7 +16,7 @@ def get_davclient(config:dict) -> caldav.DAVClient:
 
 def search_mails(imap: imaplib.IMAP4_SSL, config: dict) -> str:
     "returns a space-separated string sequence with uids of mails matching the mail account and subject specified in config."
-    result, uids = imap.uid('search', None, 'FROM', config['input']['mail_from'], 'SUBJECT', config['input']['mail_subject'])
+    result, uids = imap.uid('search', None, 'FROM', config['mail']['sender'], 'SUBJECT', config['mail']['input']['subject'])
     return uids[0] if result == 'OK' else None
 
 def fetch_mail(imap:imaplib.IMAP4_SSL, uid) -> email.message_from_bytes:
@@ -26,22 +26,22 @@ def fetch_mail(imap:imaplib.IMAP4_SSL, uid) -> email.message_from_bytes:
         
 def move_mail(imap: imaplib.IMAP4_SSL, uid, config):
     "copies an e-mail to another Inbox specified in config and marks it as seen. Deletes the first mail afterwards."
-    imap.uid('store', uid, '+FLAGS', '\\Seen'); imap.uid('copy', uid, config['input']['move_to']); imap.uid('store', uid, '+FLAGS', '\\Deleted')
+    imap.uid('store', uid, '+FLAGS', '\\Seen'); imap.uid('copy', uid, config['mail']['input']['move_to']); imap.uid('store', uid, '+FLAGS', '\\Deleted')
 
 def to_datetime(date:str, config) -> datetime.datetime:
     "returns a datetime.datetime Object from a String using format specified in config."
-    return datetime.datetime.strptime(date, config['input']['date_format'])
+    return datetime.datetime.strptime(date, config['mail']['input']['date_format'])
 
 def update_events(config):
     imap = connect_imap(config)
     if imap == None: print('Connection to IMAP Server failed'); return None
-    imap.login(config['input']['mail_account'], config['input']['password'])
-    imap.select(config['input']['inbox'])
+    imap.login(config['mail']['account'], config['mail']['password'])
+    imap.select(config['mail']['input']['inbox'])
     uids = search_mails(imap, config)
     if uids is None: print("No matching form emails found."); return None
     try:
         davclient = get_davclient(config)
-        calendar = davclient.calendar(url=config['input']['calendar'])
+        calendar = davclient.calendar(url=config['mail']['input']['calendar'])
     except ConnectionError:
         print("Connection to Nextcloud failed."); return
     for uid in uids.split():

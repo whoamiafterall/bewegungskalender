@@ -29,7 +29,7 @@ def footer():
     return footer
 
 def date(day:datetime.date):
-    return day.strftime('%a') + " " + day.strftime('%d.%m')
+    return day.strftime('%a.') + " " + day.strftime('%d.%m.')
 
 def summary(summary:str):
     return "?" if summary is None else summary
@@ -93,7 +93,7 @@ def message(events:dict, querystart: int, queryend: int, markdown:bool):
         if event_list == []:
             continue
         message += newline()
-        message += emoji(calendar_name) + f"{markdownify(calendar_name)}" if markdown else calendar_name
+        message += emoji(calendar_name) + f"{markdownify(calendar_name)}" if markdown else emoji(calendar_name) + calendar_name
         message += newline()
         for event in event_list:
                 message += markdownify(time(event)) + markdown_title_link(event) if markdown else time(event) + f" {event['summary']}"
