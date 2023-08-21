@@ -41,8 +41,6 @@ def createFeature(point: MyPoint, event: dict) -> Feature:
 def createMapData(events: dict):
     for calendar_name, event_list in events.items():
         print(); print(calendar_name)
-        if event_list == []:
-            continue
         features = []
         for event in event_list:
             location = event['location']
