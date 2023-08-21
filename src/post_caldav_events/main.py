@@ -45,7 +45,7 @@ def main(events = {}):
     print(args)
     config = get_config(args)
     if args.get_telegram_updates:
-        print(get_telegram_updates())
+        print(get_telegram_updates(config))
         exit()
     if args.update_events:
         update_events(config)
@@ -61,7 +61,7 @@ def main(events = {}):
         send_newsletter(config, querystart, queryend, events)
     if args.send_telegram:
         telegram_id = config['telegram']['group_id'] if args.telegram_id is None else args.telegram_id
-        send_telegram(config, telegram_id, message(events, querystart, queryend, markdown=True))
+        send_telegram(config, telegram_id, message(events, querystart, queryend, mode='md'))
     exit()
 
 # Run as Module or Standalone program

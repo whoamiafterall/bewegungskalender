@@ -32,6 +32,16 @@ def to_datetime(date:str, config) -> datetime.datetime:
     "returns a datetime.datetime Object from a String using format specified in config."
     return datetime.datetime.strptime(date, config['mail']['input']['date_format'])
 
+def print_data(data):
+    "print data to stdout in a beautiful way, so it appears nicely in cron-mails"
+    log = f"<p>{data[0]}</br>"
+    log += f"{data[1]}</br>"
+    log += f"{data[2]}</br>"
+    log += f"{data[3]}</br>"
+    log += f"{data[4]}</p>"
+    print(log)
+    return
+
 def update_events(config):
     imap = connect_imap(config)
     if imap == None: print('Connection to IMAP Server failed'); return None
@@ -47,7 +57,7 @@ def update_events(config):
     for uid in uids.split():
         parser = ParseWPForms()
         data = parser.parse(fetch_mail(imap, uid))
-        print(data)
+        print_data(data)
         move_mail(imap, uid, config)
         event = icalendar.Event()
         event.add('summary',data[0])

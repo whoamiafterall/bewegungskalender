@@ -1,5 +1,6 @@
 import re
 import datetime
+import markdown
 
 def header(query_start, query_end):
     header = f"📅 Die Termine vom " + date(query_start) + " bis " + date(query_end) + "\n"
@@ -18,7 +19,7 @@ def emoji(name:str):
     return emojis.get(name, '🔍 ')
 
 def footer():
-    footer = "🗺️ [Neu: zur Karte](https://umap.openstreetmap.de/en/map/bewegungskalender-karte_42841#5/50.219/7.339)\n"
+    footer = "🗺️ [Karte öffnen \(Termine der nächsten 3 Monate\)](https://umap.openstreetmap.de/en/map/bewegungskalender-karte_42841#5/50.219/7.339)\n"
     footer += "🗓️ [Monatsansicht](https://cloud.systemli.org/apps/calendar/p/zJsbBZJSQLCfkSsQ-gGA9ttt2T6PQgcKq-Brn9ook4EJWMx3ki-a7nAXkDxDETZJm58-df5QdyrBKa6H9Kpa-NpegYZLCqZjpxMa2-Rgk2wiaFQtLXGa5W-GeG6jNfCLSENW2Fs/dayGridMonth/now)\n"
     footer += "📅 [Listenansicht](https://cloud.systemli.org/apps/calendar/p/zJsbBZJSQLCfkSsQ-gGA9ttt2T6PQgcKq-Brn9ook4EJWMx3ki-a7nAXkDxDETZJm58-df5QdyrBKa6H9Kpa-NpegYZLCqZjpxMa2-Rgk2wiaFQtLXGa5W-GeG6jNfCLSENW2Fs/listMonth/now)\n"
     footer += "🌐 [Website \(mit Formular zum Termine eintragen\)](https://klimax.online/bewegungskalender)\n"
@@ -84,20 +85,21 @@ def markdownify(text: str):
     translate_dict = {c: "\\" + c for c in escape_chars}
     return text.translate(str.maketrans(translate_dict))
     
-def message(events:dict, querystart: int, queryend: int, markdown:bool):
+def message(events:dict, querystart: int, queryend: int, mode:['plain','md','html']):
     """
     
     """
-    message = markdownify(header(querystart, queryend)) if markdown else header(querystart, queryend)
+    message = markdownify(header(querystart, queryend)) if mode in ['md','html'] else header(querystart, queryend)
     for calendar_name, event_list in events.items():
         if event_list == []:
             continue
         message += newline()
-        message += emoji(calendar_name) + f"{markdownify(calendar_name)}" if markdown else emoji(calendar_name) + calendar_name
+        message += emoji(calendar_name) + f"{markdownify(calendar_name)}" if mode in ['md','html'] else emoji(calendar_name) + calendar_name
         message += newline()
         for event in event_list:
-                message += markdownify(time(event)) + markdown_title_link(event) if markdown else time(event) + f" {event['summary']}"
+                message += markdownify(time(event)) + markdown_title_link(event) if mode in ['md','html'] else time(event) + f" {event['summary']}"
                 message += newline()
     message += newline()
     message += footer()
-    return message.strip()
+    return markdown.markdown(message.strip(), extensions=['nl2br']) if mode == 'html' else message.strip()
+    

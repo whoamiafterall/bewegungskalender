@@ -6,11 +6,11 @@ def bot(config):
     bot = Bot(token=config['telegram']['token'])
     return bot
 
-def get_telegram_updates():
+def get_telegram_updates(config):
     """
-    telegram helper method to retrieve group_id
+    telegram helper method to retrieve group_ids of groups that the bot joined
     """
-    updates = bot.get_updates()
+    updates = bot(config).get_updates()
     return "\n".join([str(u) for u in updates])
 
 def log_message(message):

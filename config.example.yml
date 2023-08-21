@@ -1,5 +1,5 @@
 mail:
-  mail_account: "mail@example.org"
+  account: "mail@example.org"
   password: '**********'
   server: 'mail.example.org'
   imap_port: '993'
