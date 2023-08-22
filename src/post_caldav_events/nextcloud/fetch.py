@@ -3,6 +3,7 @@ import locale
 import caldav
 import icalendar
 import pytz
+import recurring_ical_events
 
 timezone = ""
 
@@ -19,20 +20,19 @@ def set_timezone(config:dict):
 def get_calendar_name(calendar:caldav.Calendar):
     return calendar.get_properties([caldav.dav.DisplayName()])['{DAV:}displayname']
 
-def parse_event_data(vevent):
-    start = to_datetime(vevent.get('dtstart').dt)
-    try:
-        end = to_datetime(vevent.get('dtend').dt)
-    except AttributeError:
-        end = None
+def parse_event_data(event):
+    start = to_datetime(event.get('dtstart').dt)
+    end = to_datetime(event.get('dtend').dt)
     if start.date is not end.date:
         end = end - datetime.timedelta(days=1)
     values = {
-        'summary': vevent.get('summary'),
-        'description': vevent.get('description'),
-        'location': vevent.get('location'),
+        'summary': event.get('summary'),
+        'description': event.get('description'),
+        'location': event.get('location'),
         'start': start, 
-        'end': end,}
+        'end': end,
+        'recurrence': event.get('recurrence-id')
+        }
     return values
 
 def date_search(calendar:caldav.Calendar, querystart, queryend):
