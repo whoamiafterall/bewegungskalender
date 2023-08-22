@@ -42,6 +42,12 @@ def print_data(data):
     print(log)
     return
 
+def compose_title(data):
+    if data[0] == " *":
+        return f"{data[1]} ({data[4]})"
+    else:
+        return f"{data[0]}: {data[1]} ({data[4]})"
+
 def update_events(config):
     imap = connect_imap(config)
     if imap == None: print('Connection to IMAP Server failed'); return None
@@ -60,11 +66,11 @@ def update_events(config):
         print_data(data)
         move_mail(imap, uid, config)
         event = icalendar.Event()
-        event.add('summary',data[0])
-        event.add('dtstart',to_datetime(data[1], config))
-        event.add('dtend',to_datetime(data[2], config))
-        event.add('location', data[3])
-        event.add('description',data[4])
+        event.add('summary', compose_title(data))
+        event.add('dtstart',to_datetime(data[2], config))
+        event.add('dtend',to_datetime(data[3], config))
+        event.add('location', data[5])
+        event.add('description',data[6])
         calendar.add_event(event.to_ical())
         parser.formdata.clear()
     imap.expunge(); imap.close(); imap.logout()
