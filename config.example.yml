@@ -13,6 +13,9 @@ mail:
     date_format: '%d/%m/%Y - %H:%M'
   newsletter:
     subject: 'subject: '
+    recipients:
+      - mail: "mail@example.org"
+      - mail: "mail@lists.example.org"
 telegram:
   token: 'xxxx:xxxxxx'
   group_id: '-xxxxxx' # Testkanal
