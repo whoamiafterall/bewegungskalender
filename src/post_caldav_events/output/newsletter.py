@@ -15,6 +15,7 @@ def send_newsletter(config:dict, query_start, query_end, events:dict, recipient)
         if recipient is None:
             for recipient in config['mail']['newsletter']['recipients']:
                 mail["To"] = recipient['mail']
+                print(recipient['mail'])
                 smtp.sendmail(config['mail']['sender'], recipient['mail'], mail.as_string())
         else:
             mail["To"] = recipient
