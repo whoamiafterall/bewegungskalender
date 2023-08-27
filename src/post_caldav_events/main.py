@@ -50,7 +50,6 @@ def main(events = {}):
         exit()
     if args.update_events:
         update_events(config)
-        exit()
     set_timezone(config)
     set_locale(config)
     querystart = datetime.datetime.now().date() + datetime.timedelta(days=args.query_start)
