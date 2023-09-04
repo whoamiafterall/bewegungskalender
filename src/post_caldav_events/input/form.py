@@ -3,7 +3,7 @@ import imaplib
 import email
 import caldav
 import icalendar
-import datetime
+from post_caldav_events.datetime import to_datetime
 
 def connect_imap(config: dict) -> imaplib.IMAP4_SSL:
     "returns an IMAP4_SSL-Client connected to server specified in config."
@@ -27,10 +27,6 @@ def fetch_mail(imap:imaplib.IMAP4_SSL, uid) -> email.message_from_bytes:
 def move_mail(imap: imaplib.IMAP4_SSL, uid, config):
     "copies an e-mail to another Inbox specified in config and marks it as seen. Deletes the first mail afterwards."
     imap.uid('store', uid, '+FLAGS', '\\Seen'); imap.uid('copy', uid, config['mail']['input']['move_to']); imap.uid('store', uid, '+FLAGS', '\\Deleted')
-
-def to_datetime(date:str, config) -> datetime.datetime:
-    "returns a datetime.datetime Object from a String using format specified in config."
-    return datetime.datetime.strptime(date, config['mail']['input']['date_format'])
 
 def print_data(data):
     "print data to stdout in a beautiful way, so it appears nicely in cron-mails"

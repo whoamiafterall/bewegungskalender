@@ -30,3 +30,14 @@ caldav: # configuration for your caldav server
 format:
   time_locale: "de_DE.utf8"
   timezone: "Europe/Berlin"
+message:
+  footer: 
+    - line: 'This will be displayed at the end of the message'
+    - line: 'This will be also displayed at the end of the message'
+    - line: '[When using Markdown \(A Markup Language\), you need to escape characters by using "\" \- otherwise it will not work](Link)'
+  emojis: 
+    - calendar: "calendar_one"
+      emoji: 'Emoji_One' # This lets you add Emojis in front of Calendar Names in the Message
+    - calendar: "calendar_two"
+      emoji: 'Emoji_Two'
+      ...

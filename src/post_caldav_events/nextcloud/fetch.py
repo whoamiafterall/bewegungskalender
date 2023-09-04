@@ -1,30 +1,15 @@
-import datetime
-import locale
 import caldav
 import icalendar
-import pytz
-import recurring_ical_events
-
-timezone = ""
-
-def to_datetime(date:datetime.date):
-    return date if isinstance(date, datetime.datetime) else datetime.datetime.combine(date, datetime.datetime.min.time()).astimezone(timezone)
-
-def set_locale(config:dict):
-    locale.setlocale(locale.LC_TIME, config['format']['time_locale'])   
-
-def set_timezone(config:dict):
-    global timezone
-    timezone = pytz.timezone(config['format']['timezone'])
+from post_caldav_events.datetime import check_datetime, days
     
 def get_calendar_name(calendar:caldav.Calendar):
     return calendar.get_properties([caldav.dav.DisplayName()])['{DAV:}displayname']
 
 def parse_event_data(event):
-    start = to_datetime(event.get('dtstart').dt)
-    end = to_datetime(event.get('dtend').dt)
+    start = check_datetime(event.get('dtstart').dt)
+    end = check_datetime(event.get('dtend').dt)
     if start.date is not end.date:
-        end = end - datetime.timedelta(days=1)
+        end = end - days(1)
     values = {
         'summary': event.get('summary'),
         'description': event.get('description'),
@@ -45,7 +30,7 @@ def date_search(calendar:caldav.Calendar, querystart, queryend):
     return events
                 
 def fetch_events(config: dict, querystart: int, queryend: int) -> dict:
-    """y
+    """
     Reads calendars specified in config.
     Fetches events from Nextcloud calendar by calendar using date_search.
     Returns a dict with an Array of Events mapped to each calendars name (string).
