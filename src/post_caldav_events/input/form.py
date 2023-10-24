@@ -30,19 +30,17 @@ def move_mail(imap: imaplib.IMAP4_SSL, uid, config):
 
 def print_data(data):
     "print data to stdout in a beautiful way, so it appears nicely in cron-mails"
-    log = f"<p>{data[0]}</br>"
-    log += f"{data[1]}</br>"
-    log += f"{data[2]}</br>"
-    log += f"{data[3]}</br>"
-    log += f"{data[4]}</p>"
+    log = f"{data[0]}"
+    log += f"{data[1]}"
+    log += f"{data[2]}"
+    log += f"{data[3]}"
+    log += f"{data[4]}"
+    log += f"{data[5]}"
     print(log)
     return
 
 def compose_title(data):
-    if data[0] == " *":
-        return f"{data[1]} ({data[4]})"
-    else:
-        return f"{data[0]}: {data[1]} ({data[4]})"
+    return f"{data[0]} ({data[3]})"
 
 def update_events(config):
     imap = connect_imap(config)
@@ -57,6 +55,7 @@ def update_events(config):
     except ConnectionError:
         print("Connection to Nextcloud failed."); return
     for uid in uids.split():
+        print(uid)
         parser = ParseWPForms()
         data = parser.parse(fetch_mail(imap, uid))
         print_data(data)
@@ -65,8 +64,8 @@ def update_events(config):
         event.add('summary', compose_title(data))
         event.add('dtstart',to_datetime(data[2], config))
         event.add('dtend',to_datetime(data[3], config))
-        event.add('location', data[5])
-        event.add('description',data[6])
+        event.add('location', data[4])
+        event.add('description',data[5])
         calendar.add_event(event.to_ical())
         parser.formdata.clear()
     imap.expunge(); imap.close(); imap.logout()
