@@ -6,10 +6,11 @@ from post_caldav_events.datetime import time, weekday, date, days
 def newline():
     return "\n"
 
-def header(query_start, query_end, mode): # Displayed as Head of the Message
+def header(query_start, query_end, config, mode): # Displayed as Head of the Message
     text = f"📅 " + weekday(query_start) + " " + date(query_start) + " - " + weekday(query_end) + " " + date(query_end) + "\n"
-    text += f"Tragt eure Termine ab " + weekday(query_start + days(7)) + " " + date(query_start + days(7)) + " wie immer gerne über das [Formular auf der Webseite](https://klimax.online/bewegungskalender/#Termine-eintragen) ein. \n"
+    text += f"Tragt eure Termine ab " + weekday(query_start + days(7)) + " " + date(query_start + days(7)) + " wie immer gerne über das "
     text = markdownify(text) if mode in ['md', 'html'] else text
+    text +=  config['message']['Formular'] + " ein\. \n"
     return  text
 
 def footer(config:dict): # Displayed at the End of the Message - set by config
@@ -30,7 +31,7 @@ def title(name, mode): # Adds Emojis in front of Calendar Titles (Categories) - 
         return '🟠 ' + name
     if name ==  "Prozesse & Repression":
         return '🟡 ' + name
-    if name ==  "System-Events & Termine":
+    if name ==  "System\-Events & Termine":
         return '🔴 ' + name
     if name ==  "Camps & Festivals":
         return '🔵 ' + name
@@ -89,7 +90,7 @@ def message(config:dict, events:dict, querystart: int, queryend: int, mode:['pla
     """
     
     """
-    message = header(querystart, queryend, mode)
+    message = header(querystart, queryend, config, mode)
     for calendar_name, event_list in events.items():
         if event_list == []:
             continue
