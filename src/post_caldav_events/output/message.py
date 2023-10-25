@@ -1,13 +1,16 @@
 import re
 import datetime
 import markdown
-from post_caldav_events.datetime import time, weekday, date
+from post_caldav_events.datetime import time, weekday, date, days
 
 def newline():
     return "\n"
 
-def header(query_start, query_end): # Displayed as Head of the Message
-    return f"📅 " + weekday(query_start) + " " + date(query_start) + " - " + weekday(query_end) + " " + date(query_end) + "\n" 
+def header(query_start, query_end, mode): # Displayed as Head of the Message
+    text = f"📅 " + weekday(query_start) + " " + date(query_start) + " - " + weekday(query_end) + " " + date(query_end) + "\n"
+    text += f"Tragt eure Termine ab " + weekday(query_start + days(7)) + " " + date(query_start + days(7)) + " wie immer gerne über das [Formular auf der Webseite](https://klimax.online/bewegungskalender/#Termine-eintragen) ein. \n"
+    text = markdownify(text) if mode in ['md', 'html'] else text
+    return  text
 
 def footer(config:dict): # Displayed at the End of the Message - set by config
     text = ""
@@ -16,12 +19,25 @@ def footer(config:dict): # Displayed at the End of the Message - set by config
         text += "\n"
     return text
 
-def emoji(name, config:dict): # Adds Emojis in front of Calendar Titles (Categories) - set by config
-    for calendar, emoji in config['message']['emojis']:
-        if name == calendar:
-            return emoji + " "
-        else:
-            return "🔎 "
+def title(name, mode): # Adds Emojis in front of Calendar Titles (Categories) - set by config
+    if mode in ['md', 'html']:
+        name = markdownify(name)
+    if name == "Konferenzen & Treffen":
+        return '👥 ' + name
+    if name ==  "Aktionstage & Demos":
+        return '🟢 ' + name
+    if name ==  "Jahres & Gedenktage":
+        return '🟠 ' + name
+    if name ==  "Prozesse & Repression":
+        return '🟡 ' + name
+    if name ==  "System-Events & Termine":
+        return '🔴 ' + name
+    if name ==  "Camps & Festivals":
+        return '🔵 ' + name
+    if name ==  "Workshops & Skillshares":
+        return '🟣 ' + name
+    else:
+        return "🔎 "
 
 def link(description:str):
     if  description is not None:
@@ -73,12 +89,12 @@ def message(config:dict, events:dict, querystart: int, queryend: int, mode:['pla
     """
     
     """
-    message = markdownify(header(querystart, queryend)) if mode in ['md','html'] else header(querystart, queryend)
+    message = header(querystart, queryend, mode)
     for calendar_name, event_list in events.items():
         if event_list == []:
             continue
         message += newline()
-        message += emoji(calendar_name, config) + f"{markdownify(calendar_name)}" if mode in ['md','html'] else emoji(calendar_name, config) + calendar_name
+        message += title(calendar_name, mode) 
         message += newline()
         for event in event_list:
             if event['recurrence'] is not None:
