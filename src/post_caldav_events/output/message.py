@@ -9,6 +9,8 @@ def newline():
 def header(query_start, query_end, config, mode): # Displayed as Head of the Message
     text = f"📅 " + weekday(query_start) + " " + date(query_start) + " - " + weekday(query_end) + " " + date(query_end) + "\n"
     text += f"Tragt eure Termine ab " + weekday(query_start + days(7)) + " " + date(query_start + days(7)) + " wie immer gerne über das "
+    if mode == 'html':
+        text += f"Dies ist eine automatisch generierte Mail - bitte nicht antworten."
     text = markdownify(text) if mode in ['md', 'html'] else text
     text +=  config['message']['Formular'] + " ein\. \n"
     return  text
