@@ -46,8 +46,6 @@ def createMapData(events: dict):
             location = event['location']
             if location is None:
                 print(f"N: {event['summary']}: location is None"); continue
-            if location == "online" or location == "Online":
-                print(f"O: {event['summary']}: location is online"); continue
             features.append(createFeature(createPoint(location), event))
         with open(f"post_caldav_events/mapData/{calendar_name}.geojson", "w") as f:
             f.write(f"{FeatureCollection(features)}")
