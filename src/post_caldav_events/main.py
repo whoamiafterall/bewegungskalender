@@ -12,7 +12,7 @@ from post_caldav_events.output.message import message
 from post_caldav_events.output.telegram import send_telegram, get_telegram_updates
 from post_caldav_events.output.umap import createMapData
 from post_caldav_events.output.newsletter import send_newsletter
-from post_caldav_events.output.mastodon import login
+#from post_caldav_events.output.mastodon import login
 
 # Get Arguments from Commandline 
 def get_args ():
@@ -25,10 +25,10 @@ def get_args ():
     argparser.add_argument("-qs", "--query-start", dest='query_start', type=int, help='starting day to query events from CalDav server, 0/None means today')
     argparser.add_argument("-qe", "--query-end", dest='query_end', type=int, help='number of days to query events from CalDav server, starting from query-start')
     argparser.add_argument("-r", "--recipients", dest='recipient', help='override newsletter recipients from config - useful for testing')
-    argparser.add_argument("-t", "--telegram", dest='send_telegram', help='send message to telegram - choose production or test_channel specified in config', choices=['prod', 'test'])
+    argparser.add_argument("-t", "--telegram", dest='telegram', help='send message to telegram - choose production or test_channel specified in config', choices=['prod', 'test'])
     argparser.add_argument("-toot", "--mastodon", dest='send_mastodon', help='send toot to mastodon', action='store_true')
     argparser.add_argument("-u", "--update-events", dest='update_events', help='check Mailbox for new events and add them to calendar', action='store_true')
-    argparser.set_defaults(config_file="config.yml", print=None, query_start=1, query_end=1, telegram='prod')
+    argparser.set_defaults(config_file="config.yml", print=None, query_start=1, query_end=1, telegram=None)
     args = argparser.parse_args()
     return args
 
@@ -69,7 +69,7 @@ def main(events = {}):
         createMapData(events) 
         
 # print message to stdout
-    if args.print is not None:
+    if args.print:
         print(args.print)
         format = Format.HTML if args.print == 'html' else (Format.MD if args.print == 'md' else Format.TXT)
         print(message(config, events, querystart, queryend, format))
@@ -79,9 +79,11 @@ def main(events = {}):
         recipientcli = args.recipient if args.recipient is not None else None
         send_newsletter(config, querystart, queryend, events, recipientcli, Format.HTML) 
         
-# send telegram 
-    channel = config['telegram']['test_channel'] if args.telegram is 'test' else config['telegram']['prod_channel']  
-    send_telegram(config, channel, message(config, events, querystart, queryend, Format.MD)) 
+# send telegram
+    if args.telegram:
+        channel = config['telegram']['production'] if args.telegram == 'prod' else config['telegram']['test']  
+        send_telegram(config, channel, message(config, events, querystart, queryend, Format.MD)) 
+        print(f"Succesfully sent message to {args.telegram}: {channel}!")
         
 # send mastodon newsletter
     if args.send_mastodon:
