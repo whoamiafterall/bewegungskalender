@@ -1,5 +1,6 @@
 from enum import Enum
 import re
+from post_caldav_events.helper.datetime import eventtime
 
 class Format(Enum):
     HTML = 'html'
@@ -24,7 +25,7 @@ def italic(text:str, mode: Format) -> str:
     """    
     return "<i> " + text + " </i>" if mode == Format.HTML else ("_" + text + "_" if mode == Format.MD else text)
     
-def markdownify(text:str) -> str:
+def escape_chars(text:str) -> str:
     """
     escape characters to use markdown
     """
@@ -39,10 +40,19 @@ def search_link(description:str) -> str:
         try: return re.search("(?P<url>https?://[^\s]+)", description).group("url") 
         except AttributeError: return print(f"No Link found in:{description}")
     
-def markdown_link(text:str, url:str) -> str:
-    return f" [{markdownify(text)}]({search_link(url)})" if search_link(url) is not None else f" {text}"; print(f"No valid link in description of event:{text}")
+def md_link(text:str, url:str) -> str:
+    return f" [{escape_chars(text)}]({search_link(url)})" if search_link(url) is not None else f" {text}"; print(f"No valid link in description of event:{text}")
 
 def match_string(string:str, text:str, mode) -> str:
     regex = '\.\s.*'
-    regex += re.escape(markdownify(f"{string}") if mode == Format.HTML or Format.MD else f"\..*{string}")
+    regex += re.escape(escape_chars(f"{string}") if mode == Format.HTML or Format.MD else f"\..*{string}")
     return re.search(regex, text)
+
+def md_event(event:dict) -> str:
+    return escape_chars(eventtime(event['start'], event['end'])) + md_link(event['summary'], event['description'])
+
+def txt_event(event:dict) -> str:
+    return eventtime(event['start'], event['end']) + f" {event['summary']}"  
+
+def add_event(event:dict, mode:Format):
+    return md_event(event) if mode == Format.MD or Format.HTML else txt_event(event)

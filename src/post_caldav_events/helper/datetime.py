@@ -37,3 +37,11 @@ def weekday_date(day:datetime.date) -> str:
 
 def time (datetime:datetime) -> str: # get time from a datetime object
     return datetime.astimezone(TIMEZONE).strftime('(%H:%M)') 
+
+def eventtime(start:datetime, end:datetime) -> str:
+    if start == end or (start + datetime.timedelta(days=1)) == end:
+        return f"{date(start)}" if time(start) == "(00:00)" else f"{date(start)} {time(start)}:"
+    else:
+        if time(start) == "(00:00)":
+            return f"{date(start)} - {date(end)}"
+        return f"{date(start)} - {date(end)}" if start + datetime.timedelta(days=1) < end else f"{date(start)} {time(start)}:"
