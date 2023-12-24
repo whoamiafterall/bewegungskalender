@@ -1,111 +1,68 @@
-import re
 import datetime
 import markdown
-from post_caldav_events.datetime import time, weekday, date, days
+from post_caldav_events.helper.datetime import time, weekday_date, date
+from post_caldav_events.helper.formatting import markdown_link, markdownify, bold, italic, newline, match_string, Format
 
-def newline():
-    return "\n"
+# functions that produce some type of generic message content
 
-def header(query_start, query_end, config, mode): # Displayed as Head of the Message
-    text = f"📅 " + weekday(query_start) + " " + date(query_start) + " - " + weekday(query_end) + " " + date(query_end) + "\n"
-    text += f"Tragt eure Termine ab " + weekday(query_start + days(7)) + " " + date(query_start + days(7)) + " wie immer gerne über das "
-    if mode == 'html':
-        text += f"Dies ist eine automatisch generierte Mail - bitte nicht antworten."
-    text = markdownify(text) if mode in ['md', 'html'] else text
-    text +=  config['message']['Formular'] + " ein\. \n"
-    return  text
+def queryline(query_start: datetime, query_end: datetime, mode: Format): # Displayed as Head of the Message
+    return bold(markdownify(f"Die Termine vom " + weekday_date(query_start) + " - " + weekday_date(query_end) + "\n"), mode)
 
-def footer(config:dict): # Displayed at the End of the Message - set by config
-    text = ""
-    for line in config['message']['footer']:
-        text += line['line']
-        text += "\n"
-    return text
+def footer(config:dict, mode: Format):
+    footer = bold("🌐 Links \n", mode)
+    for item in config['links']:
+        footer += markdown_link(markdownify(item['link']['text']), item['link']['url']) + "\n"
+    return footer
 
-def title(name, mode): # Adds Emojis in front of Calendar Titles (Categories) - set by config
-    if mode in ['md', 'html']:
-        name = markdownify(name)
-    if name == "Konferenzen & Treffen":
-        return '👥 ' + name
-    if name ==  "Aktionstage & Demos":
-        return '🟢 ' + name
-    if name ==  "Jahres & Gedenktage":
-        return '🟠 ' + name
-    if name ==  "Prozesse & Repression":
-        return '🟡 ' + name
-    if name ==  "System\-Events & Termine":
-        return '🔴 ' + name
-    if name ==  "Camps & Festivals":
-        return '🔵 ' + name
-    if name ==  "Workshops & Skillshares":
-        return '🟣 ' + name
-    else:
-        return "🔎 "
+# Forms Titles out of Calendar Names (Categories) - set by config - adds bold for HTML.
+def calendar_title(calendar_name: str, mode: Format) -> str: 
+    if mode == 'md':
+        calendar_name = markdownify(calendar_name) 
+    return bold(calendar_name, mode)
 
-def link(description:str):
-    if  description is not None:
-        try: return re.search("(?P<url>https?://[^\s]+)", description).group("url") 
-        except AttributeError: return
-    
-def markdown_title_link(event: dict):
-    summary = markdownify((event['summary']))
-    if link(event['description']) is not None:
-        return f" [{summary}]({link(event['description'])})" 
-    else: return f" {summary}"
+def md_event(event:dict) -> str:
+    return markdownify(eventtime(event['start'], event['end'])) + markdown_link(event['summary'], event['description'])
 
-def eventtime(start:datetime, end:datetime):
+def txt_event(event:dict) -> str:
+    return eventtime(event['start'], event['end']) + f" {event['summary']}"
+
+def eventtime(start:datetime, end:datetime) -> str:
     if start == end or (start + datetime.timedelta(days=1)) == end:
-        if time(start) == "(00:00)":
-            return f"{date(start)}"
-        return f"{date(start)} {time(start)}:"
+        return f"{date(start)}" if time(start) == "(00:00)" else f"{date(start)} {time(start)}:"
     else:
         if time(start) == "(00:00)":
             return f"{date(start)} - {date(end)}"
-        elif start + datetime.timedelta(days=1) < end:
-            return f"{date(start)} - {date(end)}"
-        return f"{date(start)} {time(start)}:"
-    
-def recurring(event:dict, message:str, mode:['plain','md','html']):
-    regex = '\.\s.*'
-    regex += re.escape(markdownify(f"{event['summary']}") if mode in ['md', 'html'] else f"\..*{event['summary']}")
-    entry = re.search(regex, message)
+        return f"{date(start)} - {date(end)}" if start + datetime.timedelta(days=1) < end else f"{date(start)} {time(start)}:"
+
+def recurring(event:dict, message:str, mode:Format) -> str:
+    entry = match_string(event['summary'], message, mode)
     if entry is None:
-        message += markdownify(eventtime(event['start'], event['end'])) + markdown_title_link(event) if mode in ['md','html'] else eventtime(event['start'], event['end']) + f" {event['summary']}"
+        message += md_event(event) if mode == Format.MD or Format.HTML else txt_event(event)
         message += newline()
         return message
     else:
         index = message.find(entry.group())
-        return message[:index+2] + f"& {markdownify(date(event['start']))} " + message[index+2:]
-        
+        return message[:index+2] + f"& {markdownify(date(event['start']))} " + message[index+2:]        
     
-def markdownify(text: str):
-    """
-    escape characters to use markdown
-    """
-    if text is None:
-        return ""
-    escape_chars = "?_–*[]()~`>#+-=|.!'{''}''"
-    translate_dict = {c: "\\" + c for c in escape_chars}
-    return text.translate(str.maketrans(translate_dict))
-    
-def message(config:dict, events:dict, querystart: int, queryend: int, mode:['plain','md','html']):
+def message(config:dict, events:dict, querystart: datetime, queryend: datetime, mode:Format) -> str:
     """
     
     """
-    message = header(querystart, queryend, config, mode)
+    message = queryline(querystart, queryend, mode)
     for calendar_name, event_list in events.items():
-        if event_list == []:
-            continue
         message += newline()
-        message += title(calendar_name, mode) 
+        message += calendar_title(calendar_name, mode) 
         message += newline()
         for event in event_list:
             if event['recurrence'] is not None:
                 message = recurring(event, message, mode)
             else:
-                message += markdownify(eventtime(event['start'], event['end'])) + markdown_title_link(event) if mode in ['md','html'] else eventtime(event['start'], event['end']) + f" {event['summary']}"
+                if mode == Format.HTML or Format.MD:
+                    message += md_event(event)
+                else:  
+                    message += txt_event(event)   
                 message += newline()
     message += newline()
-    message += footer(config)
-    return markdown.markdown(message.strip(), extensions=['nl2br']) if mode == 'html' else message.strip()
-    
+    message += footer(config, mode)
+    return markdown.markdown(message.strip(), extensions=['nl2br']) if mode == Format.HTML else message.strip()
+     

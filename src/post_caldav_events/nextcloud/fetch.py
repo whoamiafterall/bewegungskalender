@@ -1,6 +1,6 @@
 import caldav
 import icalendar
-from post_caldav_events.datetime import check_datetime, days
+from post_caldav_events.helper.datetime import check_datetime, days
     
 def get_calendar_name(calendar:caldav.Calendar):
     return calendar.get_properties([caldav.dav.DisplayName()])['{DAV:}displayname']
@@ -43,9 +43,10 @@ def fetch_events(config: dict, querystart: int, queryend: int) -> dict:
         exit()
     event_lists = []
     calendar_names = []
-    for caldavline in config['caldav']['calendars']:
-        calendar = davclient.calendar(url=caldavline['url'])
-        calendar_names.append(get_calendar_name(calendar))
-        events = date_search(calendar, querystart, queryend)
-        event_lists.append(sorted([e for e in events], key=lambda d:d['start']))
+    for calendar in config['calendars']:
+        url = davclient.calendar(url=calendar['calendar']['url'])
+        events = date_search(url, querystart, queryend)
+        if events != []:
+            event_lists.append(sorted([e for e in events], key=lambda d:d['start'])) 
+            calendar_names.append(calendar['calendar']['emoji'] + " " + get_calendar_name(url))
     return dict(zip(calendar_names, event_lists))

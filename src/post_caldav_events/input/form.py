@@ -3,7 +3,7 @@ import imaplib
 import email
 import caldav
 import icalendar
-from post_caldav_events.datetime import to_datetime
+from post_caldav_events.helper.datetime import to_datetime
 
 def connect_imap(config: dict) -> imaplib.IMAP4_SSL:
     "returns an IMAP4_SSL-Client connected to server specified in config."

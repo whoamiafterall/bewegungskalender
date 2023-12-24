@@ -2,7 +2,8 @@ import urllib.parse
 import codecs
 from nominatim import Nominatim
 from geojson import Feature, FeatureCollection
-from post_caldav_events.output.message import eventtime, link
+from post_caldav_events.output.message import eventtime
+from post_caldav_events.helper.formatting import markdown_link
 
 nominatim = Nominatim()
 
@@ -36,7 +37,10 @@ def createPoint(location: str) -> MyPoint:
     return None
 
 def createFeature(point: MyPoint, event: dict) -> Feature:
-    return Feature(geometry=point, properties={'ℹ️': event['summary'], '📅': eventtime(event['start'], event['end']), '📌': event['location'], '🌐': link(event['description'])})
+    return Feature(geometry=point, properties={'ℹ️': event['summary'], 
+                                               '📅': eventtime(event['start'], event['end']), 
+                                               '📌': event['location'], 
+                                               '🌐': markdown_link(event['description'])})
 
 def createMapData(events: dict):
     for calendar_name, event_list in events.items():
