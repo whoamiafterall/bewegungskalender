@@ -25,11 +25,10 @@ def get_args ():
     argparser.add_argument("-qs", "--query-start", dest='query_start', type=int, help='starting day to query events from CalDav server, 0/None means today')
     argparser.add_argument("-qe", "--query-end", dest='query_end', type=int, help='number of days to query events from CalDav server, starting from query-start')
     argparser.add_argument("-r", "--recipients", dest='recipient', help='override newsletter recipients from config - useful for testing')
-    argparser.add_argument("-t", "--telegram", dest='send_telegram', help='send message to telegram', action='store_true')
-    argparser.add_argument("-tid", "--telegram-id", dest='telegram_id', help='override telegram_id from config - useful if you have a channel for testing and one for production')
+    argparser.add_argument("-t", "--telegram", dest='send_telegram', help='send message to telegram - choose production or test_channel specified in config', choices=['prod', 'test'])
     argparser.add_argument("-toot", "--mastodon", dest='send_mastodon', help='send toot to mastodon', action='store_true')
     argparser.add_argument("-u", "--update-events", dest='update_events', help='check Mailbox for new events and add them to calendar', action='store_true')
-    argparser.set_defaults(config_file="config.yml", print=None, query_start=1, query_end=1, telegram_id=None)
+    argparser.set_defaults(config_file="config.yml", print=None, query_start=1, query_end=1, telegram='prod')
     args = argparser.parse_args()
     return args
 
@@ -81,9 +80,8 @@ def main(events = {}):
         send_newsletter(config, querystart, queryend, events, recipientcli, Format.HTML) 
         
 # send telegram 
-    if args.send_telegram:
-        telegram_id = config['telegram']['group_id'] if args.telegram_id is None else args.telegram_id 
-        send_telegram(config, telegram_id, message(config, events, querystart, queryend, Format.MD)) 
+    channel = config['telegram']['test_channel'] if args.telegram is 'test' else config['telegram']['prod_channel']  
+    send_telegram(config, channel, message(config, events, querystart, queryend, Format.MD)) 
         
 # send mastodon newsletter
     if args.send_mastodon:
