@@ -2,8 +2,7 @@ import urllib.parse
 import codecs
 from nominatim import Nominatim
 from geojson import Feature, FeatureCollection
-from post_caldav_events.output.message import eventtime
-from post_caldav_events.helper.formatting import search_link
+from post_caldav_events.helper.formatting import search_link, eventtime
 
 nominatim = Nominatim()
 
