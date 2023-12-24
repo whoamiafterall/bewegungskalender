@@ -37,10 +37,10 @@ def markdownify(text:str) -> str:
 def search_link(description:str) -> str:
     if  description is not None:
         try: return re.search("(?P<url>https?://[^\s]+)", description).group("url") 
-        except AttributeError: return
+        except AttributeError: return print(f"No Link found in:{description}")
     
 def markdown_link(text:str, url:str) -> str:
-    return f" [{markdownify(text)}]({search_link(url)})" if search_link(url) is not None else f" {text}"
+    return f" [{markdownify(text)}]({search_link(url)})" if search_link(url) is not None else f" {text}"; print(f"No valid link in description of event:{text}")
 
 def match_string(string:str, text:str, mode) -> str:
     regex = '\.\s.*'

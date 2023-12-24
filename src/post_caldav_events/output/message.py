@@ -16,7 +16,7 @@ def footer(config:dict, mode: Format):
 
 # Forms Titles out of Calendar Names (Categories) - set by config - adds bold for HTML.
 def calendar_title(calendar_name: str, mode: Format) -> str: 
-    if mode == 'md':
+    if mode == Format.MD:
         calendar_name = markdownify(calendar_name) 
     return bold(calendar_name, mode)
 
