@@ -53,5 +53,6 @@ def createMapData(events: dict):
             features.append(createFeature(createPoint(location), event))
         with open(f"post_caldav_events/mapData/{calendar_name}.geojson", "w") as f:
             f.write(f"{FeatureCollection(features)}")
+        print(features)
     return
 
