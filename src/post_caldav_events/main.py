@@ -86,10 +86,10 @@ def main(events = {}):
         print(f"Succesfully sent message to {args.telegram}: {channel}!")
         
 # send mastodon newsletter
-    if args.send_mastodon:
-        mastodon = login(config)
-        print(mastodon.me())
-        mastodon.toot(message(config, events, querystart, queryend, Format.MD)) 
+    # if args.send_mastodon:
+    #    mastodon = login(config)
+    #    print(mastodon.me())
+    #    mastodon.toot(message(config, events, querystart, queryend, Format.MD)) 
     exit()
 
 # Run as Module or Standalone program
