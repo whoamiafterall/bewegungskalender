@@ -15,10 +15,11 @@ def footer(config:dict, mode: Format):
     return footer
 
 # Forms Titles out of Calendar Names (Categories) - set by config - adds bold for HTML.
-def calendar_title(calendar_name: str, mode: Format) -> str: 
+def calendar_title(emoji: str, name: str, mode: Format) -> str: 
     if mode == Format.MD:
-        calendar_name = markdownify(calendar_name) 
-    return bold(calendar_name, mode)
+        name = markdownify(name) 
+    title = f"{emoji} {name}"
+    return bold(title, mode)
 
 def md_event(event:dict) -> str:
     return markdownify(eventtime(event['start'], event['end'])) + markdown_link(event['summary'], event['description'])
@@ -44,24 +45,25 @@ def recurring(event:dict, message:str, mode:Format) -> str:
         index = message.find(entry.group())
         return message[:index+2] + f"& {markdownify(date(event['start']))} " + message[index+2:]        
     
-def message(config:dict, events:dict, querystart: datetime, queryend: datetime, mode:Format) -> str:
+def message(config:dict, data:list, querystart: datetime, queryend: datetime, mode:Format) -> str:
     """
     
     """
     message = queryline(querystart, queryend, mode)
-    for calendar_name, event_list in events.items():
-        message += newline()
-        message += calendar_title(calendar_name, mode) 
-        message += newline()
-        for event in event_list:
-            if event['recurrence'] is not None:
-                message = recurring(event, message, mode)
-            else:
-                if mode == Format.HTML or Format.MD:
-                    message += md_event(event)
-                else:  
-                    message += txt_event(event)   
-                message += newline()
+    for calendar in data:
+        if calendar.events != []:
+            message += newline()
+            message += calendar_title(calendar.emoji, calendar.name, mode) 
+            message += newline()
+            for event in calendar.events:
+                if event['recurrence'] is not None:
+                    message = recurring(event, message, mode)
+                else:
+                    if mode == Format.HTML or Format.MD:
+                        message += md_event(event)
+                    else:  
+                        message += txt_event(event)   
+                    message += newline()
     message += newline()
     message += footer(config, mode)
     return markdown.markdown(message.strip(), extensions=['nl2br']) if mode == Format.HTML else message.strip()

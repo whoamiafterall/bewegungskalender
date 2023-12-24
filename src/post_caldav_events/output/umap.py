@@ -42,17 +42,16 @@ def createFeature(point: MyPoint, event: dict) -> Feature:
                                                '📌': event['location'], 
                                                '🌐': search_link(event['description'])})
 
-def createMapData(events: dict):
-    for calendar_name, event_list in events.items():
-        print(); print(calendar_name)
+def createMapData(data: list):
+    for calendar in data:
         features = []
-        for event in event_list:
+        print(calendar.name)
+        for event in calendar.events:
             location = event['location']
             if location is None:
                 print(f"N: {event['summary']}: location is None"); continue
             features.append(createFeature(createPoint(location), event))
-        with open(f"post_caldav_events/mapData/{calendar_name}.geojson", "w") as f:
+        with open(f"post_caldav_events/mapData/{calendar.name}.geojson", "w") as f:
             f.write(f"{FeatureCollection(features)}")
-        print(features)
     return
 

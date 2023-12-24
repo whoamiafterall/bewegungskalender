@@ -1,7 +1,11 @@
 import caldav
 import icalendar
+from collections import namedtuple
 from post_caldav_events.helper.datetime import check_datetime, days
     
+def connect_davclient(config:dict):
+    return caldav.DAVClient(url=config['caldav']['url'], username=config['caldav']['username'], password=config['caldav']['password'])    
+
 def get_calendar_name(calendar:caldav.Calendar):
     return calendar.get_properties([caldav.dav.DisplayName()])['{DAV:}displayname']
 
@@ -29,24 +33,23 @@ def date_search(calendar:caldav.Calendar, querystart, queryend):
                 events.append(parse_event_data(component))
     return events
                 
-def fetch_events(config: dict, querystart: int, queryend: int) -> dict:
+def fetch_events(config: dict, querystart: int, queryend: int, data = []) -> dict:
     """
-    Reads calendars specified in config.
+    Reads calendars specified in config using a CalDAV client.
     Fetches events from Nextcloud calendar by calendar using date_search.
     Returns a dict with an Array of Events mapped to each calendars name (string).
-    See also "append_event" method to see which attributes are fetched of each event.
     """
     try:
-        davclient = caldav.DAVClient(url=config['caldav']['url'], username=config['caldav']['username'], password=config['caldav']['password']) 
+        davclient = connect_davclient(config) 
     except ConnectionError:
         print("Connection to Nextcloud failed.")
         exit()
-    event_lists = []
-    calendar_names = []
     for calendar in config['calendars']:
+        caldata = namedtuple("CalData", ["emoji", "name", "events"], defaults=[[]])
         url = davclient.calendar(url=calendar['calendar']['url'])
         events = date_search(url, querystart, queryend)
-        if events != []:
-            event_lists.append(sorted([e for e in events], key=lambda d:d['start'])) 
-            calendar_names.append(calendar['calendar']['emoji'] + " " + get_calendar_name(url))
-    return dict(zip(calendar_names, event_lists))
+        caldata.name = get_calendar_name(url)
+        caldata.events = (sorted([e for e in events], key=lambda d:d['start']))
+        caldata.emoji = calendar['calendar']['emoji']
+        data.append(caldata)
+    return data
