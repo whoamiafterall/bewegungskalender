@@ -16,9 +16,14 @@ mail:
     recipients:
       - mail: "mail@example.org"
       - mail: "mail@lists.example.org"
-telegram:
-  token: 'xxxx:xxxxxx'
-  group_id: '-xxxxxx' # Testkanal
+telegram: 
+  token: 'xxxx:xxxxxx' 
+  group_id: '-xxxxxx'
+mastodon: # Create an Application on your Mastodon Account and enter the secrets here 
+  client_key: 'xxxxxxxxxxxx'
+  client_secret: 'xxxxxxxxxx'
+  access_token: 'xxxxxxxxx'
+  instance: 'xxxxx.xxxxx'
 caldav: # configuration for your caldav server
   url: 'https://cloud.example.org/remote.php/dav/'
   calendars: # list of calendars to use
