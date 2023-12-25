@@ -2,7 +2,7 @@ import urllib.parse
 import codecs
 from nominatim import Nominatim
 from geojson import Feature, FeatureCollection
-from post_caldav_events.helper.formatting import search_link, eventtime
+from post_caldav_events.helper.formatting import search_link, eventtime, to_filename
 
 nominatim = Nominatim()
 
@@ -50,7 +50,7 @@ def createMapData(data: list):
             if location is None:
                 print(f"N: {event['summary']}: location is None"); continue
             features.append(createFeature(createPoint(location), event))
-        with open(f"post_caldav_events/mapData/{calendar.name}.geojson", "w") as f:
+        with open(f"post_caldav_events/mapData/{to_filename(calendar.name)}.geojson", "w") as f:
             f.write(f"{FeatureCollection(features)}")
     return
 

@@ -1,4 +1,5 @@
 from enum import Enum
+import os
 import re
 from post_caldav_events.helper.datetime import eventtime
 
@@ -56,3 +57,9 @@ def txt_event(event:dict) -> str:
 
 def add_event(event:dict, mode:Format):
     return md_event(event) if mode == Format.MD or Format.HTML else txt_event(event)
+
+def to_filename(text):
+    text = text.replace(' ', '_')
+    return os.path.basename(text)
+
+    
