@@ -45,7 +45,7 @@ def fetch_events(config: dict, querystart: int, queryend: int, data = []) -> dic
         print("Connection to Nextcloud failed.")
         exit()
     for configline in config['calendars']:
-        calendar = namedtuple("calendar", ["emoji", "name", "events"], defaults=[[]])
+        calendar = namedtuple("calendar", ["emoji", "name", "events"])
         url = davclient.calendar(url=configline['calendar']['url'])
         events = date_search(url, querystart, queryend)
         calendar.name = get_calendar_name(url)
