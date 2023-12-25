@@ -1,7 +1,7 @@
 import caldav
 import icalendar
 from collections import namedtuple
-from post_caldav_events.helper.datetime import check_datetime, days
+from post_caldav_events.helper.datetime import check_datetime, days, to_timezone, date, fix_midnight
     
 def connect_davclient(config:dict):
     return caldav.DAVClient(url=config['caldav']['url'], username=config['caldav']['username'], password=config['caldav']['password'])    
@@ -10,10 +10,10 @@ def get_calendar_name(calendar:caldav.Calendar):
     return calendar.get_properties([caldav.dav.DisplayName()])['{DAV:}displayname']
 
 def parse_event_data(event):
-    start = check_datetime(event.get('dtstart').dt)
-    end = check_datetime(event.get('dtend').dt)
-    if start.date is not end.date:
-        end = end - days(1)
+    start = to_timezone(check_datetime(event.get('dtstart').dt))
+    end = to_timezone(check_datetime(event.get('dtend').dt))
+    if date(start) != date(end):
+        end = fix_midnight(end)
     values = {
         'summary': event.get('summary'),
         'description': event.get('description'),
@@ -44,12 +44,12 @@ def fetch_events(config: dict, querystart: int, queryend: int, data = []) -> dic
     except ConnectionError:
         print("Connection to Nextcloud failed.")
         exit()
-    for calendar in config['calendars']:
-        caldata = namedtuple("CalData", ["emoji", "name", "events"], defaults=[[]])
-        url = davclient.calendar(url=calendar['calendar']['url'])
+    for configline in config['calendars']:
+        calendar = namedtuple("calendar", ["emoji", "name", "events"], defaults=[[]])
+        url = davclient.calendar(url=configline['calendar']['url'])
         events = date_search(url, querystart, queryend)
-        caldata.name = get_calendar_name(url)
-        caldata.events = (sorted([e for e in events], key=lambda d:d['start']))
-        caldata.emoji = calendar['calendar']['emoji']
-        data.append(caldata)
+        calendar.name = get_calendar_name(url)
+        calendar.events = (sorted([e for e in events], key=lambda d:d['start']))
+        calendar.emoji = configline['calendar']['emoji']
+        data.append(calendar)
     return data

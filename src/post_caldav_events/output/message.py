@@ -44,7 +44,7 @@ def message(config:dict, data:list, querystart: datetime, queryend: datetime, mo
                 if event['recurrence'] is not None:
                     message = recurring_event(event, message, mode)
                 else:
-                    add_event(event, mode) 
+                    message += add_event(event, mode)
                     message += newline()
     message += newline()
     message += footer(config, mode)

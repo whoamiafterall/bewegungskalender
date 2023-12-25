@@ -20,6 +20,14 @@ def to_datetime(date:str, config) -> datetime.datetime:
     "returns a datetime.datetime Object from a String using format specified in config."
     return datetime.datetime.strptime(date, config['mail']['input']['date_format'])
 
+def to_timezone(dt:datetime.datetime) -> datetime.datetime:
+    return dt.astimezone(TIMEZONE)
+
+def fix_midnight(dt:datetime.datetime) -> datetime.datetime:
+    if time(dt) == "(00:00)":
+        return dt - datetime.timedelta(seconds=1)
+    return dt
+
 def days(delta) -> datetime.datetime:
     return datetime.timedelta(days=delta)
 
@@ -36,9 +44,11 @@ def weekday_date(day:datetime.date) -> str:
     return weekday(day) + " " + date(day)
 
 def time (datetime:datetime) -> str: # get time from a datetime object
-    return datetime.astimezone(TIMEZONE).strftime('(%H:%M)') 
+    return datetime.strftime('(%H:%M)') 
 
 def eventtime(start:datetime, end:datetime) -> str:
+    print(start)
+    print(end)
     if start == end or (start + datetime.timedelta(days=1)) == end:
         return f"{date(start)}" if time(start) == "(00:00)" else f"{date(start)} {time(start)}:"
     else:

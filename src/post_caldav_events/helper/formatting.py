@@ -41,7 +41,7 @@ def search_link(description:str) -> str:
         except AttributeError: return print(f"No Link found in:{description}")
     
 def md_link(text:str, url:str) -> str:
-    return f" [{escape_chars(text)}]({search_link(url)})" if search_link(url) is not None else f" {text}"; print(f"No valid link in description of event:{text}")
+    return f" [{escape_chars(text)}]({search_link(url)})" if search_link(url) is not None else f" {escape_chars(text)}"; print(f"No valid link in description of event:{text}")
 
 def match_string(string:str, text:str, mode) -> str:
     regex = '\.\s.*'
