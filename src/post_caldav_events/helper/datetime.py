@@ -47,8 +47,6 @@ def time (datetime:datetime) -> str: # get time from a datetime object
     return datetime.strftime('(%H:%M)') 
 
 def eventtime(start:datetime, end:datetime) -> str:
-    print(start)
-    print(end)
     if start == end or (start + datetime.timedelta(days=1)) == end:
         return f"{date(start)}" if time(start) == "(00:00)" else f"{date(start)} {time(start)}:"
     else:
