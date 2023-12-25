@@ -50,7 +50,7 @@ def createMapData(data: list):
             if location is None:
                 print(f"N: {event['summary']}: location is None"); continue
             features.append(createFeature(createPoint(location), event))
-        with open(f"post_caldav_events/mapData/{urllib.parse.quote(calendar.name)}.geojson", "w") as f:
+        with open(f"post_caldav_events/mapData/{calendar.name}.geojson", "w") as f:
             f.write(f"{FeatureCollection(features)}")
     return
 
