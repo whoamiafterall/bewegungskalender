@@ -30,12 +30,12 @@ def move_mail(imap: imaplib.IMAP4_SSL, uid, config):
 
 def print_data(data):
     "print data to stdout in a beautiful way, so it appears nicely in cron-mails"
-    log = f"{data[0]}"
-    log += f"{data[1]}"
-    log += f"{data[2]}"
-    log += f"{data[3]}"
-    log += f"{data[4]}"
-    log += f"{data[5]}"
+    log = f"{data[0]} "
+    log += f"{data[1]} "
+    log += f"{data[2]} "
+    log += f"{data[3]} "
+    log += f"{data[4]} "
+    log += f"{data[5]} "
     print(log)
     return
 
@@ -48,6 +48,7 @@ def update_events(config):
     imap.login(config['mail']['account'], config['mail']['password'])
     imap.select(config['mail']['input']['inbox'])
     uids = search_mails(imap, config)
+    print(uids)
     if uids is None: print("No matching form emails found."); return None
     try:
         davclient = get_davclient(config)
