@@ -1,0 +1,4 @@
+# mkdocs.yml
+site_name: Bewegungskalender
+theme:
+  name: "material"
