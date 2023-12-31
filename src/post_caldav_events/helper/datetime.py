@@ -34,10 +34,10 @@ def days(delta) -> datetime.datetime:
 def check_datetime(date:datetime) -> datetime.date:
     return date if isinstance(date, datetime.datetime) else datetime.datetime.combine(date, datetime.datetime.min.time()).astimezone(TIMEZONE)
     
-def date(day:datetime.date) -> str: # get date from a datetime object
+def date(day:datetime) -> str: # get date from a datetime object
     return day.strftime('%d.%m.')
 
-def weekday(day:datetime.date) -> str: # get weekday from a datetime object
+def weekday(day:datetime) -> str: # get weekday from a datetime object
     return day.strftime('%a.')
 
 def weekday_date(day:datetime.date) -> str:
@@ -47,9 +47,8 @@ def time (datetime:datetime) -> str: # get time from a datetime object
     return datetime.strftime('(%H:%M)') 
 
 def eventtime(start:datetime, end:datetime) -> str:
-    if start == end or (start + datetime.timedelta(days=1)) == end:
-        return f"{date(start)}" if time(start) == "(00:00)" else f"{date(start)} {time(start)}:"
-    else:
-        if time(start) == "(00:00)":
-            return f"{date(start)} - {date(end)}"
-        return f"{date(start)} - {date(end)}" if start + datetime.timedelta(days=1) < end else f"{date(start)} {time(start)}:"
+    if time(start) == "(00:00)" and date(start) != date(end):
+        return f"{date(start)} - {date(end)}"
+    elif time(start) == "(00:00)" and date(start) == date(end):
+        return f"{date(start):}"
+    return f"{date(start)} {time(start)}:"
