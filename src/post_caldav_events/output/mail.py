@@ -3,9 +3,9 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.utils import formatdate, make_msgid
 from post_caldav_events.output.message import message
-from post_caldav_events.helper.datetime import date, now
+from post_caldav_events.helper.datetime import date
 
-def send_newsletter(config:dict, query_start, query_end, events:dict, recipientcli, format):
+def send_mail(config:dict, query_start, query_end, events:dict, recipientcli, format):
     with smtplib.SMTP_SSL(config['mail']['server'], config['mail']['smtp_port'] , context=ssl.create_default_context()) as smtp:
         smtp.ehlo()
         smtp.set_debuglevel(1)
