@@ -1,2 +1,0 @@
-[console_scripts]
-x-wr-timezone = x_wr_timezone:main

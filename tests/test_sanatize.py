@@ -1,6 +1,6 @@
-from post_caldav_events.outputs import TelegramMarkdownv2Msg
+from post_caldav_events.output.message import message
 
-sanatize = TelegramMarkdownv2Msg({}).sanatize
+sanatize = message({}).sanatize
 
 def test_none_input():
     assert sanatize(None) == ""
