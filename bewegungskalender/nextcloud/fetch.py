@@ -29,10 +29,11 @@ def parse_event_data(event):
 def search(calendar:caldav.Calendar, querystart, queryend):
     events = []
     for cal_data in calendar.search(start=querystart, end=queryend, event=True, expand=True):
+        print(cal_data)
         ical_data = icalendar.Event.from_ical(cal_data.data)
-        for component in ical_data.walk():
-            if component.name == "VEVENT":
-                events.append(parse_event_data(component))
+    #    for component in ical_data.walk():
+    #        if component.name == "VEVENT":
+    #            events.append(parse_event_data(component))
     return events
                 
 def fetch_events(config: dict, querystart: int, queryend: int, data = []) -> dict:
@@ -45,7 +46,7 @@ def fetch_events(config: dict, querystart: int, queryend: int, data = []) -> dic
         logging.debug('Connecting to DAVClient...')
         davclient = connect_davclient(config) 
     except ConnectionError:
-        logging.error("Connection to Nextcloud failed.", ConnectionError)
+        logging.exception("Connection to Nextcloud failed.")
         exit()
     for configline in config['calendars']:
         calendar = namedtuple("calendar", ["emoji", "name", "events"])

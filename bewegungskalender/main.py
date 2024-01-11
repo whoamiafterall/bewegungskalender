@@ -44,7 +44,7 @@ def main(events = {}):
             logging.debug('Loading config file...')
             config:dict = yaml.load(f, Loader=yaml.FullLoader) 
     except FileNotFoundError:
-        logging.error('Config File not Found.', args.config_file, FileNotFoundError); exit()
+        logging.exception('Config File not Found:', args.config_file); exit()
     logging.debug('Setting timezone and locale...')
     locale.setlocale(locale.LC_TIME, config['format']['locale']) 
     set_timezone(config)
