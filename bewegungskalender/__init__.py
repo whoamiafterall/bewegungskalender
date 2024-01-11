@@ -1,11 +1,11 @@
-from post_caldav_events.helper.datetime import set_timezone, today, days
-from post_caldav_events.helper.formatting import Format
-from post_caldav_events.input.form import update_events
-from post_caldav_events.nextcloud.fetch import fetch_events
-from post_caldav_events.output.message import message
-from post_caldav_events.output.telegram import send_telegram, get_telegram_updates
-from post_caldav_events.output.umap import createMapData
-from post_caldav_events.output.mail import send_mail
+from bewegungskalender.helper.datetime import set_timezone, today, days
+from bewegungskalender.helper.formatting import Format
+from bewegungskalender.input.form import update_events
+from bewegungskalender.nextcloud.fetch import fetch_events
+from bewegungskalender.output.message import message
+from bewegungskalender.output.telegram import send_telegram, get_telegram_updates
+from bewegungskalender.output.umap import createMapData
+from bewegungskalender.output.mail import send_mail
 
 __all__ = ([set_timezone, today, days] +
            [Format] +
