@@ -5,7 +5,7 @@ from post_caldav_events.nextcloud.fetch import fetch_events
 from post_caldav_events.output.message import message
 from post_caldav_events.output.telegram import send_telegram, get_telegram_updates
 from post_caldav_events.output.umap import createMapData
-from post_caldav_events.output.mail import send_newsletter
+from post_caldav_events.output.mail import send_mail
 
 __all__ = ([set_timezone, today, days] +
            [Format] +
@@ -14,4 +14,4 @@ __all__ = ([set_timezone, today, days] +
            [message] +
            [send_telegram, get_telegram_updates] +
            [createMapData] +
-           [send_newsletter])
+           [send_mail])
