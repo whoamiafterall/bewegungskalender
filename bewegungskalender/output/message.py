@@ -1,7 +1,7 @@
 import datetime
 import markdown
-from post_caldav_events.helper.datetime import weekday_date, date
-from post_caldav_events.helper.formatting import md_link, escape_chars, bold, newline, Format, match_string, add_event
+from bewegungskalender.helper.datetime import weekday_date, date
+from bewegungskalender.helper.formatting import md_link, escape_chars, bold, newline, Format, match_string, add_event
 
 # Functions that produce some type of message content
 def queryline(query_start: datetime, query_end: datetime, mode: Format): # Displayed as Head of the Message

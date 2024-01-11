@@ -1,7 +1,7 @@
 import caldav
 import icalendar
 from collections import namedtuple
-from post_caldav_events.helper.datetime import check_datetime, days, to_timezone, date, fix_midnight
+from bewegungskalender.helper.datetime import check_datetime, days, to_timezone, date, fix_midnight
     
 def connect_davclient(config:dict):
     return caldav.DAVClient(url=config['caldav']['url'], username=config['caldav']['username'], password=config['caldav']['password'])    
@@ -24,9 +24,9 @@ def parse_event_data(event):
         }
     return values
 
-def date_search(calendar:caldav.Calendar, querystart, queryend):
+def search(calendar:caldav.Calendar, querystart, queryend):
     events = []
-    for cal_data in calendar.date_search(querystart, queryend):
+    for cal_data in calendar.search(querystart, queryend, event=True, expand=True):
         ical_data = icalendar.Event.from_ical(cal_data.data)
         for component in ical_data.walk():
             if component.name == "VEVENT":
@@ -47,7 +47,7 @@ def fetch_events(config: dict, querystart: int, queryend: int, data = []) -> dic
     for configline in config['calendars']:
         calendar = namedtuple("calendar", ["emoji", "name", "events"])
         url = davclient.calendar(url=configline['calendar']['url'])
-        events = date_search(url, querystart, queryend)
+        events = search(url, querystart, queryend)
         calendar.name = get_calendar_name(url)
         calendar.events = (sorted([e for e in events], key=lambda d:d['start']))
         calendar.emoji = configline['calendar']['emoji']

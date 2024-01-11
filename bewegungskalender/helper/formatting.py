@@ -1,7 +1,7 @@
 from enum import Enum
 import os
 import re
-from post_caldav_events.helper.datetime import eventtime
+from bewegungskalender.helper.datetime import eventtime
 
 class Format(Enum):
     HTML = 'html'

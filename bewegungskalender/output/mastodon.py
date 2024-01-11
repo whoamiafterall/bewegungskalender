@@ -1,5 +1,5 @@
 from mastodon import Mastodon
-from post_caldav_events.output.message import message
+from bewegungskalender.output.message import message
 
 def login(config:dict):
     return Mastodon(
