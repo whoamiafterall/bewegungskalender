@@ -3,12 +3,14 @@ import imaplib
 import email
 import caldav
 import icalendar
+import logging
 from bewegungskalender.helper.datetime import to_datetime
 
 def connect_imap(config: dict) -> imaplib.IMAP4_SSL:
     "returns an IMAP4_SSL-Client connected to server specified in config."
     try: imap = imaplib.IMAP4_SSL(config['mail']['server'], config['mail']['imap_port']); return imap
-    except ConnectionError: return None
+    except ConnectionError: 
+        logging.exception('Could not connect to IMAP-Server...'); return None
 
 def get_davclient(config:dict) -> caldav.DAVClient:
     "returns a DAVClient connected to server specified in config."
@@ -43,20 +45,23 @@ def compose_title(data):
     return f"{data[0]} ({data[3]})"
 
 def update_events(config):
+    logging.debug('Connecting to IMAP server...')
     imap = connect_imap(config)
     if imap == None: print('Connection to IMAP Server failed'); return None
+    logging.debug('Logging into IMAP-Client with credentials...')
     imap.login(config['mail']['account'], config['mail']['password'])
     imap.select(config['mail']['input']['inbox'])
+    logging.debug('Searching INBOX for matching e-mails...')
     uids = search_mails(imap, config)
-    print(uids)
     if uids is None: print("No matching form emails found."); return None
     try:
+        logging.debug('Connecting to Nextcloud DAV Interface...')
         davclient = get_davclient(config)
         calendar = davclient.calendar(url=config['mail']['input']['calendar'])
     except ConnectionError:
-        print("Connection to Nextcloud failed."); return
+        logging.exception('Connection to Nextcloud failed.'); return
+    logging.debug('Parsing E-Mails to Events...')
     for uid in uids.split():
-        print(uid)
         parser = ParseWPForms()
         data = parser.parse(fetch_mail(imap, uid))
         print_data(data)
@@ -69,6 +74,7 @@ def update_events(config):
         event.add('description',data[5])
         calendar.add_event(event.to_ical())
         parser.formdata.clear()
+    logging.debug('Closing IMAP Connection...')
     imap.expunge(); imap.close(); imap.logout()
 
 class ParseWPForms(HTMLParser):
