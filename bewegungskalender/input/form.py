@@ -5,16 +5,13 @@ import caldav
 import icalendar
 import logging
 from bewegungskalender.helper.datetime import to_datetime
+from bewegungskalender.nextcloud.fetch import connect_davclient
 
 def connect_imap(config: dict) -> imaplib.IMAP4_SSL:
     "returns an IMAP4_SSL-Client connected to server specified in config."
     try: imap = imaplib.IMAP4_SSL(config['mail']['server'], config['mail']['imap_port']); return imap
     except ConnectionError: 
         logging.exception('Could not connect to IMAP-Server...'); return None
-
-def get_davclient(config:dict) -> caldav.DAVClient:
-    "returns a DAVClient connected to server specified in config."
-    return caldav.DAVClient(url=config['caldav']['url'], username=config['caldav']['username'], password=config['caldav']['password']) 
 
 def search_mails(imap: imaplib.IMAP4_SSL, config: dict) -> str:
     "returns a space-separated string sequence with uids of mails matching the mail account and subject specified in config."
@@ -56,7 +53,7 @@ def update_events(config):
     if uids is None: print("No matching form emails found."); return None
     try:
         logging.debug('Connecting to Nextcloud DAV Interface...')
-        davclient = get_davclient(config)
+        davclient = connect_davclient(config)
         calendar = davclient.calendar(url=config['mail']['input']['calendar'])
     except ConnectionError:
         logging.exception('Connection to Nextcloud failed.'); return
