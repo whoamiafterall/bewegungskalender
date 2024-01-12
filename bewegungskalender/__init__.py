@@ -11,7 +11,7 @@ from bewegungskalender.output.telegram import send_telegram, get_telegram_update
 from bewegungskalender.output.umap import createMapData
 from bewegungskalender.output.mail import send_mail
 
-__all__ =   ([argparse, yaml, locale, logging]
+__all__ =   ([argparse, yaml, locale, logging] +
             [set_timezone, today, days] +
             [Format] +
             [update_events] +
