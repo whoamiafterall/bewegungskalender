@@ -1,5 +1,6 @@
 import urllib.parse
 import codecs
+import logging
 from nominatim import Nominatim
 from geojson import Feature, FeatureCollection
 from bewegungskalender.helper.formatting import search_link, eventtime, to_filename
@@ -44,14 +45,15 @@ def createFeature(point: MyPoint, event: dict) -> Feature:
 def createMapData(data: list):
     for calendar in data:
         features = []
-        print(calendar.name)
+        logging.debug(f"Creating Map Data for {calendar.name}...")
         for event in calendar.events:
             location = event['location']
             if location is None:
-                print(f"N: {event['summary']}: location is None"); continue
+                continue
             if location == "Online" or "online":
                 continue
             features.append(createFeature(createPoint(location), event))
+        logging.debug(f"Writing Map Data to File {to_filename(calendar.name)}...")
         with open(f"bewegungskalender/mapData/{to_filename(calendar.name)}.geojson", "w") as f:
             f.write(f"{FeatureCollection(features)}")
     return
