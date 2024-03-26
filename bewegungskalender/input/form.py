@@ -1,7 +1,6 @@
 from html.parser import HTMLParser
 import imaplib
 import email
-import caldav
 import icalendar
 import logging
 from bewegungskalender.helper.datetime import to_datetime
