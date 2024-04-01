@@ -1,4 +1,5 @@
 from enum import Enum
+import logging
 import os
 import re
 from bewegungskalender.helper.datetime import eventtime
@@ -17,19 +18,9 @@ def bold(text:str, mode: Format) -> str:
     return "<b> " + text + " </b>" if mode == Format.HTML else ("*" + text + "*" if mode == Format.MD else text)
 
 def italic(text:str, mode: Format) -> str:
-    """
-    Returns the given string in italic.
-    
-    Args:
-        text (string): The string that shall be written in italic characters.
-        mode (Format): The formatting mode to use.
-    """    
     return "<i> " + text + " </i>" if mode == Format.HTML else ("_" + text + "_" if mode == Format.MD else text)
     
 def escape_chars(text:str) -> str:
-    """
-    escape characters to use markdown
-    """
     if text is None:
         return ""
     escape_chars = "?_–*[]()~`>#+-=|.!'{''}''"
@@ -38,11 +29,18 @@ def escape_chars(text:str) -> str:
 
 def search_link(description:str) -> str:
     if  description is not None:
-        try: return re.search("(?P<url>https?://[^\s]+)", description).group("url") 
-        except AttributeError: return print(f"L: No Link found in: {description}")
+        try: 
+            return re.search("(?P<url>https?://[^\s]+)", description).group("url") 
+        except AttributeError: 
+            logging.info(f"L: No Link found in: {description}")
+            return None
     
 def md_link(text:str, url:str) -> str:
-    return f" [{escape_chars(text)}]({search_link(url)})" if search_link(url) is not None else f" {escape_chars(text)}"; print(f"No valid link in description of event:{text}")
+    if search_link(url) is not None:
+        return f"[{escape_chars(text)}]({search_link(url)})"
+    else:
+        logging.info(f"No valid link in description of event:{text}")
+        return f" {escape_chars(text)}"; 
 
 def match_string(string:str, text:str, mode) -> str:
     regex = '\.\s.*'
@@ -50,10 +48,10 @@ def match_string(string:str, text:str, mode) -> str:
     return re.search(regex, text)
 
 def md_event(event:dict) -> str:
-    return escape_chars(eventtime(event['start'], event['end'])) + md_link(event['summary'], event['description'])
+    return escape_chars(eventtime(event.start, event.end)) + md_link(event.summary, event.description)
 
 def txt_event(event:dict) -> str:
-    return eventtime(event['start'], event['end']) + f" {event['summary']}"  
+    return eventtime(event.start, event.end) + f" {event.summary}"  
 
 def add_event(event:dict, mode:Format):
     return md_event(event) if mode == Format.MD or Format.HTML else txt_event(event)
