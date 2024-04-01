@@ -11,7 +11,6 @@ def connect_imap(config: dict) -> imaplib.IMAP4_SSL:
     try: 
         imap = imaplib.IMAP4_SSL(config['mail']['server'], config['mail']['imap_port']) 
         imap.login(config['mail']['account'], config['mail']['password'])
-        imap.select(config['mail']['input']['inbox'])
         return imap
     except ConnectionError: 
         logging.exception('Could not connect to IMAP-Server...'); 
@@ -20,6 +19,7 @@ def connect_imap(config: dict) -> imaplib.IMAP4_SSL:
 def update_events(config: dict, davclient: caldav.DAVClient):
     # Connect to IMAP Client
     imap = connect_imap(config)
+    imap.select(config['form']['inbox'])
     
     # Search for Mails that fit the given pattern in config
     sender = config['form']['sender']

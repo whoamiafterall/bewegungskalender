@@ -4,8 +4,8 @@ mail:
   server: 'mail.example.org'
   imap_port: '993'
   smtp_port: '465'
-  inbox: 'INBOX'
 form:
+  inb ox: 'INBOX'
   sender: 'user@example.org'
   subject: '"Form Subject"'
   move_to: 'INBOX.Bearbeitet'
