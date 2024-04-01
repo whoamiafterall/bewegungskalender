@@ -12,7 +12,7 @@ def today() -> datetime.date:
 
 def to_datetime(date:str, config) -> datetime.datetime:
     "returns a datetime.datetime Object from a String using format specified in config."
-    return datetime.datetime.strptime(date, config['mail']['input']['date_format'])
+    return datetime.datetime.strptime(date, config['form']['date_format'])
 
 def to_timezone(dt:datetime.datetime) -> datetime.datetime:
     return dt.astimezone(TIMEZONE)
