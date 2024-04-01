@@ -1,4 +1,3 @@
-from re import DEBUG
 import yaml
 import locale
 import logging

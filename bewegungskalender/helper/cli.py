@@ -1,12 +1,11 @@
 import argparse
-import logging
 import sys
 from bewegungskalender.helper.formatting import Format
 
 # Get Arguments from Commandline 
 def get_args ():
     # Get Argparser and add arguments
-    argparser = argparse.ArgumentParser(prog="bewegungskalender", description='Fetch CalDav Events from a Nextcloud and send a Message to Telegram.')
+    argparser = argparse.ArgumentParser(prog="bewegungskalender", description='Use a CalDAV-Server to send automatic calendar newsletters to the world.')
     argparser.add_argument("-c", "--config", dest='config_file', help='specify path to config file, defaults to config.yml')
     argparser.add_argument("-d", "--debug", dest='debug', help='set the log level to debug, defaults to info', action='store_true')
     argparser.add_argument("-g", "--get-telegram-updates", dest='get_telegram_updates', help='get telegram id of channel', action='store_true')
