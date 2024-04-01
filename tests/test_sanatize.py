@@ -1,4 +1,4 @@
-from post_caldav_events.output.message import message
+from bewegungskalender.output.message import message
 
 sanatize = message({}).sanatize
 

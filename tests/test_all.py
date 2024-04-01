@@ -1,4 +1,4 @@
-from post_caldav_events.main import main
+from bewegungskalender.main import main
 import os
 
 def test_configs():
