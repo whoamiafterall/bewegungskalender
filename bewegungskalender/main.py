@@ -6,7 +6,7 @@ from bewegungskalender.helper.cli import get_args, set_log_level, set_mail_recip
 from bewegungskalender.helper.datetime import set_timezone, today, days
 from bewegungskalender.helper.formatting import Format
 from bewegungskalender.input.wpforms import update_events
-from bewegungskalender.server.dav import connect_davclient, search_events, search_events
+from bewegungskalender.server.dav import search_events
 from bewegungskalender.output.message import message
 from bewegungskalender.output.telegram import send_telegram, get_telegram_updates
 from bewegungskalender.output.umap import createMapData
@@ -18,7 +18,7 @@ def main(events = {}):
     # get Arguments from Command-Line and set log-level
     args = get_args()
     logging.basicConfig(level=set_log_level(args))
-    logging.info(f"Running with the following args: {args}")
+    logging.info(f"Args: {args}")
     
     # get Config from yml file
     logging.debug('Loading config file...')
@@ -40,9 +40,8 @@ def main(events = {}):
     
     # Input Section
     ### WPForms Input
-    if args.update_events: 
-        logging.info('Updating Events by scanning E-Mails from WPForms Lite...')
-        update_events(config, connect_davclient(config))    
+    if args.update_events:   
+        update_events(config) 
     
     # Server Section    
     ### Fetch Events from CalDav-Server
@@ -54,7 +53,7 @@ def main(events = {}):
     ### UMap Output
     if args.update_map: 
         logging.info('Creating Map Data and writing to GeoJSON Files...')
-        createMapData(events)
+        createMapData(data)
     ### Print Output
     if args.print: 
         logging.info(f"Printing message in {args.print} Format: \n")

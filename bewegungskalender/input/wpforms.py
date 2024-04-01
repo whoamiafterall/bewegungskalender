@@ -1,7 +1,7 @@
 import imaplib
 import email
 from bewegungskalender.helper.parsing import ParseWPForms
-import caldav
+from bewegungskalender.server.dav import connect_davclient
 import icalendar
 import logging
 from bewegungskalender.helper.datetime import to_datetime
@@ -16,7 +16,8 @@ def connect_imap(config: dict) -> imaplib.IMAP4_SSL:
         logging.exception('Could not connect to IMAP-Server...'); 
         exit(code=1)
 
-def update_events(config: dict, davclient: caldav.DAVClient):
+def update_events(config: dict):
+    logging.info('Updating Events by scanning E-Mails from WPForms Lite...')
     # Connect to IMAP Client
     imap = connect_imap(config)
     imap.select(config['form']['inbox'])
@@ -32,7 +33,7 @@ def update_events(config: dict, davclient: caldav.DAVClient):
         logging.info(f"Found {len(uids)} matching E-Mails!")
         
         # Get Calendar from CalDAV-Server and Parser
-        calendar = davclient.calendar(url=config['form']['calendar'])
+        calendar = connect_davclient(config).calendar(url=config['form']['calendar'])
         parser = ParseWPForms()
     
     # For each Mail that fits the given pattern
@@ -67,3 +68,4 @@ def update_events(config: dict, davclient: caldav.DAVClient):
         
     logging.debug('Closing IMAP Connection...')
     imap.expunge(); imap.close(); imap.logout()
+    logging.info('Finished updating Events from WPForms.')
