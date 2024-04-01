@@ -14,7 +14,7 @@ from bewegungskalender.output.mailnewsletter import send_mail
 #from bewegungskalender.output.mastodon import login
 
 # Main Function if run as standalone program
-def main(events = {}):
+def main():
     # get Arguments from Command-Line and set log-level
     args = get_args()
     logging.basicConfig(level=set_log_level(args))
