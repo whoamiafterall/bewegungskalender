@@ -29,8 +29,10 @@ def update_events(config: dict):
     result, uids = imap.uid('search', None, 'FROM', sender, 'SUBJECT', subject)
     if result != 'OK': # No Mails found, continue in main.py
         logging.info("No matching form emails found."); return None
-    else: 
-        logging.info(f"Found {len(uids)} matching E-Mails!")
+    elif len(uids[0]) == 0: 
+        logging.info(f"Found {len(uids[0])} matching E-Mails!"); return None
+    else:
+        logging.info(f"Found {len(uids[0])} matching E-Mails!")
         
         # Get Calendar from CalDAV-Server and Parser
         calendar = connect_davclient(config).calendar(url=config['form']['calendar'])

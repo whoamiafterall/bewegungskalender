@@ -13,7 +13,7 @@ def send_mail(config:dict, query_start, query_end, events:dict, recipients, form
         smtp.ehlo()
         smtp.set_debuglevel(1)
         logging.debug('Logging into SMTP Client with credentials...')
-        smtp.login(config['mail']['acccount'], config['mail']['password']) 
+        smtp.login(config['mail']['account'], config['mail']['password']) 
         mail = MIMEMultipart("alternative")
         mail.add_header('subject', f"{config['newsletter']['subject']} {date(query_start)} - {date(query_end)}")
         mail.add_header('from', config['newsletter']['sender'])

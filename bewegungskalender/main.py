@@ -1,8 +1,8 @@
+from re import DEBUG
 import yaml
 import locale
 import logging
-from collections import namedtuple
-from bewegungskalender.helper.cli import get_args, set_log_level, set_mail_recipients, set_print_format, set_telegram_channel
+from bewegungskalender.helper.cli import get_args, set_mail_recipients, set_print_format, set_telegram_channel
 from bewegungskalender.helper.datetime import set_timezone, today, days
 from bewegungskalender.helper.formatting import Format
 from bewegungskalender.input.wpforms import update_events
@@ -17,7 +17,10 @@ from bewegungskalender.output.mailnewsletter import send_mail
 def main():
     # get Arguments from Command-Line and set log-level
     args = get_args()
-    logging.basicConfig(level=set_log_level(args))
+    if args.debug == True:
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.INFO)
     logging.info(f"Args: {args}")
     
     # get Config from yml file
@@ -61,7 +64,7 @@ def main():
     ### Mail Output
     if args.send_mail: 
         logging.info('Sending Message per Mail...')
-        send_mail(config, start, stop, data, set_mail_recipients, Format.HTML)
+        send_mail(config, start, stop, data, set_mail_recipients(args, config), Format.HTML)
     ### Telegram Output
     if args.telegram: 
         logging.info('Sending Message to Telegram Channel...')

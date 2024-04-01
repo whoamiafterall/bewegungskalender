@@ -39,7 +39,6 @@ def message(config:dict, data:list, querystart: datetime, queryend: datetime, mo
     """
     message = queryline(querystart, queryend, mode)
     for calendar in data:
-        print (calendar)
         logging.debug(f"Formatting {calendar.name} to {mode}...")
         if calendar.events != []:
             message += newline()
