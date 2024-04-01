@@ -25,7 +25,7 @@ def update_events(config: dict, davclient: caldav.DAVClient):
     sender = config['form']['sender']
     subject = config['form']['subject']
     logging.debug(f"Searching INBOX for e-mails from {sender} with subject {subject}...")
-    result, uids = imap.uid('search', None, 'FROM', sender, 'SUBJECT', )
+    result, uids = imap.uid('search', None, 'FROM', sender, 'SUBJECT', subject)
     if result != 'OK': # No Mails found, continue in main.py
         logging.info("No matching form emails found."); return None
     else: 
