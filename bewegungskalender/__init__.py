@@ -4,8 +4,9 @@ import locale
 import logging
 from bewegungskalender.helper.datetime import set_timezone, today, days
 from bewegungskalender.helper.formatting import Format
-from bewegungskalender.input.form import update_events
-from bewegungskalender.nextcloud.fetch import fetch_events
+from bewegungskalender.helper.cli import get_args, set_mail_recipients, set_print_format
+from bewegungskalender.input.wpforms import update_events
+from bewegungskalender.server.dav import search_events, connect_davclient
 from bewegungskalender.output.message import message
 from bewegungskalender.output.telegram import send_telegram, get_telegram_updates
 from bewegungskalender.output.umap import createMapData
@@ -14,8 +15,9 @@ from bewegungskalender.output.mail import send_mail
 __all__ =   ([argparse, yaml, locale, logging] +
             [set_timezone, today, days] +
             [Format] +
+            [get_args, set_print_format, set_mail_recipients] +
             [update_events] +
-            [fetch_events] +
+            [search_events, connect_davclient] +
             [message] +
             [send_telegram, get_telegram_updates] +
             [createMapData] +
