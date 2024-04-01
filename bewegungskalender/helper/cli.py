@@ -56,5 +56,5 @@ def set_mail_recipients(args, config):
     if args.recipient is not None:
         recipients = args.recipient 
     else: 
-        config['mail']['newsletter']['recipients']
+        config['newsletter']['recipients']
     return recipients

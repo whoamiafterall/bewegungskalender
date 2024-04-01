@@ -4,18 +4,19 @@ mail:
   server: 'mail.example.org'
   imap_port: '993'
   smtp_port: '465'
-  sender: '"user@example.org"'
-  input:
-    subject: '"Form Subject"'
-    inbox: 'INBOX'
-    move_to: 'INBOX.Bearbeitet'
-    calendar: 'calendars/user/neue-termine/'
-    date_format: '%d/%m/%Y - %H:%M'
-  newsletter:
-    subject: 'subject: '
-    recipients:
-      - mail: "mail@example.org"
-      - mail: "mail@lists.example.org"
+  inbox: 'INBOX'
+form:
+  sender: 'user@example.org'
+  subject: '"Form Subject"'
+  move_to: 'INBOX.Bearbeitet'
+  calendar: 'calendars/user/neue-termine/'
+  date_format: '%d/%m/%Y - %H:%M'
+newsletter:
+  sender: 'user@example.org'
+  subject: '[] Test'
+  recipients:
+    - mail: "bob@example.org"
+    - mail: "mail@lists.example.org"
 telegram: 
   token: 'xxxx:xxxxxx' 
   group_id: '-xxxxxx'

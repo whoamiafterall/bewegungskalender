@@ -10,7 +10,7 @@ from bewegungskalender.server.dav import search_events, connect_davclient
 from bewegungskalender.output.message import message
 from bewegungskalender.output.telegram import send_telegram, get_telegram_updates
 from bewegungskalender.output.umap import createMapData
-from bewegungskalender.output.mail import send_mail
+from bewegungskalender.output.mailnewsletter import send_mail
 
 __all__ =   ([argparse, yaml, locale, logging] +
             [set_timezone, today, days] +
