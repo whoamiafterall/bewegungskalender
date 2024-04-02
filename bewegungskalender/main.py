@@ -5,7 +5,7 @@ from bewegungskalender.helper.cli import get_args, set_mail_recipients, set_prin
 from bewegungskalender.helper.datetime import set_timezone, today, days
 from bewegungskalender.helper.formatting import Format
 from bewegungskalender.input.wpforms import update_events
-from bewegungskalender.server.dav import search_events
+from bewegungskalender.server.calDAV import search_events
 from bewegungskalender.output.message import message
 from bewegungskalender.output.telegram import send_telegram, get_telegram_updates
 from bewegungskalender.output.umap import createMapData
@@ -54,8 +54,9 @@ def main():
     # Output Section
     ### UMap Output
     if args.update_map: 
-        logging.info('Creating Map Data and writing to GeoJSON Files...')
-        createMapData(data)
+        localdir = "bewegungskalender/mapData"
+        logging.info(f"Creating Map Data and writing GeoJSON Files to {localdir}...")
+        createMapData(data, localdir)
     ### Print Output
     if args.print: 
         logging.info(f"Printing message in {args.print} Format: \n")

@@ -1,3 +1,4 @@
+from collections import namedtuple
 import urllib.parse
 import codecs
 import logging
@@ -22,10 +23,11 @@ def encode(location: str):
         location = str(urllib.parse.quote(location))
     return location
     
-def createPoint(location: str) -> MyPoint:
+def createFeature(event: namedtuple) -> MyPoint:
+    location = event.location
     result = nominatim.query(query=encode(location), limit=1)
     if result == []:
-        print(f"R: {location}: no Result found")
+        logging.info(f"R: {event.summary}: no Result found for {location}")
         return None
     for key, value in result[0].items():
         if key == 'lon':
@@ -33,28 +35,27 @@ def createPoint(location: str) -> MyPoint:
         if key == 'lat':
             lat = float(value)
     if lat is not None:
-        return MyPoint(lon, lat)
+        logging.debug(f"{location} is here: {lon}, {lat}")
+        return Feature(geometry=MyPoint(lon, lat), properties={'ℹ️': event.summary, 
+                                               '📅': eventtime(event.start, event.end), 
+                                               '📌': event.location, 
+                                               '🌐': search_link(event.description)})
     return None
 
-def createFeature(point: MyPoint, event: dict) -> Feature:
-    return Feature(geometry=point, properties={'ℹ️': event['summary'], 
-                                               '📅': eventtime(event['start'], event['end']), 
-                                               '📌': event['location'], 
-                                               '🌐': search_link(event['description'])})
-
-def createMapData(data: list):
+def createMapData(data: list, localdir: str):
     for calendar in data:
         features = []
         logging.debug(f"Creating Map Data for {calendar.name}...")
         for event in calendar.events:
-            location = event['location']
+            location = event.location
             if location is None:
-                continue
-            if location == "Online" or "online":
-                continue
-            features.append(createFeature(createPoint(location), event))
-        logging.debug(f"Writing Map Data to File {to_filename(calendar.name)}...")
-        with open(f"bewegungskalender/mapData/{to_filename(calendar.name)}.geojson", "w") as f:
-            f.write(f"{FeatureCollection(features)}")
+                logging.info(f"N: {event.summary}: location is None"); continue
+            if location == "Online" or location == "online":
+                logging.debug(f"O: {event.summary}: location is Online"); continue
+            features.append(createFeature(event))
+        filename = f"{localdir}/{to_filename(calendar.name)}.geojson"
+        logging.debug(f"Writing Map Data to File {filename}...")
+        with open(filename, "w") as f:
+                f.write(f"{FeatureCollection(features)}")
     return
 
