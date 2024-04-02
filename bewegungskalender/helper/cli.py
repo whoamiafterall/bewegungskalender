@@ -18,7 +18,7 @@ def get_args ():
     argparser.add_argument("-t", "--telegram", dest='telegram', help='send message to telegram - choose production or test_channel specified in config - defaults to test', choices=['prod', 'test'])
     argparser.add_argument("-toot", "--mastodon", dest='send_mastodon', help='send toot to mastodon', action='store_true')
     argparser.add_argument("-u", "--update-events", dest='update_events', help='check Mailbox for new events and add them to calendar', action='store_true')
-    argparser.set_defaults(config_file="config.yml", print='txt', log_level='info', query_start=1, query_end=14)
+    argparser.set_defaults(config_file="config.yml", log_level='info', query_start=1, query_end=14)
     # Show help if no argument specified
     if len(sys.argv) <= 1:
         sys.argv.append('--help')

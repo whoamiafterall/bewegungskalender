@@ -27,20 +27,19 @@ def escape_chars(text:str) -> str:
     translate_dict = {c: "\\" + c for c in escape_chars}
     return text.translate(str.maketrans(translate_dict))
 
-def search_link(description:str) -> str:
+def search_link(summary:str, description:str) -> str:
     if  description is not None:
         try: 
             return re.search("(?P<url>https?://[^\s]+)", description).group("url") 
         except AttributeError: 
-            logging.info(f"L: No Link found in: {description}")
+            logging.warn(f"L: {summary}: No Link in: {description}")
             return None
     
 def md_link(text:str, url:str) -> str:
-    if search_link(url) is not None:
-        return f"[{escape_chars(text)}]({search_link(url)})"
+    if search_link(text, url) is not None:
+        return f"[{escape_chars(text)}]({search_link(text, url)})"
     else:
-        logging.info(f"No valid link in description of event:{text}")
-        return f" {escape_chars(text)}"; 
+        return f" {escape_chars(text)}"
 
 def match_string(string:str, text:str, mode) -> str:
     regex = '\.\s.*'

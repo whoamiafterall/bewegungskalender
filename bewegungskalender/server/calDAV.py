@@ -1,4 +1,5 @@
 import logging
+import requests
 from bewegungskalender.helper.parsing import parse_event
 import caldav
 import icalendar
@@ -14,11 +15,11 @@ def connect_davclient(config:dict):
         logging.exception("Connection to CalDav-Server failed.")
         exit()
         
-def search_events(config: dict, start: int, stop: int) :
+def search_events(config: dict, start: int, stop: int, expand=bool) :
     # Connect to CalDAV Server
     data = []
     davclient = connect_davclient(config)
-    logging.info(f"Looking for Events from {start} to {stop}")
+    logging.info(f"Looking for Events between {start} and {stop} in {len(config['calendars'])} calendars... ")
     
     # Get Calendar Objects from Server
     for configline in config['calendars']:
@@ -31,9 +32,8 @@ def search_events(config: dict, start: int, stop: int) :
             'start': start,
             'end': stop,
         }
-
         events = []
-        for cal_data in calobject.search(**search_filter, event=True, expand=True, sort_keys=['dtstart', 'summary']):
+        for cal_data in calobject.search(**search_filter, event=True, expand=expand, sort_keys=['dtstart', 'summary']):
             for component in icalendar.Event.from_ical(cal_data.data).walk():
                 if component.name == "VEVENT":
                     events.append(parse_event(component))
@@ -42,8 +42,9 @@ def search_events(config: dict, start: int, stop: int) :
         calendar = namedtuple("calendar", ["emoji", "name", "events"], defaults=[[]])
         try:
             calendar.name = calobject.get_properties([caldav.dav.DisplayName()])['{DAV:}displayname']
-        except ConnectionError:
-            calendar.name = url
+        except requests.ConnectionError:
+            logging.exception("Couldn't get calendar name from DAV-Client because of connection error. Aborting, please check your network connection and try again!")
+            exit()
         calendar.events = events
         calendar.emoji = configline['calendar']['emoji']
         logging.info(f"Successfully parsed {len(calendar.events)} events from {calendar.name}!")

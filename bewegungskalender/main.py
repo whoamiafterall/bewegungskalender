@@ -49,14 +49,15 @@ def main():
     ### Fetch Events from CalDav-Server
     start = today() + days(args.query_start); 
     stop = start + days(args.query_end)
-    data = search_events(config, start, stop)
+    data = search_events(config, start, stop, expand=True)
     
     # Output Section
     ### UMap Output
     if args.update_map: 
-        localdir = "bewegungskalender/mapData"
-        logging.info(f"Creating Map Data and writing GeoJSON Files to {localdir}...")
-        createMapData(data, localdir)
+        localdir = config['umap']['localdir']
+        remote = config['umap']['repo']
+        logging.info(f"Creating GeoJSON Files in {localdir} and pushing them to {remote}...")
+        createMapData(data, localdir, remote)
     ### Print Output
     if args.print: 
         logging.info(f"Printing message in {args.print} Format: \n")
