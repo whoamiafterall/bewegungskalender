@@ -1,7 +1,7 @@
 import imaplib
 import email
 from bewegungskalender.helper.parsing import ParseWPForms
-from bewegungskalender.server.dav import connect_davclient
+from bewegungskalender.server.calDAV import connect_davclient
 import icalendar
 import logging
 from bewegungskalender.helper.datetime import to_datetime
