@@ -3,7 +3,6 @@ config.yml
 .Radicale.cache
 logs/
 bewegungskalender/logs/message.txt
-bewegungskalender/mapData
 bewegungskalender/newsletter_recipients.txt
 bewegungskalender/mapData/serveGeoJSON.php
 bewegungskalender/nextcloud/icslib.py
