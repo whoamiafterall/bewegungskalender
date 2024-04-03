@@ -20,6 +20,9 @@ newsletter:
 telegram: 
   token: 'xxxx:xxxxxx' 
   group_id: '-xxxxxx'
+data: # Create a git repository to store persistent data, see README for instructions
+  repo: 'git@github.com:<username>/<repo>.git'
+  localdir: "bewegungskalender/mapData" # you can leave this as default
 mastodon: # Create an Application on your Mastodon Account and enter the secrets here 
   client_key: 'xxxxxxxxxxxx'
   client_secret: 'xxxxxxxxxx'

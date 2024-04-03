@@ -1,21 +1,24 @@
+import asyncio
+import datetime
+from typing import NamedTuple
 import yaml
 import locale
 import logging
-from bewegungskalender.helper.cli import get_args, set_mail_recipients, set_print_format, set_telegram_channel
+from bewegungskalender.helper.cli import get_args, set_mail_recipients, set_print_format
 from bewegungskalender.helper.datetime import set_timezone, today, days
 from bewegungskalender.helper.formatting import Format
 from bewegungskalender.input.wpforms import update_events
 from bewegungskalender.server.calDAV import search_events
 from bewegungskalender.output.message import message
-from bewegungskalender.output.telegram import send_telegram, get_telegram_updates
+from bewegungskalender.output.telegram import edit_telegram, send_telegram, get_telegram_updates
 from bewegungskalender.output.umap import createMapData
 from bewegungskalender.output.mailnewsletter import send_mail
 #from bewegungskalender.output.mastodon import login
 
 # Main Function if run as standalone program
-def main():
+async def main():
     # get Arguments from Command-Line and set log-level
-    args = get_args()
+    args:dict = get_args()
     if args.debug == True:
         logging.basicConfig(level=logging.DEBUG)
     else:
@@ -47,15 +50,15 @@ def main():
     
     # Server Section    
     ### Fetch Events from CalDav-Server
-    start = today() + days(args.query_start); 
-    stop = start + days(args.query_end)
-    data = search_events(config, start, stop, expand=True)
+    start:datetime.date = today() + days(args.query_start); 
+    stop:datetime.date = start + days(args.query_end)
+    data:list[NamedTuple] = search_events(config, start, stop, expand=True)
     
     # Output Section
     ### UMap Output
     if args.update_map: 
-        localdir = config['umap']['localdir']
-        remote = config['umap']['repo']
+        localdir:str = config['umap']['localdir']
+        remote:str = config['umap']['repo']
         logging.info(f"Creating GeoJSON Files in {localdir} and pushing them to {remote}...")
         createMapData(data, localdir, remote)
     ### Print Output
@@ -66,11 +69,15 @@ def main():
     if args.send_mail: 
         logging.info('Sending Message per Mail...')
         send_mail(config, start, stop, data, set_mail_recipients(args, config), Format.HTML)
-    ### Telegram Output
+    ### Send to Telegram
     if args.telegram: 
         logging.info('Sending Message to Telegram Channel...')
-        send_telegram(config, set_telegram_channel(args, config), message(config, data, start, stop, Format.MD))
+        await send_telegram(args, config, message(config, data, start, stop, Format.MD))
         logging.info(f"Succesfully sent message to Telegram Channel {args.telegram}!")
+    ### Edit Telegram
+    if args.edit_telegram: 
+        logging.info('Editing last Message in Telegram Channel...')
+        await edit_telegram(args, config, message(config, data, start, stop, Format.MD))
     logging.info('Finished all Tasks - Quitting.')
     exit()
     
@@ -82,6 +89,5 @@ def main():
 
 # Run as Module or Standalone program
 if __name__ == '__main__':
-    output = main()
-    if output:
-        print(output, end='')
+    asyncio.run(main())
+    
