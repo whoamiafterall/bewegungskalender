@@ -37,7 +37,7 @@ def search_link(summary:str, description:str) -> str:
     
 def md_link(text:str, url:str) -> str:
     if search_link(text, url) is not None:
-        return f"[{escape_chars(text)}]({search_link(text, url)})"
+        return f" [{escape_chars(text)}]({search_link(text, url)})"
     else:
         return f" {escape_chars(text)}"
 
