@@ -22,22 +22,22 @@ def fix_midnight(dt:datetime.datetime) -> datetime.datetime:
         return dt - datetime.timedelta(seconds=1)
     return dt
 
-def days(delta) -> datetime.datetime:
+def days(delta:int) -> datetime.datetime:
     return datetime.timedelta(days=delta)
 
 def check_datetime(date:datetime) -> datetime.date:
     return date if isinstance(date, datetime.datetime) else datetime.datetime.combine(date, datetime.datetime.min.time()).astimezone(TIMEZONE)
     
-def date(day:datetime) -> str: # get date from a datetime object
+def date(day:datetime.date) -> str: # get date from a datetime object
     return day.strftime('%d.%m.')
 
-def weekday(day:datetime) -> str: # get weekday from a datetime object
+def weekday(day:datetime.date) -> str: # get weekday from a datetime object
     return day.strftime('%a.')
 
 def weekday_date(day:datetime.date) -> str:
     return weekday(day) + " " + date(day)
 
-def time (datetime:datetime) -> str: # get time from a datetime object
+def time (datetime:datetime.datetime) -> str: # get time from a datetime object
     return datetime.strftime('(%H:%M)') 
 
 def eventtime(start:datetime, end:datetime) -> str:

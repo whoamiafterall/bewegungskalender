@@ -1,5 +1,6 @@
 from collections import namedtuple
 import os
+from typing import NamedTuple
 import urllib.parse
 import codecs
 import logging
@@ -45,7 +46,7 @@ def createFeature(event: namedtuple) -> MyPoint:
                                             '🌐': search_link(event.summary, event.description)})
    
 
-def createMapData(data: list, localdir: str, remote: str):
+def createMapData(data: list[NamedTuple], localdir: str, remote: str) -> None:
     # Initialize and configure git repository if necessary
     if os.path.isdir(s=f"{localdir}/.git") == True: # if git repository already exists in localdir
         repo = git.Repo(path=localdir)  
@@ -61,13 +62,13 @@ def createMapData(data: list, localdir: str, remote: str):
             origin = repo.create_remote(name='master', url=remote)    
             logging.info(f"Found git repo in {localdir} and added {remote} as 'master'!")
     
-    filenames = []
+    filenames:list = []
     for calendar in data:
-        features = []
-        recurrence = []
+        features:list = []
+        recurrence:list = []
         logging.debug(f"Creating Map Data for {calendar.name}...")
         for event in calendar.events:
-            location = event.location
+            location:str = event.location
             if location is None: # filter events without location
                 logging.debug(f"N: {event.summary}: location is None")
                 search_link(event.summary, event.description) # call just for logs

@@ -3,7 +3,7 @@ import sys
 from bewegungskalender.helper.formatting import Format
 
 # Get Arguments from Commandline 
-def get_args ():
+def get_args() -> dict:
     # Get Argparser and add arguments
     argparser = argparse.ArgumentParser(prog="bewegungskalender", description='Use a CalDAV-Server to send automatic calendar newsletters to the world.')
     argparser.add_argument("-c", "--config", dest='config_file', help='specify path to config file, defaults to config.yml')
@@ -22,30 +22,21 @@ def get_args ():
     # Show help if no argument specified
     if len(sys.argv) <= 1:
         sys.argv.append('--help')
-    args = argparser.parse_args()
+    args:dict = argparser.parse_args()
     return args
 
 # Handle --print and set Format to HTML, MarkDown or TXT
-def set_print_format(args):
+def set_print_format(args:dict) -> Format:
     if args.print == 'html':
-        format = Format.HTML     
+        return Format.HTML     
     elif args.print == 'md':
-        format = Format.MD
+        return Format.MD
     else:
-        format = Format.TXT
-    return format
-
-#  Handle --telegram and set channel to production if specified
-def set_telegram_channel(args, config):
-    if args.telegram == 'prod':
-        channel = config['telegram']['production'] 
-    else:
-        channel = config['telegram']['test']
-    return channel
+        return Format.TXT
 
  # Handle --recipients and set recipients if specified
-def set_mail_recipients(args, config):
+def set_mail_recipients(args:dict, config:dict) -> list[str]:
     if args.recipient is not None:
-        return args.recipient 
+        return list(args.recipient) 
     else: 
         return config['newsletter']['recipients']
