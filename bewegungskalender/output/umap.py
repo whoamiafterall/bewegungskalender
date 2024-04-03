@@ -1,11 +1,10 @@
 from collections import namedtuple
-import os
 from typing import NamedTuple
 import urllib.parse
 import codecs
 import logging
 from nominatim import Nominatim
-import git
+from git import Repo, Remote
 from geojson import Feature, FeatureCollection
 from bewegungskalender.helper.formatting import search_link, eventtime, to_filename
 
@@ -46,22 +45,7 @@ def createFeature(event: namedtuple) -> MyPoint:
                                             '🌐': search_link(event.summary, event.description)})
    
 
-def createMapData(data: list[NamedTuple], localdir: str, remote: str) -> None:
-    # Initialize and configure git repository if necessary
-    if os.path.isdir(s=f"{localdir}/.git") == True: # if git repository already exists in localdir
-        repo = git.Repo(path=localdir)  
-        origin = repo.remote(name='master')
-        logging.debug(f"Using existing git repo in {localdir}...")
-    else: # if git repository doesn't exist in localdir
-        try: # try cloning git repository from remote repository
-            repo = git.Repo.clone_from(url=remote, to_path=localdir)
-            origin = repo.create_remote(name='master', url=remote)   
-            logging.info(f"Sucessfully cloned git repository from {remote} to {localdir}!")          
-        except git.GitCommandError: # except initialize it if localdir already exists
-            repo = git.Repo.init(path=localdir)
-            origin = repo.create_remote(name='master', url=remote)    
-            logging.info(f"Found git repo in {localdir} and added {remote} as 'master'!")
-    
+def createMapData(data: list[NamedTuple], repo: Repo, origin: Remote) -> None:    
     filenames:list = []
     for calendar in data:
         features:list = []
@@ -91,9 +75,10 @@ def createMapData(data: list[NamedTuple], localdir: str, remote: str) -> None:
         logging.info(f"Located {len(features)} Events from {calendar.name} on OpenStreetMap!")
         filenames.append(filename)
         logging.debug(f"Writing to {filename}...")
-        with open(f"{localdir}/{filename}", "w") as f: # write GeoJSON Data to each Calendar-File
+        
+        with open(f"{repo.working_dir}/{filename}", "w") as f: # write GeoJSON Data to each Calendar-File
             f.write(f"{FeatureCollection(features)}")
     repo.index.add(filenames); repo.index.commit("Updated mapData"); origin.push() # Stage, Commit and Push Files to remote (origin)
-    logging.info(f"Successfully pushed {len(filenames)} geojson files to {remote}!")
+    logging.info(f"Successfully pushed {len(filenames)} geojson files to {origin.url}!")
     return
 

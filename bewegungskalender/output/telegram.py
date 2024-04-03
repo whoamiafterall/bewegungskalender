@@ -1,4 +1,6 @@
 import logging
+from bewegungskalender.server.auto_git import get_git_remote, init_git_repo
+from git import Remote, Repo
 import telegram
 import yaml
 from telegram.constants import ParseMode
@@ -19,7 +21,7 @@ async def get_telegram_updates(config:dict):
     updates = await bot(config).get_updates()
     return "\n".join([str(u) for u in updates])
 
-async def send_telegram(args:dict, config:dict, message:str) -> None:
+async def send_telegram(args:dict, config:dict, repo:Repo, origin:Remote, message:str) -> None:
     if len(message) > 8000: # Check if message is too long for telegram
         logging.exception(f"Could not send message with {len(message)} characters to telegram, message longer than 8000 characters. Aborting."); exit(1)
     
@@ -37,16 +39,19 @@ async def send_telegram(args:dict, config:dict, message:str) -> None:
     except telegram.error.TelegramError: # if something goes wrong
         logging.exception(f"Something went wrong while sending message to telegram channel: {args.telegram} - Aborting, please try again.\n")
         logging.debug(f"{message}")
-    with open(f"{config['data']['localdir']}/message_ids.yml", "w") as f: 
+    with open(f"{repo.working_dir}/message_ids.yml", "w") as f: 
         f.write(f"{args.telegram}: {lastmessage.message_id}") # write message_id of the message sent to file to be able to edit it
+        repo.index.add('message_ids.yml'); repo.index.commit("Updated message_ids.yml"); origin.push() # git stage, commit and push
+        logging.info(f"Pushed {repo.working_dir}/message_ids.yml to {origin.url}!")
     return
 
-async def edit_telegram(args:dict, config:dict, message:str) -> None:
+async def edit_telegram(args:dict, config:dict, origin:Remote, message:str) -> None:
     if len(message) > 8000: # Check if message is too long for telegram
         logging.exception(f"Could not send message with {len(message)} characters to telegram, message longer than 8000 characters. Aborting."); exit(1)
     try: # Get ID of last Message sent
-         with open(f"{config['data']['localdir']}/message_ids.yml", "r") as f: 
-            message_ids:dict = yaml.load(f, Loader=yaml.FullLoader) 
+        origin.pull('main')
+        with open(f"{config['data']['localdir']}/message_ids.yml", "r") as f: 
+            message_ids:dict = yaml.load(f, Loader=yaml.FullLoader)
     except FileNotFoundError:
         logging.exception(f"{config['data']['localdir']}/message_ids.yml: File with message_ids not Found"); exit()
     
@@ -62,7 +67,7 @@ async def edit_telegram(args:dict, config:dict, message:str) -> None:
                                                 message_id=message_ids['test'], 
                                                 chat_id=config['telegram']['test'], 
                                                 parse_mode=ParseMode.MARKDOWN_V2, 
-                                                disable_web_page_preview=True) 
+                                                disable_web_page_preview=True)
         logging.info(f"Succesfully edited last message in Telegram Channel: {args.edit_telegram}!")
     except telegram.error.BadRequest: # if message has not changed throw an exception
         logging.error(f"Telegram message was not modified. Seems like there have been no changes. \n")
