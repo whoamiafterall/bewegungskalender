@@ -78,7 +78,7 @@ def createMapData(data: list[NamedTuple], repo: Repo, origin: Remote) -> None:
         
         with open(f"{repo.working_dir}/{filename}", "w") as f: # write GeoJSON Data to each Calendar-File
             f.write(f"{FeatureCollection(features)}")
-    repo.index.add(filenames); repo.index.commit("Updated mapData"); origin.push() # Stage, Commit and Push Files to remote (origin)
+    repo.index.add(filenames); repo.index.commit("Updated mapData"); origin.push('main') # Stage, Commit and Push Files to remote (origin)
     logging.info(f"Successfully pushed {len(filenames)} geojson files to {origin.url}!")
     return
 
