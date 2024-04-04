@@ -1,6 +1,6 @@
 import logging
 from bewegungskalender.server.auto_git import get_git_remote, init_git_repo
-from git import Remote, Repo
+from git import Remote, Repo # type: ignore
 import telegram
 import yaml
 from telegram.constants import ParseMode

@@ -1,6 +1,6 @@
 import logging
 import os
-from git import Remote, Repo, GitCommandError
+from git import Remote, Repo, GitCommandError # type: ignore
 
 def init_git_repo(localdir: str, remote:str) -> Repo:
     # Initialize git repository if necessary

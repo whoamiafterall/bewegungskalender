@@ -2,7 +2,7 @@ import asyncio
 import datetime
 from typing import NamedTuple
 from bewegungskalender.server.auto_git import get_git_remote, init_git_repo
-from git import Remote, Repo
+from git import Remote, Repo # type: ignore
 import yaml
 import locale
 import logging

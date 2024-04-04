@@ -4,7 +4,7 @@ import urllib.parse
 import codecs
 import logging
 from nominatim import Nominatim
-from git import Repo, Remote
+from git import Repo, Remote # type: ignore
 from geojson import Feature, FeatureCollection
 from bewegungskalender.helper.formatting import search_link, eventtime, to_filename
 
