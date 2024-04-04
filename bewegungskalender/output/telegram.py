@@ -41,7 +41,7 @@ async def send_telegram(args:dict, config:dict, repo:Repo, origin:Remote, messag
         logging.debug(f"{message}")
     with open(f"{repo.working_dir}/message_ids.yml", "w") as f: 
         f.write(f"{args.telegram}: {lastmessage.message_id}") # write message_id of the message sent to file to be able to edit it
-        origin.pull(); repo.index.add('message_ids.yml'); repo.index.commit("Updated message_ids.yml"); origin.push('main') # git pull, stage, commit and push
+        repo.index.add('message_ids.yml'); repo.index.commit("Updated message_ids.yml"); origin.pull(); origin.push('main') # git pull, stage, commit and push
         logging.info(f"Pushed {repo.working_dir}/message_ids.yml to {origin.url}!")
     return
 
