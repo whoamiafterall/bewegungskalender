@@ -6,7 +6,7 @@ This has been a fork of https://gitlab.com/iexos/caldav2telegram but can be seen
 This script does several things (most of them optional) interacting with Nextcloud Calendars via caldav:
 - Get Events submitted through a Form and automatically add them to a calendar
 - Fetch all the Events from multiple Calendars in a given timeframe.
-- Locate those Events on Openstreetmap using Nominatim, producing GeoJSON files for a [Map](https://umap.openstreetmap.de/en/map/bewegungskalender-karte_42841#5/50.219/7.339)
+- Locate those Events on Openstreetmap using Nominatim, producing GeoJSON files for a [Map](https://umap.openstreetmap.fr/en/map/bewegungskalender-karte_1048275)
 - Write a Message listing the Events in MarkDown, HTML, or Plain Text.
 - Send the message to a Mailing List in HTML: bewegungskalender@lists.riseup.net
 - Post the message to a Telegram channel in MarkDown: https://t.me/bewegungskalender
