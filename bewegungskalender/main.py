@@ -1,21 +1,18 @@
 import asyncio
 import datetime
 from typing import NamedTuple
-from bewegungskalender.server.auto_git import get_git_remote, init_git_repo
-from git import Remote, Repo # type: ignore
 import yaml
 import locale
 import logging
-from bewegungskalender.helper.cli import get_args, set_mail_recipients, set_print_format
+from bewegungskalender.helper.cli import get_args, set_mail_recipients, set_print_format, set_telegram_channel
 from bewegungskalender.helper.datetime import set_timezone, today, days
 from bewegungskalender.helper.formatting import Format
 from bewegungskalender.input.wpforms import update_events
 from bewegungskalender.server.calDAV import search_events
-from bewegungskalender.output.message import message
-from bewegungskalender.output.telegram import edit_telegram, send_telegram, get_telegram_updates
+from bewegungskalender.output.message import get_message
+from bewegungskalender.output.telegram import Channel, send_or_edit_telegram, get_telegram_updates
 from bewegungskalender.output.umap import createMapData
 from bewegungskalender.output.mailnewsletter import send_mail
-#from bewegungskalender.output.mastodon import login
 
 # Main Function if run as standalone program
 async def main():
@@ -43,7 +40,7 @@ async def main():
     # Telegram Config
     if args.get_telegram_updates: 
         logging.info('Getting telegram channel id...')
-        print(get_telegram_updates(config)); exit() 
+    #    print(get_telegram_updates(config)); exit() 
     
     # Input Section
     ### WPForms Input
@@ -55,34 +52,24 @@ async def main():
     start:datetime.date = today() + days(args.query_start); 
     stop:datetime.date = start + days(args.query_end)
     data:list[NamedTuple] = search_events(config, start, stop, expand=True)
-    ### Make git Repository ready
-    localdir:str = config['data']['localdir']
-    remote:str = config['data']['remote']
-    repo:Repo = init_git_repo(localdir, remote) # get, clone or initialize git repository
-    origin:Remote = get_git_remote(remote, repo) # get git origin (remote git host)
     
     # Output Section
     ### UMap Output
     if args.update_map: 
-        logging.info(f"Creating GeoJSON Files in {repo.working_dir} and pushing them to {origin.url}...")
-        createMapData(data, repo, origin)
+        logging.info(f"Creating GeoJSON Data for the map...")
+        createMapData(data, config['datadir'])
     ### Print Output
     if args.print: 
         logging.info(f"Printing message in {args.print} Format: \n")
-        print(message(config, data, start, stop, set_print_format(args)))
+        print(set_print_format(args, get_message(config, data, start, stop)))
     ### Mail Output
     if args.send_mail: 
         logging.info('Sending Message per Mail...')
         send_mail(config, start, stop, data, set_mail_recipients(args, config), Format.HTML)
-    ### Send to Telegram
-    if args.telegram: 
-        logging.info('Sending Message to Telegram Channel...')
-        await send_telegram(args, config, repo, origin, message(config, data, start, stop, Format.MD))
-        logging.info(f"Succesfully sent message to Telegram Channel {args.telegram}!")
-    ### Edit Telegram
-    if args.edit_telegram: 
-        logging.info('Editing last Message in Telegram Channel...')
-        await edit_telegram(args, config, origin, message(config, data, start, stop, Format.MD))
+    ### Send or Edit Telegram Message
+    if args.telegram:
+        channel = set_telegram_channel(args.telegram, config)
+        await send_or_edit_telegram(channel, config['datadir'], get_message(config, data, start, stop), mode=args.telegram_mode)
     logging.info('Finished all Tasks - Quitting.')
     exit()
     
