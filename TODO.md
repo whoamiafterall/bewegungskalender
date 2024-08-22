@@ -70,7 +70,7 @@
 - [x] upgrade date.search() to calendar.search()
 - [x] test
 
-## Shipped Changes (Last 02.04.)
+# Shipped Changes (Last 02.04.)
 
 - [x] upgrade dependencies locally
 - [x] test
