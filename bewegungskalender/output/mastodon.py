@@ -1,3 +1,4 @@
+"""
 from mastodon import Mastodon
 from bewegungskalender.output.message import message
 
@@ -8,3 +9,4 @@ def login(config:dict):
         access_token = config['mastodon']['access_token'],
         api_base_url= f"https://{config['mastodon']['instance']}/api/v1/apps"
     )
+"""
