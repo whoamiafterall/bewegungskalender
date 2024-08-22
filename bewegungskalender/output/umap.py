@@ -1,10 +1,10 @@
 from collections import namedtuple
 from typing import NamedTuple
+from unittest.util import strclass
 import urllib.parse
 import codecs
 import logging
 from nominatim import Nominatim
-from git import Repo, Remote # type: ignore
 from geojson import Feature, FeatureCollection
 from bewegungskalender.helper.formatting import search_link, eventtime, to_filename
 
@@ -45,7 +45,7 @@ def createFeature(event: namedtuple) -> MyPoint:
                                             '🌐': search_link(event.summary, event.description)})
    
 
-def createMapData(data: list[NamedTuple], repo: Repo, origin: Remote) -> None:    
+def createMapData(data: list[NamedTuple], localdir:str) -> None:    
     filenames:list = []
     for calendar in data:
         features:list = []
@@ -75,10 +75,7 @@ def createMapData(data: list[NamedTuple], repo: Repo, origin: Remote) -> None:
         logging.info(f"Located {len(features)} Events from {calendar.name} on OpenStreetMap!")
         filenames.append(filename)
         logging.debug(f"Writing to {filename}...")
-        
-        with open(f"{repo.working_dir}/{filename}", "w") as f: # write GeoJSON Data to each Calendar-File
+        with open(f"{localdir}/{filename}", "w") as f: # write GeoJSON Data to each Calendar-File
             f.write(f"{FeatureCollection(features)}")
-    repo.index.add(filenames); repo.index.commit("Updated mapData"); origin.pull(); origin.push('main') # Stage, Commit, Pull and Push Files to remote (origin)
-    logging.info(f"Successfully pushed {len(filenames)} geojson files to {origin.url}!")
     return
 
