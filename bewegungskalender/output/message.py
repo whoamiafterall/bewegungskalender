@@ -1,9 +1,18 @@
 import datetime
 import logging
-import markdown
 from collections import namedtuple
 from bewegungskalender.helper.datetime import weekday_date, date
 from bewegungskalender.helper.formatting import md_link, escape_chars, bold, newline, Format, match_string, add_event
+
+#TODO pass Message Object around to reduce clutter and get rid of the for loop
+
+class MultiFormatMessage():
+    def __init__(self, start:datetime.date, end:datetime.date) -> None:
+        self.start = start
+        self.end = end
+        self.html:str = ""
+        self.markdown:str = ""
+        self.txt:str = ""
 
 def queryline(start: datetime.date, stop: datetime.date, mode: Format): # Displayed as Head of the Message
     return bold(escape_chars(f"Die Termine vom " + weekday_date(start) + " - " + weekday_date(stop) + "\n"), mode)
@@ -32,21 +41,28 @@ def calendar_title(emoji: str, name: str, mode: Format) -> str:
     title:str = f"{emoji} {name}"
     return bold(title, mode)  
 
-def message(config:dict, data:list, start: datetime.date, stop: datetime.date, mode:Format) -> str:
-    message:str = queryline(start, stop, mode)
-    for calendar in data:
-        logging.debug(f"Formatting {calendar.name} to {mode}...")
-        if calendar.events != []:
-            message += newline()
-            message += calendar_title(calendar.emoji, calendar.name, mode) 
-            message += newline()
-            for event in calendar.events:
-                if event.recurrence is not None:
-                    message:str = recurring_event(event, message, mode)
-                else:
-                    message += add_event(event, mode)
-                    message += newline()
-    message += newline()
-    message += footer(config, mode)
-    logging.info(f"Successfully formatted the message to {mode}!")
-    return markdown.markdown(message.strip(), extensions=['nl2br']) if mode == Format.HTML else message.strip()
+def get_message(config:dict, data:list, start: datetime.date, stop: datetime.date) -> MultiFormatMessage:
+    formats = {}
+    for mode in Format:
+        message:str = queryline(start, stop, mode)
+        for calendar in data:
+            logging.debug(f"Formatting {calendar.name} to {mode}...")
+            if calendar.events != []:
+                message += newline()
+                message += calendar_title(calendar.emoji, calendar.name, mode) 
+                message += newline()
+                for event in calendar.events:
+                    if event.recurrence is not None:
+                        message:str = recurring_event(event, message, mode)
+                    else:
+                        message += add_event(event, mode)
+                        message += newline()
+        message += newline()
+        message += footer(config, mode)
+        formats[mode] = message
+        logging.info(f"Successfully formatted the message to {mode}!")
+    msg_object = MultiFormatMessage(start, stop)
+    msg_object.html = formats[Format.HTML]
+    msg_object.markdown = formats[Format.MD]
+    msg_object.txt = formats[Format.TXT]
+    return msg_object
