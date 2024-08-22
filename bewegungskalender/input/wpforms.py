@@ -6,6 +6,12 @@ import icalendar
 import logging
 from bewegungskalender.helper.datetime import to_datetime
 
+#TODO: ValueError: time data '07/07/2024 - 19:M0' does not match format '%d/%m/%Y - %H:%M' 
+# => L'isola Sommer Protest Fest Aachen
+
+#TODO:     event.add('summary', f"{data[0]} ({data[3]})"); IndexError: list index out of range
+# => Kino knirschendes Gold-Kies frisst Wald
+
 def connect_imap(config: dict) -> imaplib.IMAP4_SSL:
     logging.debug('Connecting to IMAP server using credential from config...')
     try: 
