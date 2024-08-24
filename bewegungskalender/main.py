@@ -1,37 +1,22 @@
 import asyncio
-import datetime
+from datetime import datetime, date, time, timedelta
 from typing import NamedTuple
 import yaml
 import locale
 import logging
-from bewegungskalender.helper.cli import get_args, set_mail_recipients, set_print_format, set_telegram_channel
-from bewegungskalender.helper.datetime import set_timezone, today, days
+from bewegungskalender.helper.cli import args, start, stop, set_print_format, set_telegram_channel
+from bewegungskalender.helper.config import config
+from bewegungskalender.helper.datetime import set_timezone
 from bewegungskalender.helper.formatting import Format
 from bewegungskalender.input.wpforms import update_events
 from bewegungskalender.server.calDAV import search_events
 from bewegungskalender.output.message import get_message
-from bewegungskalender.output.telegram import Channel, send_or_edit_telegram, get_telegram_updates
+from bewegungskalender.output.telegram import send_or_edit_telegram, get_telegram_updates
 from bewegungskalender.output.umap import createMapData
 from bewegungskalender.output.mailnewsletter import send_mail
 
 # Main Function if run as standalone program
 async def main():
-    # get Arguments from Command-Line and set log-level
-    args:dict = get_args()
-    if args.debug == True:
-        logging.basicConfig(level=logging.DEBUG)
-    else:
-        logging.basicConfig(level=logging.INFO)
-    logging.info(f"Args: {args}")
-    
-    # get Config from yml file
-    logging.debug('Loading config file...')
-    try:
-        with open(args.config_file, 'r') as f: 
-            config:dict = yaml.load(f, Loader=yaml.FullLoader) 
-    except FileNotFoundError:
-        logging.exception('Config File not Found:', args.config_file); exit()
-        
     # Set Timezone and Locale
     logging.debug('Setting timezone and locale...')
     locale.setlocale(locale.LC_TIME, config['format']['locale']) 
@@ -49,8 +34,6 @@ async def main():
     
     # Server Section    
     ### Fetch Events from CalDav-Server
-    start:datetime.date = today() + days(args.query_start); 
-    stop:datetime.date = start + days(args.query_end)
     data:list[NamedTuple] = search_events(config, start, stop, expand=True)
     
     # Output Section
@@ -65,11 +48,11 @@ async def main():
     ### Mail Output
     if args.send_mail: 
         logging.info('Sending Message per Mail...')
-        send_mail(config, start, stop, data, set_mail_recipients(args, config), Format.HTML)
+        send_mail(config, start, stop, data, Format.HTML)
     ### Send or Edit Telegram Message
     if args.telegram:
         channel = set_telegram_channel(args.telegram, config)
-        await send_or_edit_telegram(channel, config['datadir'], get_message(config, data, start, stop), mode=args.telegram_mode)
+        await send_or_edit_telegram(channel, config['datadir'], get_message(config, data, start, stop), edit=args.telegram_edit)
     logging.info('Finished all Tasks - Quitting.')
     exit()
     

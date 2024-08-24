@@ -1,10 +1,6 @@
-from enum import Enum
-from io import TextIOWrapper
 import logging
-from mailbox import Message
 import telegram
 import yaml
-from telegram.constants import ParseMode
 from telegram import Bot
 
 from bewegungskalender.output.message import MultiFormatMessage
@@ -30,23 +26,23 @@ async def get_telegram_updates(config:dict):
     updates = await bot(config).get_updates()
     return "\n".join([str(u) for u in updates])
     
-async def send_or_edit_telegram(channel:Channel, localdir:str, message:MultiFormatMessage, mode:str = ['edit', 'send']) -> None:
+async def send_or_edit_telegram(channel:Channel, localdir:str, message:MultiFormatMessage, edit:bool) -> None:
     if len(message.markdown) > 8000: # Check if message is too long for telegram
         logging.exception(f"Could not send message with {len(message.markdown)} characters to telegram, message longer than 8000 characters. Aborting."); exit(1)
     try:
         with open(f"{localdir}/lastmessage.txt", "r+") as content:
             with open(f"{localdir}/message_ids.yml", "r+") as ids:
                 last_msg_ids = yaml.load(ids, Loader=yaml.SafeLoader)
-                if mode == 'send':
+                if edit == False:
                     logging.info('Sending Message to Telegram Channel...')
                     lastmessage:dict = await bot(channel.botToken).send_message(text=message.markdown, 
                                                                     chat_id=channel.id, 
-                                                                    parse_mode=ParseMode.MARKDOWN_V2, 
+                                                                    parse_mode="MarkdownV2", 
                                                                     disable_web_page_preview=True)      
                     content.seek(0), content.write(message.txt), content.truncate() # write message content to file to be able to check if it has changed
                     last_msg_ids[channel.type] = lastmessage.message_id
                     logging.info(f"Succesfully sent message to Telegram Channel {channel.id}!")
-                elif mode == 'edit':
+                elif edit == True:
                     logging.info('Editing last Message in Telegram Channel...')
                     if content.read() == message.txt:
                         logging.info("Message has not changed since the last edit. No changes applied.")
@@ -54,7 +50,7 @@ async def send_or_edit_telegram(channel:Channel, localdir:str, message:MultiForm
                         await bot(channel.botToken).edit_message_text(text=message.markdown, 
                                                 message_id=last_msg_ids[channel.type], 
                                                 chat_id=channel.id, 
-                                                parse_mode=ParseMode.MARKDOWN_V2, 
+                                                parse_mode="MarkdownV2", 
                                                 disable_web_page_preview=True)    
                         content.seek(0), content.write(message.txt), content.truncate()
                         logging.info(f"Succesfully edited last message in Telegram Channel: {channel.id}!")

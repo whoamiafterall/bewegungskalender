@@ -5,9 +5,10 @@ from email.mime.multipart import MIMEMultipart
 from email.utils import formatdate, make_msgid
 from bewegungskalender.helper.formatting import Format
 from bewegungskalender.output.message import get_message
+from bewegungskalender.helper.cli import mail_receiver
 from bewegungskalender.helper.datetime import date
 
-def send_mail(config:dict, start:datetime.date, stop:datetime.date, events:dict, recipients:list[str]):
+def send_mail(config:dict, start:datetime.date, stop:datetime.date, events:dict):
     server:str = config['mail']['server']
     port:str = config['mail']['smtp_port']
     logging.debug('Connecting to SMTP Server...')
@@ -25,11 +26,15 @@ def send_mail(config:dict, start:datetime.date, stop:datetime.date, events:dict,
         message = get_message(config, events, start, stop)
         mail.attach(MIMEText(message.txt, "txt"))
         mail.attach(MIMEText(message.html, "html"))
-        if recipients is not None:
-            for recipient in recipients:
-                mail["to"] = recipient
-                logging.debug(f"Sending E-Mail to {recipient}...")
+        if mail_receiver is not None:
+            receiver = mail_receiver
+        else: 
+            receiver = config['newsletter']['receiver']
+        if receiver is not None:
+            for address in receiver:
+                mail["to"] = address
+                logging.debug(f"Sending E-Mail to {address}...")
                 smtp.ehlo()
-                smtp.sendmail(config['newsletter']['sender'], recipient, mail.as_string())
+                smtp.sendmail(config['newsletter']['sender'], address, mail.as_string())
         logging.debug('Quitting Connection to SMTP Server...')
         smtp.quit()

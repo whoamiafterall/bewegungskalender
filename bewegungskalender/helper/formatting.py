@@ -1,8 +1,9 @@
+from datetime import datetime
 from enum import Enum
 import logging
 import os
 import re
-from bewegungskalender.helper.datetime import eventtime
+from bewegungskalender.helper.datetime import date, time
 
 class Format(Enum):
     HTML = 'html'
@@ -59,4 +60,10 @@ def to_filename(text):
     text = text.replace(' ', '_')
     return os.path.basename(text)
 
-    
+def eventtime(start:datetime, end:datetime) -> str:
+    if time(start) == "(00:00)" and date(start) != date(end):
+        return f"{date(start)} - {date(end)}"
+    elif time(start) == "(00:00)" and date(start) == date(end):
+        return f"{date(start):}"
+    return f"{date(start)} {time(start)}:"
+

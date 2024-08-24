@@ -1,4 +1,4 @@
-import datetime
+from datetime import date
 import logging
 from collections import namedtuple
 from bewegungskalender.helper.datetime import weekday_date, date
@@ -7,14 +7,14 @@ from bewegungskalender.helper.formatting import md_link, escape_chars, bold, new
 #TODO pass Message Object around to reduce clutter and get rid of the for loop
 
 class MultiFormatMessage():
-    def __init__(self, start:datetime.date, end:datetime.date) -> None:
+    def __init__(self, start:date, end:date) -> None:
         self.start = start
         self.end = end
         self.html:str = ""
         self.markdown:str = ""
         self.txt:str = ""
 
-def queryline(start: datetime.date, stop: datetime.date, mode: Format): # Displayed as Head of the Message
+def queryline(start: date, stop: date, mode: Format): # Displayed as Head of the Message
     return bold(escape_chars(f"Die Termine vom " + weekday_date(start) + " - " + weekday_date(stop) + "\n"), mode)
 
 def footer(config:dict, mode: Format) -> str:
@@ -41,7 +41,7 @@ def calendar_title(emoji: str, name: str, mode: Format) -> str:
     title:str = f"{emoji} {name}"
     return bold(title, mode)  
 
-def get_message(config:dict, data:list, start: datetime.date, stop: datetime.date) -> MultiFormatMessage:
+def get_message(config:dict, data:list, start: date, stop: date) -> MultiFormatMessage:
     formats = {}
     for mode in Format:
         message:str = queryline(start, stop, mode)

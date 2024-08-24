@@ -1,7 +1,8 @@
 import argparse
+from datetime import date, timedelta
 from logging import exception
+import logging
 import sys
-from bewegungskalender.helper.formatting import Format
 from bewegungskalender.output.message import MultiFormatMessage
 from bewegungskalender.output.telegram import Channel
 
@@ -19,7 +20,7 @@ def get_args() -> dict:
     p.add_argument("-qe", "--query-end", dest='query_end', type=int, help='range of days to query events from CalDav server, starting from query-start - defaults to 14')
     p.add_argument("-r", "--recipients", dest='recipient', help='override mail recipients from config')
     p.add_argument("-t", "--telegram", dest='telegram', help='send message to telegram - choose production or test_channel specified in config', choices=['prod', 'test'])
-    p.add_argument("--mode", dest='telegram_mode', required='--telegram' in sys.argv, help='choose wether to edit last telegram message or send a new one', choices=['send', 'edit'])
+    p.add_argument("--edit", dest='telegram_edit', required='--telegram' in sys.argv, help='edit last telegram message instead of sending a new one', action='store_true')
     p.add_argument("-toot", "--mastodon", dest='send_mastodon', help='send toot to mastodon', action='store_true')
     p.add_argument("-u", "--update-events", dest='update_events', help='check Mailbox for new events and add them to calendar', action='store_true')
     p.set_defaults(config_file="config.yml", log_level='info', query_start=1, query_end=14, telegram_mode='send')
@@ -29,8 +30,15 @@ def get_args() -> dict:
     args:dict = p.parse_args()
     return args
 
+def set_log_level(args:dict):
+    if args.debug == True:
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.INFO)
+    logging.info(f"Args: {args}")
+
 # Handle --print and set Format to HTML, MarkDown or TXT
-def set_print_format(args:dict, message:MultiFormatMessage) -> Format:
+def set_print_format(args:dict, message:MultiFormatMessage) -> str:
     if args.print == 'html':
         return message.html     
     elif args.print == 'md':
@@ -47,8 +55,16 @@ def set_telegram_channel(type:str, config:dict) -> Channel:
         return Channel(config['telegram']['test'], botToken, 'test')
 
  # Handle --recipients and set recipients if specified
-def set_mail_recipients(args:dict, config:dict) -> list[str]:
+def set_mail_receiver(args:dict) -> list[str]:
     if args.recipient is not None:
         return list(args.recipient) 
-    else: 
-        return config['newsletter']['recipients']
+    else:
+        return None
+
+# These are run when this module is imported
+args = get_args()
+set_log_level(args)
+mail_receiver = set_mail_receiver(args)
+# TODO add set_telegram_channel & set_print_format
+start:date = date.today() + timedelta(args.query_start)
+stop:date = start + timedelta(args.query_end)

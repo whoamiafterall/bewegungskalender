@@ -2,7 +2,7 @@ from collections import namedtuple
 from html.parser import HTMLParser
 import logging
 from typing import NamedTuple
-from bewegungskalender.helper.datetime import check_datetime, date, fix_midnight, to_timezone
+from bewegungskalender.helper.datetime import check_datetime, date, fix_midnight
 import icalendar
 
 def parse_event(component:icalendar.Event)-> NamedTuple:
@@ -11,8 +11,8 @@ def parse_event(component:icalendar.Event)-> NamedTuple:
     event.summary =  component.get('summary')
     event.description = component.get('description')
     event.location = component.get('location')
-    event.start = to_timezone(check_datetime(component.get('dtstart').dt))
-    event.end = to_timezone(check_datetime(component.get('dtend').dt))
+    event.start = check_datetime(component.get('dtstart').dt)
+    event.end = check_datetime(component.get('dtend').dt)
     event.recurrence = component.get('recurrence-id')
     
     # Fix Events that end on midnight being read as one day longer than they are
