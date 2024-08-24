@@ -13,7 +13,6 @@ icalendar==5.0.12
 idna==3.6
 lxml==5.2.1
 Markdown==3.6
-nominatim==0.1
 python-dateutil==2.9.0.post0
 python-telegram-bot==21.0.1
 pytz==2024.1
