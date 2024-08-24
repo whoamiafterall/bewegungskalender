@@ -1,10 +1,9 @@
-from collections import namedtuple
+import re
 from typing import NamedTuple
-from unittest.util import strclass
 import urllib.parse
 import codecs
 import logging
-from nominatim import Nominatim
+from bewegungskalender.helper.nominatim import NominatimSearch, NominatimLookup
 from geojson import Feature, FeatureCollection
 from bewegungskalender.helper.formatting import search_link, eventtime, to_filename
 
@@ -22,14 +21,24 @@ def encode(location: str):
     except UnicodeEncodeError: 
         location = str(urllib.parse.quote(location))
     return location
-    
-def createFeature(event: namedtuple) -> MyPoint:
+  
+def nominatim(location: str) -> list: #TODO test this 
     # query Nominatim and log if nothing is found
-    location = event.location
-    nominatim = Nominatim()
-    result = nominatim.query(query=encode(location), limit=1)
+    search = NominatimSearch()
+    loookup = NominatimLookup()
+    # Check if there is a link to a OSM-Node/Relation/Way
+    if location == "" or None:
+        return None
+    feature = re.search("(https?:\/\/openstreetmap.org\/(way|node|relation)\/\d{4,15})", location)
+    if feature is not None: 
+        split = feature.rsplit('/', 2)
+        return loookup.query(split[-2].upper()[0] + split[-1]) # Lookup this OSM-Relation and get result
+    return search.query(query=encode(location), limit=1)
+    
+def createFeature(event: NamedTuple) -> MyPoint:
+    result = nominatim(event.location)
     if result == []:
-        logging.warn(f"R: {event.summary}: no Result found for {location}")
+        logging.warn(f"R: {event.summary}: no Result found for {event.location}")
         return None
     
     # parse results to GeoJSON
@@ -38,7 +47,7 @@ def createFeature(event: namedtuple) -> MyPoint:
             lon = float(value)
         if key == 'lat':
             lat = float(value)
-    logging.debug(f"{event.summary}: found {location}: {lon}, {lat}")
+    logging.debug(f"{event.summary}: found {event.location}: {lon}, {lat}")
     return Feature(geometry=MyPoint(lon, lat), properties={'ℹ️': event.summary, 
                                             '📅': eventtime(event.start, event.end), 
                                             '📌': event.location, 
