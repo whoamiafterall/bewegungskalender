@@ -1,15 +1,14 @@
 import asyncio
-from datetime import datetime, date, time, timedelta
 from typing import NamedTuple
-import yaml
 import locale
 import logging
 from bewegungskalender.helper.cli import args, start, stop, set_print_format, set_telegram_channel
 from bewegungskalender.helper.config import config
 from bewegungskalender.helper.datetime import set_timezone
 from bewegungskalender.helper.formatting import Format
-from bewegungskalender.input.wpforms import update_events
-from bewegungskalender.server.calDAV import search_events
+from bewegungskalender.input.nextcloud_forms import update_ncform
+from bewegungskalender.input.wpforms import update_wpform
+from bewegungskalender.server.calDAV import connect_davclient, search_events
 from bewegungskalender.output.message import get_message
 from bewegungskalender.output.telegram import send_or_edit_telegram, get_telegram_updates
 from bewegungskalender.output.umap import createMapData
@@ -29,8 +28,12 @@ async def main():
     
     # Input Section
     ### WPForms Input
-    if args.update_events:   
-        update_events(config) 
+    input_calendar = connect_davclient(config).calendar(url=config['input']['calendar'])
+    if args.update_wpform:   
+        update_wpform(config, input_calendar) 
+    ### Nextcloud Form Input
+    if args.update_ncform != None:
+        update_ncform(config['ncform']['url'], input_calendar)
     
     # Server Section    
     ### Fetch Events from CalDav-Server

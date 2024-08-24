@@ -15,6 +15,7 @@ def get_args() -> dict:
     p.add_argument("-g", "--get-telegram-updates", dest='get_telegram_updates', help='get telegram id of channel', action='store_true')
     p.add_argument("-m", "--map", dest='update_map', help='create MapData in geojson from loaction entries of events', action='store_true')
     p.add_argument("-n", "--newsletter", dest='send_mail', help='send email-to recipients specified or from config', action='store_true')
+    p.add_argument("-nc", "--update-ncform", dest='update_ncform', type=int, help='get new events in the last X days submitted to Nextcloud Form')
     p.add_argument("-p", "--print", dest='print', help='print message to stdout and select format from html, markdown or plain-text - defaults to txt', choices=['html','md','txt'], action='store')
     p.add_argument("-qs", "--query-start", dest='query_start', type=int, help='starting day to query events from CalDav server, 0 means today, 1 tomorrow - defaults to 1')
     p.add_argument("-qe", "--query-end", dest='query_end', type=int, help='range of days to query events from CalDav server, starting from query-start - defaults to 14')
@@ -22,8 +23,8 @@ def get_args() -> dict:
     p.add_argument("-t", "--telegram", dest='telegram', help='send message to telegram - choose production or test_channel specified in config', choices=['prod', 'test'])
     p.add_argument("--edit", dest='telegram_edit', required='--telegram' in sys.argv, help='edit last telegram message instead of sending a new one', action='store_true')
     p.add_argument("-toot", "--mastodon", dest='send_mastodon', help='send toot to mastodon', action='store_true')
-    p.add_argument("-u", "--update-events", dest='update_events', help='check Mailbox for new events and add them to calendar', action='store_true')
-    p.set_defaults(config_file="config.yml", log_level='info', query_start=1, query_end=14, telegram_mode='send')
+    p.add_argument("-wp", "--update-wpform", dest='update_wpform', help='check Mailbox for new events from WPForms and add them to calendar', action='store_true')
+    p.set_defaults(config_file="config.yml", log_level='info', query_start=1, query_end=14)
     # Show help if no argument specified
     if len(sys.argv) <= 1:
         sys.argv.append('--help')

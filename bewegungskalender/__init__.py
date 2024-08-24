@@ -5,7 +5,8 @@ import logging
 from bewegungskalender.helper.datetime import set_timezone
 from bewegungskalender.helper.formatting import Format
 from bewegungskalender.helper.cli import get_args, set_telegram_channel, set_print_format
-from bewegungskalender.input.wpforms import update_events
+from bewegungskalender.input.wpforms import update_wpform
+from bewegungskalender.input.nextcloud_forms import update_ncform
 from bewegungskalender.server.calDAV import search_events
 from bewegungskalender.output.message import get_message
 from bewegungskalender.output.telegram import Channel, send_or_edit_telegram, get_telegram_updates
@@ -16,7 +17,8 @@ __all__ =   ([argparse, yaml, locale, logging] +
             [set_timezone] +
             [Format] +
             [get_args, set_print_format, set_telegram_channel] +
-            [update_events] +
+            [update_wpform] +
+            [update_ncform] +
             [search_events] +
             [get_message] +
             [Channel, send_or_edit_telegram, get_telegram_updates] +
