@@ -56,7 +56,7 @@ async def send_or_edit_telegram(channel:Channel, localdir:str, message:MultiForm
                         logging.info(f"Succesfully edited last message in Telegram Channel: {channel.id}!")
                 ids.seek(0); ids.write(yaml.dump(last_msg_ids, Dumper=yaml.SafeDumper)); ids.truncate()
     except telegram.error.TelegramError and telegram.error.BadRequest: # if something goes wrong
-        logging.exception(f"Something went wrong while working in mode '{mode}' in telegram channel: {channel.type} - Aborting, please try again.\n")
+        logging.exception(f"Something went wrong while working in telegram channel: {channel.type} - Aborting, please try again.\n")
         logging.exception(telegram.error.TelegramError, telegram.error.BadRequest)
         logging.debug(message)
     except FileNotFoundError:
