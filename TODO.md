@@ -1,17 +1,6 @@
 
 # TODOs
 
-## WPForms
-
-- Some Failures:
-- [] ValueError: time data '07/07/2024 - 19:M0' does not match format '%d/%m/%Y - %H:%M'  => L'isola Sommer Protest Fest Aachen
-- [] event.add('summary', f"{data[0]} ({data[3]})"); IndexError: list index out of range => Kino knirschendes Gold-Kies frisst Wald
-
-## Nextcloud Forms
-
-- [] check how it is possible to support it
-- [] check if web embedding is already shipped
-
 ## Nicegui
 
 ### Admin Panel
@@ -20,12 +9,14 @@
 
 ### Map
 
-- [] create a leaflet map out of mapData and display it with nicegui
+- [] create a leaflet map out of mapData and display it in a nicegui Tab
 
 ### Calendar
 
-- [] maybe create a nice calendar-view too ?
+- [] create a nice calendar-view
 - [] or look for existing software
+- [] could use calendar.HTMLCalendar
+- [] could use fullcalendar.js
 
 ## switch to asyncio
 
@@ -35,26 +26,42 @@
 ## Move Message to Class
 
 - [X] define class (22.08.)
-- [] define classmethod which translates formats or pass the message around
-- [] define constructor with: Format
-- [] define methods
+- [X] define classmethods
+- [ ] fix recurring events
+
+## Multilingual Support?
 
 ## Mastodon Support?
 
 # Changelog
 
-## Mail-Newsletter
+## WPForms (fixed 25.08.)
+
+- [X] ValueError: time data '07/07/2024 - 19:M0' does not match format '%d/%m/%Y - %H:%M'  => L'isola Sommer Protest Fest Aachen
+- [X] event.add('summary', f"{data[0]} ({data[3]})"); IndexError: list index out of range => Kino knirschendes Gold-Kies frisst Wald
+
+## Nextcloud Forms (implemented 25.08.)
+
+- [X] check how it is possible to support it
+=> works, just use csv or ods file that is automatically updated and cron that on to the server, then search from last timestamp to now. Store timestamp.
+- [X] check if web embedding is already shipped
+- [X] implement
+- [ ] ship
+
+## Mail-Newsletter (fixed 22.08.)
 
 - [x] fixed the SpamAssasin problem by properly creating a MimeMultiPart Message (txt and html)
+- [ ] ship
 
 ## Auto-Update Telegram Message (Fixed 22.08.)
 
 - [x] upgrade to python telegram bot 21.x.x
 - [x] look for way to edit message in telegram Bot => see telegram .py
-- [x] look for way to store message_ids => git repository
+- [x] look for way to store message_ids => yaml file
+- [x] added check if last message has changed or not, so it doesnt crash
 - [x] add a cli-argument for editing
 - [x] test
-- [x] send automatic updates to telegram message every day through cron
+- [ ] send automatic updates to telegram message every day through cron => ship
 
 ## Fix Map (Done 02.04.)
 
