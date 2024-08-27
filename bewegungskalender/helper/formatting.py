@@ -16,16 +16,16 @@ def newline():
     return "\n"
 
 def bold(text:str, mode: Format) -> str:
-    return "<b> " + text + " </b>" if mode == Format.HTML else ("*" + text + "*" if mode == Format.MD else text)
+    return "<b> " + text + " </b>" if mode == Format.HTML else ("*" + text + "*")
 
 def italic(text:str, mode: Format) -> str:
-    return "<i> " + text + " </i>" if mode == Format.HTML else ("_" + text + "_" if mode == Format.MD else text)
+    return "<i> " + text + " </i>" if mode == Format.HTML else ("_" + text + "_")
     
-def escape_chars(text:str) -> str:
+def escape_markdown(text:str) -> str:
     if text is None:
         return ""
-    escape_chars = "?_–*[]()~`>#+-=|.!'{''}''"
-    translate_dict = {c: "\\" + c for c in escape_chars}
+    charset = "?_–*[]()~`>#+-=|.!'{''}''"
+    translate_dict = {c: "\\" + c for c in charset}
     return text.translate(str.maketrans(translate_dict))
 
 def search_link(summary:str, description:str) -> str:
@@ -38,23 +38,14 @@ def search_link(summary:str, description:str) -> str:
     
 def md_link(text:str, url:str) -> str:
     if search_link(text, url) is not None:
-        return f" [{escape_chars(text)}]({search_link(text, url)})"
+        return f" [{escape_markdown(text)}]({search_link(text, url)})"
     else:
-        return f" {escape_chars(text)}"
+        return f" {escape_markdown(text)}"
 
-def match_string(string:str, text:str, mode) -> str:
+def match_string(string:str, text:str, mode) -> re.Match|None:
     regex = '\.\s.*'
-    regex += re.escape(escape_chars(f"{string}") if mode == Format.HTML or Format.MD else f"\..*{string}")
+    regex += re.escape(escape_markdown(f"{string}") if mode == Format.HTML or Format.MD else f"{string}")
     return re.search(regex, text)
-
-def md_event(event:dict) -> str:
-    return escape_chars(eventtime(event.start, event.end)) + md_link(event.summary, event.description)
-
-def txt_event(event:dict) -> str:
-    return eventtime(event.start, event.end) + f" {event.summary}"  
-
-def add_event(event:dict, mode:Format):
-    return md_event(event) if mode == Format.MD or Format.HTML else txt_event(event)
 
 def to_filename(text):
     text = text.replace(' ', '_')

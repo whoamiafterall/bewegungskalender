@@ -1,8 +1,8 @@
-from datetime import date
+from datetime import date, datetime, time
 import logging
 from collections import namedtuple
 from bewegungskalender.helper.datetime import weekday_date, date
-from bewegungskalender.helper.formatting import md_link, escape_chars, bold, newline, Format, match_string, add_event
+from bewegungskalender.helper.formatting import eventtime, md_link, escape_markdown, bold, Format, match_string
 
 #TODO pass Message Object around to reduce clutter and get rid of the for loop
 
@@ -14,55 +14,70 @@ class MultiFormatMessage():
         self.markdown:str = ""
         self.txt:str = ""
 
-def queryline(start: date, stop: date, mode: Format): # Displayed as Head of the Message
-    return bold(escape_chars(f"Die Termine vom " + weekday_date(start) + " - " + weekday_date(stop) + "\n"), mode)
-
-def footer(config:dict, mode: Format) -> str:
-    footer:str = bold("🌐 Links \n", mode)
-    for item in config['links']:
-        footer += md_link(escape_chars(item['link']['text']), item['link']['url']) + "\n"
-    return footer       
-
-def recurring_event(event: namedtuple, message:str, mode:Format) -> str:
-    entry:str = match_string(event.summary, message, mode)
-    if entry is None:
-        message += add_event(event, mode)
-        message += newline()
-        return message
-    else:
-        index:int = message.find(entry.group())
-        logging.debug(f"Recurring Event: {event.summary} - adding date to line in message")
-        return message[:index+2] + f"& {escape_chars(date(event.start))} " + message[index+2:] 
+    def newline(self):
+        self.txt += "\n"
+        self.markdown += "\n"
+        self.html += "\n"
+        
+    def queryline(self) -> str: # Displayed as Head of the Message => bold info on the Timerange
+        self.txt += (f"Die Termine vom " + weekday_date(self.start) + " - " + weekday_date(self.end))
+        self.markdown += bold(escape_markdown((f"Die Termine vom " + weekday_date(self.start) + " - " + weekday_date(self.end))), Format.MD)
+        self.html += bold(escape_markdown((f"Die Termine vom " + weekday_date(self.start) + " - " + weekday_date(self.end))), Format.HTML)
+   
+    # Create Titles out of Calendar Names (Categories) and Emojis - adds bold for HTML and Markdown.
+    def calendar_title(self, emoji: str, name: str) -> str: 
+        self.txt += f"{emoji} {name}"
+        self.markdown += bold(f"{emoji} {escape_markdown(name)}", Format.MD)
+        self.html += bold(f"{emoji} {escape_markdown(name)}", Format.HTML)
+        
+    def recurring_event(self, event: namedtuple) -> str:
+        txt = match_string(event.summary, self.txt, Format.TXT)
+        md = match_string(event.summary, self.markdown, Format.MD)
+        html = match_string(event.summary, self.html, Format.HTML)
+        if txt is not None: #TODO fix
+            index:int = txt.span()[0]
+            self.txt = self.txt[:index+2] + f"& {escape_markdown(date(event.start))} " + self.txt[index+2:]
+        if md is not None: # Tested and working
+            index:int = md.span()[0]
+            self.markdown = self.markdown[:index+2] + f"& {escape_markdown(date(event.start))} " + self.markdown[index+2:]
+        elif html is not None: #TODO fix
+            index:int = html.span()[0]
+            self.html = self.html[:index+2] + f"& {escape_markdown(date(event.start))} " + self.html[index+2:]
+        else:
+            self.add_event(event)
+            self.newline()
     
-# Forms Titles out of Calendar Names (Categories) - set by config - adds bold for HTML.
-def calendar_title(emoji: str, name: str, mode: Format) -> str: 
-    if mode == Format.MD:
-        name:str = escape_chars(name) 
-    title:str = f"{emoji} {name}"
-    return bold(title, mode)  
+    def add_event(self, event:namedtuple):
+        self.txt += eventtime(event.start, event.end) + f" {event.summary}"
+        self.markdown += escape_markdown(eventtime(event.start, event.end)) + md_link(event.summary, event.description)
+        self.html += escape_markdown(eventtime(event.start, event.end)) + md_link(event.summary, event.description)
+        
+    def footer(self, config:dict) -> str:  # Displayed as End of the Message (List of links)
+        self.txt += "🌐 Weiterführende Links: \n"
+        self.markdown += bold("🌐 Weiterführende Links: \n", Format.MD)
+        self.html += bold("🌐 Weiterführende Links: \n", Format.HTML)
+        for item in config['links']:
+            self.txt += f"{item['link']['text']}: {item['link']['url']}\n"
+            self.markdown += md_link(escape_markdown(item['link']['text']), item['link']['url']) + "\n"
+            self.html += md_link(escape_markdown(item['link']['text']), item['link']['url']) + "\n"
 
 def get_message(config:dict, data:list, start: date, stop: date) -> MultiFormatMessage:
-    formats = {}
-    for mode in Format:
-        message:str = queryline(start, stop, mode)
-        for calendar in data:
-            logging.debug(f"Formatting {calendar.name} to {mode}...")
-            if calendar.events != []:
-                message += newline()
-                message += calendar_title(calendar.emoji, calendar.name, mode) 
-                message += newline()
-                for event in calendar.events:
-                    if event.recurrence is not None:
-                        message:str = recurring_event(event, message, mode)
-                    else:
-                        message += add_event(event, mode)
-                        message += newline()
-        message += newline()
-        message += footer(config, mode)
-        formats[mode] = message
-        logging.info(f"Successfully formatted the message to {mode}!")
-    msg_object = MultiFormatMessage(start, stop)
-    msg_object.html = formats[Format.HTML]
-    msg_object.markdown = formats[Format.MD]
-    msg_object.txt = formats[Format.TXT]
-    return msg_object
+    message = MultiFormatMessage(start, stop)
+    message.queryline()
+    message.newline()
+    for calendar in data:
+        logging.debug(f"Formatting and adding {calendar.name} to message...")
+        if calendar.events != []:
+            message.newline()
+            message.calendar_title(calendar.emoji, calendar.name) 
+            message.newline()
+            for event in calendar.events:
+                if event.recurrence is not None:
+                    message.recurring_event(event)
+                else:
+                    message.add_event(event)
+                    message.newline()
+    message.newline()
+    message.footer(config)
+    logging.info(f"Successfully formatted the message!")
+    return message
