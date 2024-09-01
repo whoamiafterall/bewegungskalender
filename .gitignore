@@ -2,7 +2,10 @@ __pycache__
 config.yml
 .Radicale.cache
 logs/
-data/*
+data/*.geojson
+data/*.txt
+data/*.yml
+data/*.csv
 
 
 # Byte-compiled / optimized / DLL files
