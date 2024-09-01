@@ -2,11 +2,7 @@ __pycache__
 config.yml
 .Radicale.cache
 logs/
-data/
-bewegungskalender/logs/message.txt
-bewegungskalender/newsletter_recipients.txt
-bewegungskalender/mapData/serveGeoJSON.php
-bewegungskalender/nextcloud/icslib.py
+data/*
 
 
 # Byte-compiled / optimized / DLL files
