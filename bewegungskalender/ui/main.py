@@ -1,6 +1,6 @@
 import os
 import json
-from nicegui import ui,app
+from nicegui import events,ui,app
 from bewegungskalender.helper.config import config
 from bewegungskalender.helper.formatting import italic,Format
 
@@ -55,7 +55,7 @@ async def map_page():
                     marker = m.marker(latlng=(lat, lng))
 
                     #set icon (icon path was defined earlier based on feature collection file name)
-                    marker.run_method(':setIcon', 'L.icon({iconUrl: "'+icon+'",iconSize: [20,20],iconAnchor:[10, 10]})')
+                    marker.run_method(':setIcon', f"L.icon({{iconUrl: '{icon}',iconSize: [30,30],iconAnchor:[15, 30],popupAnchor:[0,-30]}})")
                                 
                     # make a popup html string to pass to map
                     popuphtml = ""
@@ -67,10 +67,6 @@ async def map_page():
 
                     ## pass popup html to  map and bind to marker id
                     m.run_layer_method(marker.id, 'bindPopup', popuphtml)
-
-                
-    
-
 
 def start_ui():       
     #add statis files
