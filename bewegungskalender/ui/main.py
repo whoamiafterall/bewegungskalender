@@ -68,6 +68,7 @@ async def map_page():
                     ## pass popup html to  map and bind to marker id
                     m.run_layer_method(marker.id, 'bindPopup', popuphtml)
 
+
 def start_ui():       
     #add statis files
     app.add_static_files("/assets", "bewegungskalender/ui/assets")      
