@@ -10,6 +10,8 @@ from bewegungskalender.output.telegram import Channel
 def get_args() -> dict:
     # Get p and add arguments
     p = argparse.ArgumentParser(prog="bewegungskalender", description='Use a CalDAV-Server to send automatic calendar newsletters to the world.')
+    
+    p.add_argument("-u", "--ui", dest='ui', help='run nicegui script and serve data on localhost', action='store_true')
     p.add_argument("-c", "--config", dest='config_file', help='specify path to config file, defaults to config.yml')
     p.add_argument("-d", "--debug", dest='debug', help='set the log level to debug, defaults to info', action='store_true')
     p.add_argument("-g", "--get-telegram-updates", dest='get_telegram_updates', help='get telegram id of channel', action='store_true')

@@ -42,6 +42,7 @@ def md_link(text:str, url:str) -> str:
     else:
         return f" {escape_markdown(text)}"
 
+
 def match_string(string:str, text:str, mode) -> re.Match|None:
     regex = '\.\s.*'
     regex += re.escape(escape_markdown(f"{string}") if mode == Format.HTML or Format.MD else f"{string}")

@@ -13,9 +13,20 @@ from bewegungskalender.output.message import get_message
 from bewegungskalender.output.telegram import send_or_edit_telegram, get_telegram_updates
 from bewegungskalender.output.umap import createMapData
 from bewegungskalender.output.mailnewsletter import send_mail
+from bewegungskalender.ui.main import start_ui
+
 
 # Main Function if run as standalone program
-async def main():
+def main():
+    # ui.run can't be called from async call
+    if args.ui: 
+        logging.info("Running NiceGui")
+        start_ui()
+    else:
+        asyncio.run(main_async())
+
+# Main Async Funktion call if not running NiceGui
+async def main_async():
     # Set Timezone and Locale
     logging.debug('Setting timezone and locale...')
     locale.setlocale(locale.LC_TIME, config['format']['locale']) 
@@ -39,6 +50,9 @@ async def main():
     ### Fetch Events from CalDav-Server
     data:list[NamedTuple] = search_events(config, start, stop, expand=True)
     
+
+
+        
     # Output Section
     ### UMap Output
     if args.update_map: 
@@ -66,6 +80,7 @@ async def main():
     #    mastodon.toot(message(config, events, start, end, Format.MD)) 
 
 # Run as Module or Standalone program
-if __name__ == '__main__':
-    asyncio.run(main())
+if __name__ in {"__main__", "__mp_main__"}:
+    main()
+
     
