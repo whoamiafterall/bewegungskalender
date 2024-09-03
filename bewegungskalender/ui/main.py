@@ -3,7 +3,6 @@ import json
 from nicegui import events,ui,app
 from bewegungskalender.helper.config import config
 from bewegungskalender.helper.formatting import italic,Format
-
 from geojson import Feature, FeatureCollection
 from pathlib import Path
 
@@ -12,11 +11,11 @@ from pathlib import Path
 async def map_page():
 
     # new map with center set to center of germany
-    m = ui.leaflet(center=(51.165691, 10.451526), zoom=4)
-    m.clear_layers()
+    map = ui.leaflet(center=(51.165691, 10.451526), zoom=4)
+    map.clear_layers()
 
     # add ui on bottom right for copyright and set map template(the style) + zoom
-    m.tile_layer(
+    map.tile_layer(
 
         url_template=r'https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png',
         options={
@@ -29,30 +28,30 @@ async def map_page():
     )
 
     #wait for map to be intialized
-    await m.initialized()
+    await map.initialized()
    
     #itirate through map data dir and get all .geojson files (each being a collection of features)
     #note: the current implenetation is built around the original /data dir and how umap.py populates it. It might be reasonable to rework umap.py and /data functionality to better suit leaflet.
-    for x in os.listdir(config['datadir']):
+    for file in os.listdir(config['datadir']):
         
-        if x.endswith(".geojson"):
+        if file.endswith(".geojson"):
             #get file name without .gejson ending
-            c = x[:-len(".geojson")]
+            filename:str = file[:-len(".geojson")]
             #set icon path based on filename which is unique to each map feature collection
-            icon = 'assets/icons/'+c+'.svg'
+            icon = 'assets/icons/' + filename + '.svg'
 
             # open file
-            with open(config['datadir']+"/"+x, 'r') as f:
+            with open(config['datadir'] + "/" + filename, 'r') as f:
                 #read as json
-                frie_data = json.load(f)
+                file_data = json.load(f)
 
                 #loop trough features
-                for feature in frie_data["features"]:
+                for feature in file_data["features"]:
 
                     #add them as markers
                     lat = feature["geometry"]["coordinates"][1]
                     lng = feature["geometry"]["coordinates"][0]
-                    marker = m.marker(latlng=(lat, lng))
+                    marker = map.marker(latlng=(lat, lng))
 
                     #set icon (icon path was defined earlier based on feature collection file name)
                     marker.run_method(':setIcon', f"L.icon({{iconUrl: '{icon}',iconSize: [30,30],iconAnchor:[15, 30],popupAnchor:[0,-30]}})")
@@ -63,14 +62,14 @@ async def map_page():
                         value = feature["properties"][key]
                         #handle links (it might be good to )
                         popuphtml = popuphtml + f"{(key)} {value}<br>"
-                    popuphtml = popuphtml + f"<br> {italic(c.replace("_"," "),Format.HTML)}"
+                    popuphtml = popuphtml + f"<br> {italic(filename.replace("_", " "), Format.HTML)}"
 
                     ## pass popup html to  map and bind to marker id
-                    m.run_layer_method(marker.id, 'bindPopup', popuphtml)
+                    map.run_layer_method(marker.id, 'bindPopup', popuphtml)
 
 
 def start_ui():       
-    #add statis files
+    #add static files
     app.add_static_files("/assets", "bewegungskalender/ui/assets")      
     #run map
     ui.run()
