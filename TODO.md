@@ -27,7 +27,7 @@
 
 - [X] define class (22.08.)
 - [X] define classmethods
-- [ ] fix recurring events
+- [X] fix recurring events
 
 ## Multilingual Support?
 

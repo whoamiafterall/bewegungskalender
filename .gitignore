@@ -1,9 +1,8 @@
 __pycache__
 config.yml
 .Radicale.cache
-logs/
-
 bewegungskalender/data/*
+!/bewegungskalender/data/README.md
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
