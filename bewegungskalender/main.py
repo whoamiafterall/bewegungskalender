@@ -1,7 +1,7 @@
 import asyncio
 from typing import NamedTuple
-import locale
-import logging
+from locale import setlocale, LC_TIME
+from logging import debug, info
 from bewegungskalender.helper.cli import args, start, stop, set_print_format, set_telegram_channel
 from bewegungskalender.helper.config import config
 from bewegungskalender.helper.datetime import set_timezone
@@ -9,32 +9,31 @@ from bewegungskalender.helper.formatting import Format
 from bewegungskalender.input.nextcloud_forms import update_ncform
 from bewegungskalender.input.wpforms import update_wpform
 from bewegungskalender.server.calDAV import connect_davclient, search_events
-from bewegungskalender.output.message import get_message
+from bewegungskalender.output.message import MultiFormatMessage, get_message
 from bewegungskalender.output.telegram import send_or_edit_telegram, get_telegram_updates
 from bewegungskalender.output.umap import createMapData
 from bewegungskalender.output.mailnewsletter import send_mail
-from bewegungskalender.ui.main import start_ui
+from bewegungskalender.ui.main_page import start_ui
 
+# Set Timezone and locale
+debug('Setting timezone and locale...')
+setlocale(LC_TIME, config['format']['locale']) 
+set_timezone(config)
 
 # Main Function if run as standalone program
 def main():
     # ui.run can't be called from async call
-    if args.ui: 
-        logging.info("Running NiceGui")
+    if args.user_interface: 
+        info("Starting User Interface!")
         start_ui()
     else:
         asyncio.run(main_async())
 
 # Main Async Funktion call if not running NiceGui
 async def main_async():
-    # Set Timezone and Locale
-    logging.debug('Setting timezone and locale...')
-    locale.setlocale(locale.LC_TIME, config['format']['locale']) 
-    set_timezone(config)
-    
     # Telegram Config
     if args.get_telegram_updates: 
-        logging.info('Getting telegram channel id...')
+        info('Getting telegram channel id...')
     #    print(get_telegram_updates(config)); exit() 
     
     # Input Section
@@ -49,28 +48,27 @@ async def main_async():
     # Server Section    
     ### Fetch Events from CalDav-Server
     data:list[NamedTuple] = search_events(config, start, stop, expand=True)
-    
-
-
+    ### Create a Message in TXT, MD & HTML
+    message: MultiFormatMessage = get_message(config, data, start, stop)
         
     # Output Section
     ### UMap Output
     if args.update_map: 
-        logging.info(f"Creating GeoJSON Data for the map...")
+        info(f"Creating GeoJSON Data for the map...")
         createMapData(data, config['datadir'])
     ### Print Output
     if args.print: 
-        logging.info(f"Printing message in {args.print} Format: \n")
-        print(set_print_format(args, get_message(config, data, start, stop)))
+        info(f"Printing message in {args.print} Format: \n")
+        print(set_print_format(args, message))
     ### Mail Output
     if args.send_mail: 
-        logging.info('Sending Message per Mail...')
-        send_mail(config, start, stop, data, Format.HTML)
+        info('Sending Message per Mail...')
+        send_mail(config, message, start, stop)
     ### Send or Edit Telegram Message
     if args.telegram:
         channel = set_telegram_channel(args.telegram, config)
-        await send_or_edit_telegram(channel, config['datadir'], get_message(config, data, start, stop), edit=args.telegram_edit)
-    logging.info('Finished all Tasks - Quitting.')
+        await send_or_edit_telegram(channel, config['datadir'], message, edit=args.telegram_edit)
+    info('Finished all Tasks - Quitting.')
     exit()
     
 # send mastodon newsletter

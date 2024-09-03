@@ -4,11 +4,11 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.utils import formatdate, make_msgid
 from bewegungskalender.helper.formatting import Format
-from bewegungskalender.output.message import get_message
+from bewegungskalender.output.message import MultiFormatMessage
 from bewegungskalender.helper.cli import mail_receiver
 from bewegungskalender.helper.datetime import date
 
-def send_mail(config:dict, start:datetime.date, stop:datetime.date, events:dict):
+def send_mail(config:dict, message:MultiFormatMessage, start:datetime.date, stop:datetime.date):
     server:str = config['mail']['server']
     port:str = config['mail']['smtp_port']
     logging.debug('Connecting to SMTP Server...')
@@ -23,7 +23,6 @@ def send_mail(config:dict, start:datetime.date, stop:datetime.date, events:dict)
         mail.add_header('date', formatdate(localtime=True))
         mail.add_header('Message-ID', make_msgid())
         mail.add_header('Return-Path', 'noreply-bewegungskalender@systemli.org')
-        message = get_message(config, events, start, stop)
         mail.attach(MIMEText(message.txt, "txt"))
         mail.attach(MIMEText(message.html, "html"))
         if mail_receiver is not None:

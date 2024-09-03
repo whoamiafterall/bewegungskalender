@@ -10,8 +10,6 @@ from bewegungskalender.output.telegram import Channel
 def get_args() -> dict:
     # Get p and add arguments
     p = argparse.ArgumentParser(prog="bewegungskalender", description='Use a CalDAV-Server to send automatic calendar newsletters to the world.')
-    
-    p.add_argument("-u", "--ui", dest='ui', help='run nicegui script and serve data on localhost', action='store_true')
     p.add_argument("-c", "--config", dest='config_file', help='specify path to config file, defaults to config.yml')
     p.add_argument("-l", "--loglevel", dest='loglevel', help='set the log level, defaults to info', choices=['debug', 'error'], action='store')
     p.add_argument("-g", "--get-telegram-updates", dest='get_telegram_updates', help='get telegram id of channel', action='store_true')
@@ -25,6 +23,7 @@ def get_args() -> dict:
     p.add_argument("-t", "--telegram", dest='telegram', help='send message to telegram - choose production or test_channel specified in config', choices=['prod', 'test'])
     p.add_argument("--edit", dest='telegram_edit', required='--telegram' in sys.argv, help='edit last telegram message instead of sending a new one', action='store_true')
     p.add_argument("-toot", "--mastodon", dest='send_mastodon', help='send toot to mastodon', action='store_true')
+    p.add_argument("-ui", "--user-interface", dest='user_interface', help='start the user interface', action='store_true')
     p.add_argument("-wp", "--update-wpform", dest='update_wpform', help='check Mailbox for new events from WPForms and add them to calendar', action='store_true')
     p.set_defaults(config_file="config.yml", log_level='info', query_start=1, query_end=14)
     # Show help if no argument specified

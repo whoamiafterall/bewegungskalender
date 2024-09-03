@@ -1,17 +1,10 @@
 import os
 import json
-from nicegui import events,ui,app
+from nicegui import ui
 from bewegungskalender.helper.config import config
-from bewegungskalender.helper.formatting import italic,Format
-from geojson import Feature, FeatureCollection
-from pathlib import Path
+from bewegungskalender.helper.formatting import italic, Format
 
-#for the time being the map can be accessed using a subpage called /map, this can and maybe shoud be changed
-@ui.page('/map')
-async def map_page():
-
-    # new map with center set to center of germany
-    map = ui.leaflet(center=(51.165691, 10.451526), zoom=4)
+async def configure_map(map:ui.leaflet):
     map.clear_layers()
 
     # add ui on bottom right for copyright and set map template(the style) + zoom
@@ -41,7 +34,7 @@ async def map_page():
             icon = 'assets/icons/' + filename + '.svg'
 
             # open file
-            with open(config['datadir'] + "/" + filename, 'r') as f:
+            with open(config['datadir'] + "/" + filename + ".geojson", 'r') as f:
                 #read as json
                 file_data = json.load(f)
 
@@ -62,16 +55,8 @@ async def map_page():
                         value = feature["properties"][key]
                         #handle links (it might be good to )
                         popuphtml = popuphtml + f"{(key)} {value}<br>"
-                    popuphtml = popuphtml + f"<br> {italic(filename.replace("_", " "), Format.HTML)}"
+                   # popuphtml = popuphtml + f"<br> {italic(filename.replace("_", " "), Format.HTML)}"
 
                     ## pass popup html to  map and bind to marker id
                     map.run_layer_method(marker.id, 'bindPopup', popuphtml)
-
-
-def start_ui():       
-    #add static files
-    app.add_static_files("/assets", "bewegungskalender/ui/assets")      
-    #run map
-    ui.run()
-
-
+    return map
