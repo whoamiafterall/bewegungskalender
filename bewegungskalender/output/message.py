@@ -4,8 +4,6 @@ from typing import Tuple
 from bewegungskalender.helper.datetime import weekday_date
 from bewegungskalender.helper.formatting import eventtime, match_and_add_recurring, md_link, escape_markdown, bold, Format
 
-#TODO pass Message Object around to reduce clutter and get rid of the for loop
-
 class MultiFormatMessage():
     def __init__(self, start:date, end:date) -> None:
         self.start = start

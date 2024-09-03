@@ -3,6 +3,10 @@
 
 ## Nicegui
 
+### main_page.py
+
+See '#TODO' Comments in there
+
 ### Admin Panel
 
 - [] create an admin panel for settings
@@ -13,7 +17,8 @@
 
 ### Calendar
 
-- [] create a nice calendar-view
+- [X] create a nice calendar-view
+=> embedded iframe from nextcloud
 - [] or look for existing software
 - [] could use calendar.HTMLCalendar
 - [] could use fullcalendar.js
@@ -23,17 +28,17 @@
 - [] change all the relevant functions
 - [] test
 
-## Move Message to Class
-
-- [X] define class (22.08.)
-- [X] define classmethods
-- [X] fix recurring events
-
 ## Multilingual Support?
 
 ## Mastodon Support?
 
 # Changelog
+
+## Move Message to Class (done 03.09.)
+
+- [X] define class (22.08.)
+- [X] define classmethods
+- [X] fix recurring events
 
 ## WPForms (fixed 25.08.)
 
