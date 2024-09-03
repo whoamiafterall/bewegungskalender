@@ -1,8 +1,8 @@
 from datetime import date, datetime, time
 import logging
-from collections import namedtuple
-from bewegungskalender.helper.datetime import weekday_date, date
-from bewegungskalender.helper.formatting import eventtime, md_link, escape_markdown, bold, Format, match_string
+from typing import Tuple
+from bewegungskalender.helper.datetime import weekday_date
+from bewegungskalender.helper.formatting import eventtime, match_and_add_recurring, md_link, escape_markdown, bold, Format
 
 #TODO pass Message Object around to reduce clutter and get rid of the for loop
 
@@ -13,6 +13,12 @@ class MultiFormatMessage():
         self.html:str = ""
         self.markdown:str = ""
         self.txt:str = ""
+        
+    def __str__(self) -> str:
+        return f"Events from {self.start} to {self.end} in Txt Format: \n{self.txt}"
+    
+    def __repr__(self) -> str:
+        return f"MultiFormatMessage:\nstart={self.start}\nend={self.end}\ntxt=\n{self.txt}"
 
     def newline(self):
         self.txt += "\n"
@@ -30,24 +36,13 @@ class MultiFormatMessage():
         self.markdown += bold(f"{emoji} {escape_markdown(name)}", Format.MD)
         self.html += bold(f"{emoji} {escape_markdown(name)}", Format.HTML)
         
-    def recurring_event(self, event: namedtuple) -> str:
-        txt = match_string(event.summary, self.txt, Format.TXT)
-        md = match_string(event.summary, self.markdown, Format.MD)
-        html = match_string(event.summary, self.html, Format.HTML)
-        if txt is not None: #TODO fix
-            index:int = txt.span()[0]
-            self.txt = self.txt[:index+2] + f"& {escape_markdown(date(event.start))} " + self.txt[index+2:]
-        if md is not None: # Tested and working
-            index:int = md.span()[0]
-            self.markdown = self.markdown[:index+2] + f"& {escape_markdown(date(event.start))} " + self.markdown[index+2:]
-        elif html is not None: #TODO fix
-            index:int = html.span()[0]
-            self.html = self.html[:index+2] + f"& {escape_markdown(date(event.start))} " + self.html[index+2:]
-        else:
-            self.add_event(event)
-            self.newline()
-    
-    def add_event(self, event:namedtuple):
+    # This should be refactored at some point, but i'm happy that it properly works for now.
+    def add_recurring_event(self, event: Tuple) -> str:
+        self.txt = match_and_add_recurring(event, self.txt, Format.TXT)
+        self.markdown = match_and_add_recurring(event, self.markdown, Format.MD)
+        self.html = match_and_add_recurring(event, self.html, Format.HTML)
+     
+    def add_event(self, event:Tuple):
         self.txt += eventtime(event.start, event.end) + f" {event.summary}"
         self.markdown += escape_markdown(eventtime(event.start, event.end)) + md_link(event.summary, event.description)
         self.html += escape_markdown(eventtime(event.start, event.end)) + md_link(event.summary, event.description)
@@ -73,7 +68,7 @@ def get_message(config:dict, data:list, start: date, stop: date) -> MultiFormatM
             message.newline()
             for event in calendar.events:
                 if event.recurrence is not None:
-                    message.recurring_event(event)
+                    message.add_recurring_event(event)
                 else:
                     message.add_event(event)
                     message.newline()

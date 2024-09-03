@@ -11,7 +11,7 @@ def get_args() -> dict:
     # Get p and add arguments
     p = argparse.ArgumentParser(prog="bewegungskalender", description='Use a CalDAV-Server to send automatic calendar newsletters to the world.')
     p.add_argument("-c", "--config", dest='config_file', help='specify path to config file, defaults to config.yml')
-    p.add_argument("-d", "--debug", dest='debug', help='set the log level to debug, defaults to info', action='store_true')
+    p.add_argument("-l", "--loglevel", dest='loglevel', help='set the log level, defaults to info', choices=['debug', 'error'], action='store')
     p.add_argument("-g", "--get-telegram-updates", dest='get_telegram_updates', help='get telegram id of channel', action='store_true')
     p.add_argument("-m", "--map", dest='update_map', help='create MapData in geojson from loaction entries of events', action='store_true')
     p.add_argument("-n", "--newsletter", dest='send_mail', help='send email-to recipients specified or from config', action='store_true')
@@ -32,8 +32,11 @@ def get_args() -> dict:
     return args
 
 def set_log_level(args:dict):
-    if args.debug == True:
-        logging.basicConfig(level=logging.DEBUG)
+    if args.loglevel != None:
+        if args.loglevel == 'debug':
+            logging.basicConfig(level=logging.DEBUG)
+        elif args.loglevel == 'error':
+            logging.basicConfig(level=logging.ERROR)
     else:
         logging.basicConfig(level=logging.INFO)
     logging.info(f"Args: {args}")
