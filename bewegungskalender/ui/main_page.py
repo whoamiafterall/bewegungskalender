@@ -1,6 +1,6 @@
 
 from typing import NamedTuple
-from nicegui import ui, context, app
+from nicegui import ui, app
 from logging import debug
 from bewegungskalender.helper.config import config
 from bewegungskalender.output.message import MultiFormatMessage
@@ -33,7 +33,7 @@ async def main_page():
     # Create Tab Panels (what is shown when Tab is selected)
     debug('Creating Tab Panels (Content)...')
     with ui.card().classes('w-screen h-dvh p-0'):
-        with ui.tab_panels(tabs, value=help).classes('w-full h-full fixed p-0 m-0'):
+        with ui.tab_panels(tabs, value=help).classes('w-full h-full fixed'):
             # Create one Tab for displaying help
             debug(f"Creating Help Panel with the content of {config['help']['path']}...")
             with ui.tab_panel(help).classes('p-0 m-0'):                
