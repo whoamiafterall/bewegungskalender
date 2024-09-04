@@ -1,6 +1,6 @@
 
 from typing import NamedTuple
-from nicegui import ui, app
+from nicegui import ui, context, app
 from logging import debug
 from bewegungskalender.helper.config import config
 from bewegungskalender.output.message import MultiFormatMessage
@@ -33,7 +33,7 @@ async def main_page():
     # Create Tab Panels (what is shown when Tab is selected)
     debug('Creating Tab Panels (Content)...')
     with ui.card().classes('w-screen h-dvh p-0'):
-        with ui.tab_panels(tabs, value=help).classes('w-full h-full fixed'):
+        with ui.tab_panels(tabs, value=help).classes('w-full h-full fixed p-0 m-0'):
             # Create one Tab for displaying help
             debug(f"Creating Help Panel with the content of {config['help']['path']}...")
             with ui.tab_panel(help).classes('p-0 m-0'):                
@@ -64,15 +64,14 @@ async def main_page():
                 # new map with center set to center of germany
                 map = ui.leaflet(center=(config['map']['center']['lat'], config['map']['center']['lon']), zoom=config['map']['zoom']).classes('w-screen h-screen p-0 m-0')
                 map = await configure_map(map)
-              
 
     ui.query('.nicegui-content').classes('p-0') # remove default padding from site
-    debug('Finished. Starting UI...')
    # storage_secret = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits) for _ in range(32))
-    debug('Successfully started UI.')
 
 #seperate start_ui out from main page
 def start_ui():
+    debug('Finished. Starting UI...')
     ui.run(title=config['title'], favicon=config['favicon'], port=config['port']) #storage_secret=storage_secret)
+    debug('Successfully started UI.')
     app.add_static_files(config['assets']['url_path'], config['assets']['local_dir'])  
 

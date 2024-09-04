@@ -37,7 +37,7 @@ async def configure_map(map:ui.leaflet):
             marker = map.marker(latlng=(lat, lng))
 
             #set icon 
-            marker.run_method(':setIcon', f"L.icon({{iconUrl: '{featureCollection["map_marker_url"]}',iconSize: [30,30],iconAnchor:[15, 30],popupAnchor:[0,-30]}})")
+            marker.run_method(':setIcon', f"L.icon({{iconUrl: '{featureCollection['map_marker_url']}',iconSize: [30,30],iconAnchor:[15, 30],popupAnchor:[0,-30]}})")
                                              
             #use template html file and replace variables TODO: use a proper templating language like Jinja? (Didn't want to seutp a templating environment just for one file though)
             #it might also a be an option to be generate all the html popups and store them as properties themselves also.
