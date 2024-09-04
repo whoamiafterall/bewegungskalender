@@ -38,8 +38,8 @@ def search_events(config: dict, start: datetime.date, stop: datetime.date, expan
                 if component.name == "VEVENT":
                     events.append(parse_event(component))
                     
-        # Create Namedtuple to store Calendar Data in a useful way (Name, Emojis & Events)
-        calendar:NamedTuple = namedtuple("calendar", ["emoji", "name", "events"], defaults=[[]])
+        # Create Namedtuple to store Calendar Data in a useful way (Name, Emojis, Events, Map Marker)
+        calendar:NamedTuple = namedtuple("calendar", ["emoji", "name", "events","map_marker"], defaults=[[]])
         try:
             calendar.name = calobject.get_properties([caldav.dav.DisplayName()])['{DAV:}displayname']
         except requests.ConnectionError:
@@ -47,6 +47,7 @@ def search_events(config: dict, start: datetime.date, stop: datetime.date, expan
             exit()
         calendar.events = events
         calendar.emoji = configline['calendar']['emoji']
+        calendar.map_marker_url = configline['calendar']['map_marker_url']
         logging.info(f"Successfully parsed {len(calendar.events)} events from {calendar.name}!")
         data.append(calendar)
     return data

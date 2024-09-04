@@ -4,10 +4,11 @@ from nicegui import ui, app
 from logging import debug
 from bewegungskalender.helper.config import config
 from bewegungskalender.output.message import MultiFormatMessage
-from bewegungskalender.ui.map import configure_map
+from bewegungskalender.ui.helper.map import configure_map
 
+#nice gui support async function for page loading
 @ui.page('/')
-def start_ui():
+async def main_page():
     ui.dark_mode(True) # Set dark mode
     ui.colors(primary='#1c2329', secondary='white')
     
@@ -58,16 +59,20 @@ def start_ui():
               #          ui.html(message.html)   
                         
             # Create Map View
-            with ui.tab_panel(config['map']['label']):                      
+            with ui.tab_panel(config['map']['label']).classes('p-0 m-0'):                      
                 # add static files
-                app.add_static_files("/assets", "bewegungskalender/ui/assets")  
                 # new map with center set to center of germany
-                map = ui.leaflet(center=config['map']['center'], zoom=config['map']['zoom'])
-               # map = configure_map(map) #TODO #FIXME
-                
+                map = ui.leaflet(center=(config['map']['center']['lat'], config['map']['center']['lon']), zoom=config['map']['zoom']).classes('w-screen h-screen p-0 m-0')
+                map = await configure_map(map)
+              
+
     ui.query('.nicegui-content').classes('p-0') # remove default padding from site
     debug('Finished. Starting UI...')
    # storage_secret = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits) for _ in range(32))
-    ui.run(title=config['title'], favicon=config['favicon'], port=8081) #storage_secret=storage_secret)
     debug('Successfully started UI.')
+
+#seperate start_ui out from main page
+def start_ui():
+    ui.run(title=config['title'], favicon=config['favicon'], port=config['port']) #storage_secret=storage_secret)
+    app.add_static_files(config['assets']['url_path'], config['assets']['local_dir'])  
 

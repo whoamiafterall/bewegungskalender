@@ -4,8 +4,8 @@ import urllib.parse
 import codecs
 import logging
 from bewegungskalender.helper.nominatim import NominatimSearch, NominatimLookup
-from geojson import Feature, FeatureCollection
 from bewegungskalender.helper.formatting import search_link, eventtime, to_filename
+from geojson import Feature, FeatureCollection
 
 class MyPoint():
      def __init__(self, lon, lat):
@@ -48,14 +48,20 @@ def createFeature(event: NamedTuple) -> MyPoint:
         if key == 'lat':
             lat = float(value)
     logging.debug(f"{event.summary}: found {event.location}: {lon}, {lat}")
-    return Feature(geometry=MyPoint(lon, lat), properties={'ℹ️': event.summary, 
-                                            '📅': eventtime(event.start, event.end), 
-                                            '📌': event.location, 
-                                            '🌐': search_link(event.summary, event.description)})
+    
+    return Feature(geometry=MyPoint(lon, lat), properties={'summary': event.summary, 
+                                            'eventtime': eventtime(event.start, event.end), 
+                                            'location': event.location, 
+                                            'link': search_link(event.summary, event.description)})
    
+def readMapData(savedir:str) -> list: 
+    with open(f"{savedir}", "r") as f: # write Data to file
+        return eval(f.read())
 
-def createMapData(data: list[NamedTuple], localdir:str) -> None:    
-    filenames:list = []
+
+def createMapData(data: list[NamedTuple], savedir:str) -> None: 
+    featureCollections:list = []
+
     for calendar in data:
         features:list = []
         recurrence:list = []
@@ -80,11 +86,16 @@ def createMapData(data: list[NamedTuple], localdir:str) -> None:
                 recurrence.append(event.summary)
             if feature is not None: # add located events to list 
                 features.append(feature) 
-        filename = f"{to_filename(calendar.name)}.geojson"
+
         logging.info(f"Located {len(features)} Events from {calendar.name} on OpenStreetMap!")
-        filenames.append(filename)
-        logging.debug(f"Writing to {filename}...")
-        with open(f"{localdir}/{filename}", "w") as f: # write GeoJSON Data to each Calendar-File
-            f.write(f"{FeatureCollection(features)}")
-    return
+                    
+        #save some extra info in featureCollection to use for displaying map later
+        featureCollection = FeatureCollection(features)
+        featureCollection["name"] = calendar.name
+        featureCollection["map_marker_url"] = calendar.map_marker_url
+
+        featureCollections.append(featureCollection)
+
+    with open(f"{savedir}", "w") as f: # write Data to file
+        f.write(repr(featureCollections))
 
