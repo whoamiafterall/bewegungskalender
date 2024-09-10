@@ -1,5 +1,0 @@
-[server]
-hosts = 0.0.0.0:18476
-
-[storage]
-filesystem_folder = /radicale
