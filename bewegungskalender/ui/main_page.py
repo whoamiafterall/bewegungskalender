@@ -4,7 +4,7 @@ from nicegui import ui, app
 from logging import debug
 from bewegungskalender.helper.config import config
 from bewegungskalender.output.message import MultiFormatMessage
-from bewegungskalender.ui.helper.map import configure_map
+from bewegungskalender.ui.map import configure_map
 
 #nice gui support async function for page loading
 @ui.page('/')
