@@ -28,6 +28,8 @@ async def configure_map(map:ui.leaflet):
     #call read data
     featureCollections:list = readMapData(config['mapdatadir'])
         
+
+
     #loop trough feature collections
     for featureCollection in featureCollections:
         #loop trough features

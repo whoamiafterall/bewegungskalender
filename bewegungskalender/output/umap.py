@@ -3,6 +3,7 @@ from typing import NamedTuple
 import urllib.parse
 import codecs
 import logging
+import json
 from bewegungskalender.helper.nominatim import NominatimSearch, NominatimLookup
 from bewegungskalender.helper.formatting import search_link, eventtime, to_filename
 from geojson import Feature, FeatureCollection
@@ -49,14 +50,16 @@ def createFeature(event: NamedTuple) -> MyPoint:
             lat = float(value)
     logging.debug(f"{event.summary}: found {event.location}: {lon}, {lat}")
     
+    
+
     return Feature(geometry=MyPoint(lon, lat), properties={'summary': event.summary, 
                                             'eventtime': eventtime(event.start, event.end), 
                                             'location': event.location, 
                                             'link': search_link(event.summary, event.description)})
    
 def readMapData(savedir:str) -> list: 
-    with open(f"{savedir}", "r") as f: # write Data to file
-        return eval(f.read())
+    with open(f"{savedir}", "r") as f:
+        return json.loads(f.read())
 
 
 def createMapData(data: list[NamedTuple], savedir:str) -> None: 
@@ -97,5 +100,5 @@ def createMapData(data: list[NamedTuple], savedir:str) -> None:
         featureCollections.append(featureCollection)
 
     with open(f"{savedir}", "w") as f: # write Data to file
-        f.write(repr(featureCollections))
+        f.write(json.dumps(featureCollections))
 
