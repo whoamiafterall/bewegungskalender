@@ -5,7 +5,7 @@ from bewegungskalender.helper.config import config
 from bewegungskalender.helper.formatting import italic, Format
 from geojson import Feature, FeatureCollection
 from bewegungskalender.output.umap import readMapData
-
+from bewegungskalender.ui.templater import render_map_template
 
 async def configure_map(map:ui.leaflet):
     map.clear_layers()
@@ -44,8 +44,7 @@ async def configure_map(map:ui.leaflet):
             #use template html file and replace variables TODO: use a proper templating language like Jinja? (Didn't want to seutp a templating environment just for one file though)
             #it might also a be an option to be generate all the html popups and store them as properties themselves also.
             properties = feature["properties"]
-            with open(config['map']['popup']['template_path'], 'r') as f:
-                html:str = f.read().format(summary=properties["summary"],eventtime=properties["eventtime"],location=properties["location"],link=properties["link"])
-                map.run_layer_method(marker.id, 'bindPopup', html)
+            context = {"summary": properties["summary"],"eventtime": properties["eventtime"],"location": properties["location"],"link": properties["link"]}
+            map.run_layer_method(marker.id, 'bindPopup', render_map_template(context))
             
     return map

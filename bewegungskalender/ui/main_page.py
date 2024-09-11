@@ -6,6 +6,7 @@ from bewegungskalender.helper.config import config
 from bewegungskalender.output.message import MultiFormatMessage
 from bewegungskalender.ui.map import configure_map
 
+
 #nice gui support async function for page loading
 @ui.page('/')
 async def main_page():
@@ -81,4 +82,9 @@ def start_ui():
     debug('Successfully started UI.')
     # add static files
     app.add_static_files(config['assets']['url_path'], config['assets']['local_dir'])  
+
+
+
+
+
 
