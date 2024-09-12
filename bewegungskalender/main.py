@@ -60,7 +60,7 @@ async def main_async():
     ## UMap Output
     if ARGS.update_map: 
         LOG.info(f"Creating GeoJSON Data for the map...")
-        createMapData(data, config['mapdatadir'])
+        createMapData(data, config['mapdatadir'], config['locationcatchdir'])
     ## Print Output
     if ARGS.print: 
         LOG.info(f"Printing message in {ARGS.format} Format: \n")

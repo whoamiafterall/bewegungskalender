@@ -3,10 +3,13 @@ from typing import NamedTuple
 import urllib.parse
 import codecs
 import json
+import base64
 from bewegungskalender.helper.nominatim import NominatimSearch, NominatimLookup
 from bewegungskalender.helper.formatting import search_link, eventtime, to_filename
 from bewegungskalender.helper.logger import LOG
 from geojson import Feature, FeatureCollection
+from functools import reduce
+from slugify import slugify
 
 class MyPoint():
      def __init__(self, lon, lat):
@@ -23,9 +26,49 @@ def encode(location: str):
         location = str(urllib.parse.quote(location))
     return location
   
+# method that uses catched lon lat locations
+def getCoordinateLocation(location: str,locationcatchdir:str):
+    fname = f"{locationcatchdir}/{ slugify(location)}.json"
+    try:
+        f = open(fname, 'r')
+        return json.loads(f.read())["coordinates"]
+    except:
+        LOG.debug(f"Could not open/read file for {location} Looking up location online ...") 
+
+    coordinates = nominatimCoordinate(location)
+
+    with open(f"{fname}", "w") as f:
+        f.write(json.dumps({
+            "location":location,
+            "coordinates":coordinates
+        }))      
+
+    if coordinates == None:
+        LOG.warning(f"no Result found for {location}")
+        return None
+
+    LOG.debug(f"found {location}: {coordinates[0]}, {coordinates[1]}")
+    return coordinates
+
+def nominatimCoordinate(location: str):
+
+    result = nominatim(location)
+
+    if result == []:
+        return None
+
+    # parse lat and lon
+    for key, value in result[0].items():
+        if key == 'lon':
+            lon = float(value)
+        if key == 'lat':
+            lat = float(value)
+
+    return [lon,lat]
+
+
 def nominatim(location: str) -> list: #TODO test this 
     # query Nominatim and log if nothing is found
-    search = NominatimSearch()
     loookup = NominatimLookup()
     # Check if there is a link to a OSM-Node/Relation/Way
     if location == "" or None:
@@ -34,25 +77,28 @@ def nominatim(location: str) -> list: #TODO test this
     if feature is not None: 
         split = feature.rsplit('/', 2)
         return loookup.query(split[-2].upper()[0] + split[-1]) # Lookup this OSM-Relation and get result
-    return search.query(query=encode(location), limit=1)
-    
-def createFeature(event: NamedTuple) -> MyPoint:
-    result = nominatim(event.location)
-    if result == []:
-        LOG.warn(f"R: {event.summary}: no Result found for {event.location}")
-        return None
-    
-    # parse results to GeoJSON
-    for key, value in result[0].items():
-        if key == 'lon':
-            lon = float(value)
-        if key == 'lat':
-            lat = float(value)
-    LOG.debug(f"{event.summary}: found {event.location}: {lon}, {lat}")
-    
-    
 
-    return Feature(geometry=MyPoint(lon, lat), properties={'summary': event.summary, 
+    #people often add things to adress at begining with open streetmap can't unterstand, for that reason we can remove portions of the string if location was not found until we find something of nothing left to remove
+    return recursiveArraySearch(location.split(" "))
+
+
+def recursiveArraySearch (locationArray):
+    search = NominatimSearch()
+    result = search.query(query=encode(reduce(lambda x, y: str(x) + " " + str(y), locationArray)), limit=1)
+    if result == [] and len(locationArray) > 1:
+        return recursiveArraySearch(locationArray[1:])
+    return result
+
+    
+def createFeature(event: NamedTuple, locationcatchdir:str) -> MyPoint:
+    
+    coordinates = getCoordinateLocation(event.location,locationcatchdir)
+
+    if coordinates == None:
+        LOG.warning(f"R: {event.summary}: {event.location} has no valid coordinates")
+        return None
+
+    return Feature(geometry=MyPoint(coordinates[0], coordinates[1]), properties={'summary': event.summary, 
                                             'eventtime': eventtime(event.start, event.end), 
                                             'location': event.location, 
                                             'link': search_link(event.summary, event.description)})
@@ -62,7 +108,7 @@ def readMapData(savedir:str) -> list:
         return json.loads(f.read())
 
 
-def createMapData(data: list[NamedTuple], savedir:str) -> None: 
+def createMapData(data: list[NamedTuple], savedir:str, locationcatchdir:str) -> None: 
     featureCollections:list = []
 
     for calendar in data:
@@ -84,7 +130,7 @@ def createMapData(data: list[NamedTuple], savedir:str) -> None:
                 LOG.debug(f"{event.summary}: Skipping recurring event...")
                 continue
             except ValueError: # Event is not present in recurrence List
-                feature = createFeature(event) # locate the event on OpenStreetMap
+                feature = createFeature(event,locationcatchdir) # locate the event on OpenStreetMap
             if event.recurrence is not None: # add recurring event to list for the check above
                 recurrence.append(event.summary)
             if feature is not None: # add located events to list 
