@@ -1,8 +1,8 @@
 from collections import namedtuple
 from html.parser import HTMLParser
-import logging
 from typing import NamedTuple
-from bewegungskalender.helper.datetime import check_datetime, date, fix_midnight
+from bewegungskalender.helper.datetime import check_datetime, date_str, fix_midnight
+from bewegungskalender.helper.logger import LOG
 import icalendar
 
 def parse_event(component:icalendar.Event)-> NamedTuple:
@@ -14,12 +14,11 @@ def parse_event(component:icalendar.Event)-> NamedTuple:
     event.start = check_datetime(component.get('dtstart').dt)
     event.end = check_datetime(component.get('dtend').dt)
     event.recurrence = component.get('recurrence-id')
-    
-    # Fix Events that end on midnight being read as one day longer than they are
-    if date(event.start) != date(event.end):
+   
+    if date_str(event.start) != date_str(event.end):
         event.end = fix_midnight(event.end)
         
-    logging.debug(f"Success parsing {event.summary}...")
+    LOG.debug(f"Success parsing {event.summary}...")
     return event   
 
 class ParseWPForms(HTMLParser):

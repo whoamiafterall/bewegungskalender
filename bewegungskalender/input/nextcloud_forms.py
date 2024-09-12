@@ -1,19 +1,20 @@
 import csv
-import logging
+
 import icalendar
 import pytz
 import urllib.request
 from caldav import Calendar
 from datetime import datetime, timedelta
-from bewegungskalender.helper.cli import args
+from bewegungskalender.helper.cli import LAST_UPDATE
+from bewegungskalender.helper.logger import LOG
 
 def update_ncform(url:str, calendar:Calendar) -> dict:
-    logging.info('Checking Nextcloud Form Responses for new events...')
-    logging.debug("Downloading CSV-File with Responses to NC-Form...")
+    LOG.info('Checking Nextcloud Form Responses for new events...')
+    LOG.debug("Downloading CSV-File with Responses to NC-Form...")
     file = urllib.request.urlretrieve(url, "bewegungskalender/data/termine.csv")[0]
     with open(file) as f:
         for row in csv.DictReader(f):
-            if datetime.fromisoformat(row['Timestamp']) > datetime.now(tz=pytz.utc) - timedelta(args.update_ncform):
+            if datetime.fromisoformat(row['Timestamp']) > datetime.now(tz=pytz.utc)- timedelta(LAST_UPDATE):
                 create_events(row, calendar)
             
 def create_events(row:dict, calendar:Calendar):
@@ -36,4 +37,4 @@ def create_events(row:dict, calendar:Calendar):
         end = datetime.combine(start.date() + timedelta(1), datetime.min.time())
     event.add('dtend', end)
     calendar.add_event(event.to_ical())
-    logging.info(f"Successfully added {row['Start-Datum']}: {row['Titel']} to calender!")
+    LOG.info(f"Successfully added {row['Start-Datum']}: {row['Titel']} to calender!")

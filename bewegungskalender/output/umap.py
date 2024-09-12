@@ -2,10 +2,10 @@ import re
 from typing import NamedTuple
 import urllib.parse
 import codecs
-import logging
 import json
 from bewegungskalender.helper.nominatim import NominatimSearch, NominatimLookup
 from bewegungskalender.helper.formatting import search_link, eventtime, to_filename
+from bewegungskalender.helper.logger import LOG
 from geojson import Feature, FeatureCollection
 
 class MyPoint():
@@ -39,7 +39,7 @@ def nominatim(location: str) -> list: #TODO test this
 def createFeature(event: NamedTuple) -> MyPoint:
     result = nominatim(event.location)
     if result == []:
-        logging.warn(f"R: {event.summary}: no Result found for {event.location}")
+        LOG.warn(f"R: {event.summary}: no Result found for {event.location}")
         return None
     
     # parse results to GeoJSON
@@ -48,7 +48,7 @@ def createFeature(event: NamedTuple) -> MyPoint:
             lon = float(value)
         if key == 'lat':
             lat = float(value)
-    logging.debug(f"{event.summary}: found {event.location}: {lon}, {lat}")
+    LOG.debug(f"{event.summary}: found {event.location}: {lon}, {lat}")
     
     
 
@@ -68,20 +68,20 @@ def createMapData(data: list[NamedTuple], savedir:str) -> None:
     for calendar in data:
         features:list = []
         recurrence:list = []
-        logging.debug(f"Creating Map Data for {calendar.name}...")
+        LOG.debug(f"Creating Map Data for {calendar.name}...")
         for event in calendar.events:
             location:str = event.location
             if location is None: # filter events without location
-                logging.debug(f"N: {event.summary}: location is None")
+                LOG.debug(f"N: {event.summary}: location is None")
                 search_link(event.summary, event.description) # call just for logs
                 continue 
             if location == "Online" or location == "online": # filter events with online/Online as location
-                logging.debug(f"O: {event.summary}: location is Online")
+                LOG.debug(f"O: {event.summary}: location is Online")
                 search_link(event.summary, event.description) #call just for logs
                 continue
             try: 
                 recurrence.index(event.summary) # check if recurring event has already been located
-                logging.debug(f"{event.summary}: Skipping recurring event...")
+                LOG.debug(f"{event.summary}: Skipping recurring event...")
                 continue
             except ValueError: # Event is not present in recurrence List
                 feature = createFeature(event) # locate the event on OpenStreetMap
@@ -90,7 +90,7 @@ def createMapData(data: list[NamedTuple], savedir:str) -> None:
             if feature is not None: # add located events to list 
                 features.append(feature) 
 
-        logging.info(f"Located {len(features)} Events from {calendar.name} on OpenStreetMap!")
+        LOG.info(f"Located {len(features)} Events from {calendar.name} on OpenStreetMap!")
                     
         #save some extra info in featureCollection to use for displaying map later
         featureCollection = FeatureCollection(features)

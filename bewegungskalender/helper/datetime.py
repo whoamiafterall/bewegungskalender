@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 import pytz
 
 # pytz helper function
@@ -15,17 +15,17 @@ def fix_midnight(dt:datetime) -> datetime:
         return dt - timedelta(seconds=1)
     return dt
 
-def check_datetime(date:datetime) -> datetime.date:
+def check_datetime(date:date) -> datetime:
     return date if isinstance(date, datetime) else datetime.combine(date, datetime.min.time()).astimezone(TIMEZONE)
     
-def date(day:datetime) -> str: # get date from a datetime object
+def date_str(day:datetime) -> str: # get date from a datetime object
     return day.strftime('%d.%m.')
 
 def weekday(day:datetime) -> str: # get weekday from a datetime object
     return day.strftime('%a.')
 
 def weekday_date(day:datetime) -> str:
-    return weekday(day) + " " + date(day)
+    return weekday(day) + " " + date_str(day)
 
 def time (datetime:datetime) -> str: # get time from a datetime object
     return datetime.strftime('(%H:%M)')
