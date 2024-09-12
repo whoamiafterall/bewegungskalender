@@ -65,3 +65,4 @@ websockets==13.0.1
 wsproto==1.2.0
 x-wr-timezone==0.0.7
 yarl==1.9.7
+python_slugify==8.0.4
