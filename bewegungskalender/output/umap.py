@@ -28,17 +28,20 @@ def encode(location: str):
   
 # method that uses catched lon lat locations
 def getCoordinateLocation(location: str,locationcatchdir:str):
-    fname = f"{locationcatchdir}/{ slugify(location)}"
+    fname = f"{locationcatchdir}/{ slugify(location)}.json"
     try:
         f = open(fname, 'r')
-        return json.loads(f.read())
+        return json.loads(f.read())["coordinates"]
     except:
         logging.debug(f"Could not open/read file for {location} Looking up location online ...") 
 
     coordinates = nominatimCoordinate(location)
 
     with open(f"{fname}", "w") as f:
-        f.write(json.dumps(coordinates))      
+        f.write(json.dumps({
+            "location":location,
+            "coordinates":coordinates
+        }))      
 
     if coordinates == None:
         logging.warn(f"no Result found for {location}")
