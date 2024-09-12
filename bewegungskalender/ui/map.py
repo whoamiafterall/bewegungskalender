@@ -2,7 +2,7 @@ import os
 import json
 from nicegui import ui
 from bewegungskalender.helper.config import config
-from bewegungskalender.helper.formatting import italic, Format
+from bewegungskalender.helper.formatting import Format
 from geojson import Feature, FeatureCollection
 from bewegungskalender.output.umap import readMapData
 from bewegungskalender.ui.templater import render_map_template
