@@ -10,6 +10,7 @@ from bewegungskalender.helper.logger import LOG
 from geojson import Feature, FeatureCollection
 from functools import reduce
 from slugify import slugify
+from bewegungskalender.helper.file import safe_open_write
 
 class MyPoint():
      def __init__(self, lon, lat):
@@ -37,7 +38,7 @@ def getCoordinateLocation(location: str,locationcatchdir:str):
 
     coordinates = nominatimCoordinate(location)
 
-    with open(f"{fname}", "w") as f:
+    with safe_open_write(f"{fname}") as f:
         f.write(json.dumps({
             "location":location,
             "coordinates":coordinates
@@ -145,6 +146,6 @@ def createMapData(data: list[NamedTuple], savedir:str, locationcatchdir:str) -> 
 
         featureCollections.append(featureCollection)
 
-    with open(f"{savedir}", "w") as f: # write Data to file
+    with safe_open_write(f"{savedir}") as f: # write Data to file
         f.write(json.dumps(featureCollections))
 
