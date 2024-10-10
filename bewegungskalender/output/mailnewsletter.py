@@ -3,20 +3,20 @@ from datetime import date
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.utils import formatdate, make_msgid
-from bewegungskalender.helper.formatting import Format
+from bewegungskalender.functions.formatting import Format
 from bewegungskalender.output.message import MultiFormatMessage
-from bewegungskalender.helper.cli import MAIL_TO, START, END
-from bewegungskalender.helper.logger import LOG
-from bewegungskalender.helper.datetime import date_str
+from bewegungskalender.functions.cli import MAIL_TO, START, END
+from bewegungskalender.functions.logger import LOGGER
+from bewegungskalender.functions.datetime import date_str
 
 def send_mail(config:dict, message:MultiFormatMessage):
     server:str = config['mail']['server']
     port:str = config['mail']['smtp_port']
-    LOG.debug('Connecting to SMTP Server...')
+    LOGGER.debug('Connecting to SMTP Server...')
     with smtplib.SMTP_SSL(server, port, context=ssl.create_default_context()) as smtp:
         smtp.ehlo()
         smtp.set_debuglevel(1)
-        LOG.debug('Logging into SMTP Client with credentials...')
+        LOGGER.debug('Logging into SMTP Client with credentials...')
         smtp.login(config['mail']['account'], config['mail']['password']) 
         mail = MIMEMultipart("alternative")
         subject = f"{config['newsletter']['subject']} {date_str(START)} - {date_str(END)}"
@@ -33,8 +33,8 @@ def send_mail(config:dict, message:MultiFormatMessage):
         if receiver is not None:
             for address in receiver:
                 mail["to"] = address
-                LOG.debug(f"Sending E-Mail to {address}...")
+                LOGGER.debug(f"Sending E-Mail to {address}...")
                 smtp.ehlo()
                 smtp.sendmail(config['newsletter']['sender'], address, mail.as_string())
-        LOG.debug('Quitting Connection to SMTP Server...')
+        LOGGER.debug('Quitting Connection to SMTP Server...')
         smtp.quit()

@@ -3,13 +3,15 @@ from typing import NamedTuple
 import urllib.parse
 import codecs
 import json
-from bewegungskalender.helper.nominatim import NominatimSearch, NominatimLookup
-from bewegungskalender.helper.formatting import search_link, eventtime
-from bewegungskalender.helper.logger import LOG
+
+from bewegungskalender.functions.event import Event
+from bewegungskalender.functions.nominatim import NominatimSearch, NominatimLookup
+from bewegungskalender.functions.formatting import search_link, eventtime
+from bewegungskalender.functions.logger import LOGGER
 from geojson import Feature, FeatureCollection
 from functools import reduce
 from slugify import slugify
-from bewegungskalender.helper.file import safe_open_write
+from bewegungskalender.functions.file import safe_open_write
 
 class MyPoint():
      def __init__(self, lon, lat):
@@ -33,7 +35,7 @@ def getCoordinateLocation(location: str,locationcatchdir:str):
         f = open(fname, 'r')
         return json.loads(f.read())["coordinates"]
     except:
-        LOG.debug(f"Could not open/read file for {location} Looking up location online ...") 
+        LOGGER.debug(f"Could not open/read file for {location} Looking up location online ...")
 
     coordinates = nominatimCoordinate(location)
 
@@ -44,10 +46,10 @@ def getCoordinateLocation(location: str,locationcatchdir:str):
         }))      
 
     if coordinates == None:
-        LOG.warning(f"no Result found for {location}")
+        LOGGER.warning(f"no Result found for {location}")
         return None
 
-    LOG.debug(f"found {location}: {coordinates[0]}, {coordinates[1]}")
+    LOGGER.debug(f"found {location}: {coordinates[0]}, {coordinates[1]}")
     return coordinates
 
 def nominatimCoordinate(location: str):
@@ -90,12 +92,12 @@ def recursiveArraySearch (locationArray):
     return result
 
     
-def createFeature(event: NamedTuple, locationcatchdir:str) -> MyPoint:
+def createFeature(event: Event, locationcatchdir:str) -> MyPoint:
     
     coordinates = getCoordinateLocation(event.location,locationcatchdir)
 
     if coordinates == None:
-        LOG.warning(f"R: {event.summary}: {event.location} has no valid coordinates")
+        LOGGER.warning(f"R: {event.summary}: {event.location} has no valid coordinates")
         return None
 
     return Feature(geometry=MyPoint(coordinates[0], coordinates[1]), properties={'summary': event.summary, 
@@ -114,20 +116,20 @@ def createMapData(data: list[NamedTuple], savedir:str, locationcatchdir:str) -> 
     for calendar in data:
         features:list = []
         recurrence:list = []
-        LOG.debug(f"Creating Map Data for {calendar.name}...")
+        LOGGER.debug(f"Creating Map Data for {calendar.name}...")
         for event in calendar.events:
             location:str = event.location
             if location is None: # filter events without location
-                LOG.debug(f"N: {event.summary}: location is None")
+                LOGGER.debug(f"N: {event.summary}: location is None")
                 search_link(event.summary, event.description) # call just for logs
                 continue 
             if location == "Online" or location == "online": # filter events with online/Online as location
-                LOG.debug(f"O: {event.summary}: location is Online")
+                LOGGER.debug(f"O: {event.summary}: location is Online")
                 search_link(event.summary, event.description) #call just for logs
                 continue
             try: 
                 recurrence.index(event.summary) # check if recurring event has already been located
-                LOG.debug(f"{event.summary}: Skipping recurring event...")
+                LOGGER.debug(f"{event.summary}: Skipping recurring event...")
                 continue
             except ValueError: # Event is not present in recurrence List
                 feature = createFeature(event,locationcatchdir) # locate the event on OpenStreetMap
@@ -136,7 +138,7 @@ def createMapData(data: list[NamedTuple], savedir:str, locationcatchdir:str) -> 
             if feature is not None: # add located events to list 
                 features.append(feature) 
 
-        LOG.info(f"Located {len(features)} Events from {calendar.name} on OpenStreetMap!")
+        LOGGER.info(f"Located {len(features)} Events from {calendar.name} on OpenStreetMap!")
                     
         #save some extra info in featureCollection to use for displaying map later
         featureCollection = FeatureCollection(features)

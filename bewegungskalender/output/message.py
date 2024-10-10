@@ -1,10 +1,10 @@
-from typing import Tuple
-from bewegungskalender.helper.cli import START, END
-from bewegungskalender.helper.logger import LOG
-from bewegungskalender.helper.datetime import weekday_date
-from bewegungskalender.helper.formatting import Style, eventtime, match_and_add_recurring, md_link, escape, style, Format
+from bewegungskalender.functions.cli import START, END
+from bewegungskalender.functions.event import Event
+from bewegungskalender.functions.logger import LOGGER
+from bewegungskalender.functions.datetime import weekday_date
+from bewegungskalender.functions.formatting import Style, eventtime, match_and_add_recurring, md_link, escape, style, Format
 
-class MultiFormatMessage():
+class MultiFormatMessage:
     def __init__(self) -> None:
         self.start = START
         self.end = END
@@ -13,16 +13,16 @@ class MultiFormatMessage():
         self.txt:str = ""
         
     # set Format from a given String
-    def get(self, format:str|Format) -> str:
-        """Get the message of this instance in the specified format.
+    def get(self, frmt: str | Format) -> str:
+        """Get the message of this instance in the specified frmt.
 
         Args:
-            format (str|Format): The format to be used as a **string** or of type **Format**.
+            frmt (str|Format): The frmt to be used as a **string** or of type **Format**.
 
         Returns:
-            str: The message formatted in the specified format.
+            str: The message formatted in the specified frmt.
         """    
-        match format:
+        match frmt:
             case 'html' | Format.HTML:
                 return self.html     
             case 'md' | Format.MD:
@@ -30,7 +30,7 @@ class MultiFormatMessage():
             case 'txt' | Format.TXT:
                 return self.txt
             case _:
-                LOG.warning(f"Format: {format} does not exist. Choose: 'html', 'md' or 'txt'.")   
+                LOGGER.warning(f"Format: {frmt} does not exist. Choose: 'html', 'md' or 'txt'.")
                 exit(1) 
             
     def __str__(self) -> str:
@@ -46,7 +46,7 @@ class MultiFormatMessage():
         
     def header(self): # Displayed as Head of the Message => style info on the Timerange
         header = f"Die Termine vom " + weekday_date(self.start) + " - " + weekday_date(self.end)
-        self.txt += (header)
+        self.txt += header
         self.markdown += style(escape(header), Format.MD, Style.BOLD)
         self.html += style(escape(header), Format.HTML, Style.BOLD)
    
@@ -56,13 +56,13 @@ class MultiFormatMessage():
         self.markdown += style(f"{emoji} {escape(name)}", Format.MD, Style.BOLD)
         self.html += style(f"{emoji} {escape(name)}", Format.HTML, Style.BOLD)
         
-    # This should be refactored at some point, but i'm happy that it properly works for now.
-    def add_recurring_event(self, event: Tuple):
+    # This should be refactored at some point, but I'm happy that it properly works for now.
+    def add_recurring_event(self, event: Event):
         self.txt = match_and_add_recurring(event, self.txt, Format.TXT)
         self.markdown = match_and_add_recurring(event, self.markdown, Format.MD)
         self.html = match_and_add_recurring(event, self.html, Format.HTML)
      
-    def add_event(self, event:Tuple):
+    def add_event(self, event:Event):
         self.txt += eventtime(event.start, event.end) + f" {event.summary}"
         self.markdown += escape(eventtime(event.start, event.end)) + md_link(event.summary, event.description)
         self.html += escape(eventtime(event.start, event.end)) + md_link(event.summary, event.description)
@@ -82,8 +82,8 @@ def create_message(config:dict, data:list) -> MultiFormatMessage:
     message.header()
     message.newline()
     for calendar in data:
-        LOG.debug(f"Formatting and adding {calendar.name} to message...")
-        if calendar.events != []:
+        LOGGER.debug(f"Formatting and adding {calendar.name} to message...")
+        if calendar.events:
             message.newline()
             message.calendar_title(calendar.emoji, calendar.name) 
             message.newline()
@@ -95,5 +95,5 @@ def create_message(config:dict, data:list) -> MultiFormatMessage:
                     message.newline()
     message.newline()
     message.footer(config)
-    LOG.info(f"Successfully formatted the message!")
+    LOGGER.info(f"Successfully formatted the message!")
     return message

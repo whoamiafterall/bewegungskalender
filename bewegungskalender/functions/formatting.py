@@ -3,8 +3,9 @@ from enum import Enum
 import os
 import re
 from typing import Tuple
-from bewegungskalender.helper.datetime import date_str, time
-from bewegungskalender.helper.logger import LOG
+from bewegungskalender.functions.datetime import date_str, time
+from bewegungskalender.functions.event import Event
+from bewegungskalender.functions.logger import LOGGER
 
 class Format(Enum): # to make dot notation available
     HTML = 'html'
@@ -78,7 +79,7 @@ def search_link(summary:str, description:str) -> str:
         try: # 
             return re.search("(?P<url>https?://[^\s]+)", description).group("url") 
         except AttributeError: 
-            LOG.warning(f"L: {summary}: No Link in: {description}")
+            LOGGER.warning(f"L: {summary}: No Link in: {description}")
             return None
     
 def md_link(text:str, url:str) -> str:
@@ -87,7 +88,7 @@ def md_link(text:str, url:str) -> str:
     else:
         return f" {escape(text)}"
 
-def match_and_add_recurring(event:Tuple, message:str, format:Format) -> str:
+def match_and_add_recurring(event:Event, message:str, format:Format) -> str:
     # Prepare regex, the primary entry of the event and the date to add if its not the first occurence
     if format == Format.TXT:
         regex = r'(\d{2}\.\d{2}\.\s)(\(\d{2}\:\d{2}\)\:\s)?' + f"({re.escape(event.summary)})"

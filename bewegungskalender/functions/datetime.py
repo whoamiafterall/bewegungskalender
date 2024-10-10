@@ -1,5 +1,5 @@
 from _datetime import datetime, timedelta, date
-from bewegungskalender.helper.config import CONFIG
+from bewegungskalender.functions.config import CONFIG
 import pytz
 
 TIMEZONE = pytz.timezone(CONFIG['format']['timezone'])
