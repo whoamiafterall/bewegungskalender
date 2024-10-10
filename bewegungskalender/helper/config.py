@@ -6,6 +6,6 @@ from bewegungskalender.helper.logger import LOG
 LOG.debug('Loading config file...')
 try:
     with open(CONFIG_FILE, 'r') as f: 
-        config:dict = yaml.load(f, Loader=yaml.FullLoader) 
+        CONFIG:dict = yaml.load(f, Loader=yaml.FullLoader)
 except FileNotFoundError:
     LOG.exception('Config File not Found:', CONFIG_FILE); exit()

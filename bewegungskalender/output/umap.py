@@ -3,9 +3,8 @@ from typing import NamedTuple
 import urllib.parse
 import codecs
 import json
-import base64
 from bewegungskalender.helper.nominatim import NominatimSearch, NominatimLookup
-from bewegungskalender.helper.formatting import search_link, eventtime, to_filename
+from bewegungskalender.helper.formatting import search_link, eventtime
 from bewegungskalender.helper.logger import LOG
 from geojson import Feature, FeatureCollection
 from functools import reduce
@@ -68,13 +67,13 @@ def nominatimCoordinate(location: str):
     return [lon,lat]
 
 
-def nominatim(location: str) -> list: #TODO test this 
+def nominatim(location: str) -> list|None: #TODO test this
     # query Nominatim and log if nothing is found
     loookup = NominatimLookup()
     # Check if there is a link to a OSM-Node/Relation/Way
     if location == "" or None:
         return None
-    feature = re.search("(https?:\/\/openstreetmap.org\/(way|node|relation)\/\d{4,15})", location)
+    feature = re.search("(https?:\/\/openstreetmap.org/(way|node|relation)\/\d{4,15})", location)
     if feature is not None: 
         split = feature.rsplit('/', 2)
         return loookup.query(split[-2].upper()[0] + split[-1]) # Lookup this OSM-Relation and get result

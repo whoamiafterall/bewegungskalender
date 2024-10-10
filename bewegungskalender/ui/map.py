@@ -1,7 +1,7 @@
 import os
 import json
 from nicegui import ui
-from bewegungskalender.helper.config import config
+from bewegungskalender.helper.config import CONFIG
 from bewegungskalender.helper.formatting import Format
 from geojson import Feature, FeatureCollection
 from bewegungskalender.output.umap import readMapData
@@ -26,7 +26,7 @@ async def configure_map(map:ui.leaflet):
     await map.initialized()
 
     #call read data
-    featureCollections:list = readMapData(config['mapdatadir'])
+    featureCollections:list = readMapData(CONFIG['mapdatadir'])
         
 
 

@@ -1,10 +1,10 @@
 import sys
 from argparse import ArgumentParser, Namespace
-from datetime import date, timedelta
+from _datetime import date, timedelta
 from typing import Final
 #from bewegungskalender.output.telegram import Channel
 
-def get_ARGS() -> Namespace:
+def get_args() -> Namespace:
     """Creates an instance of Class **ArgumentParser** from **argparse** module which is used for parsing **command-line arguments**. <br>
     Configures the name and description of the program, aswell as several arguments and default values. <br>
     If **no argument** is specified it will display the **help view (--help/-h)**. <br>
@@ -53,7 +53,7 @@ def get_ARGS() -> Namespace:
 #     return Channel(config['telegram']['test'], botToken, 'test')
 
 # These are run when this module is imported
-ARGS: Final[dict] = get_ARGS()
+ARGS: Final[Namespace] = get_args()
 CONFIG_FILE: Final[str] = ARGS.config_file
 START: Final[date] = date.today() + timedelta(ARGS.query_start)
 END: Final[date] = START + timedelta(ARGS.query_end)

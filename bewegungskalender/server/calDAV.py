@@ -1,15 +1,14 @@
 import datetime
 from typing import NamedTuple
-
 from caldav import Calendar, DAVClient
-from nicegui import app
 import requests
-from bewegungskalender.helper.parsing import parse_event
 from bewegungskalender.helper.logger import LOG
 import caldav
 import icalendar
 from collections import namedtuple
-    
+from bewegungskalender.helper.parsing import parse_event
+
+
 def connect_davclient(config:dict):
     # Try to connect to CalDAV-Server
     LOG.info("Connecting to CalDav-Server using credentials from config...")
