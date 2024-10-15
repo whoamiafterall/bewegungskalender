@@ -1,9 +1,7 @@
-
-from typing import NamedTuple
 from nicegui import ui, app
 from bewegungskalender.functions.config import CONFIG
 from bewegungskalender.functions.logger import LOGGER
-from bewegungskalender.output.message import MultiFormatMessage
+from bewegungskalender.ui.functions import tab_panel, container
 from bewegungskalender.ui.map import configure_map
 
 
@@ -18,55 +16,66 @@ async def main_page():
     LOGGER.debug('Creating Tabs...')
     with ui.header().classes('fixed p-0 m-0') as header:
         with ui.tabs().classes('w-full') as tabs:
-            # Create one Tab for showing Help
-            help_tab = ui.tab(name='help_tab', label=CONFIG['help']['label'], icon='home')
-            # Create one Tab for showing All Events in a List
-            all_events = ui.tab(name='all_events', label=CONFIG['all_events']['label'], icon='calendar_month')
+            home = ui.tab(name='main_page', label=CONFIG['main_page']['label'], icon='home')
+            calendar = ui.tab(name='all_events', label=CONFIG['all_events']['label'], icon='calendar_month')
             # Create one Tab for each Category (Calendar)
           #  for calendar in data:
            #     if calendar.events != []:
-           #         ui.tab(calendar.name)   
+           #         ui.tab(calendar.name)
             # Create one Tab for the Map
             ui.tab(CONFIG['map']['label'], icon='map')
             # Create one tab for the Form
             form = ui.tab(name='form', label=CONFIG['form']['label'], icon='edit_calendar')
-                
+            faq = ui.tab(name='legende', label=CONFIG['legende']['label'], icon='question_mark')
+            links = ui.tab(name='links', label=CONFIG['links']['label'], icon='link')
     
     # Create Tab Panels (what is shown when Tab is selected)
     LOGGER.debug('Creating Tab Panels (Content)...')
+
     with ui.card().classes('w-screen h-dvh p-0'):
-        with ui.tab_panels(tabs, value=help_tab).classes('w-full h-full fixed'):
-            # Create one Tab for displaying help_tab
-            LOGGER.debug(f"Creating Help Panel with the content of {CONFIG['help']['path']}...")
-            with ui.tab_panel(help_tab).classes('p-0 m-0'):
-                with ui.row().classes('w-screen h-dvh gap-0 p-0 m-0'):
-                    with ui.card().tight().classes('md:w-1/2 w-full md:h-full pl-10 pr-10 pb-20 m-0 bg-black text-base anitaliased font-light text-secondary decoration-primary'):
-                        with open(CONFIG['help_tab']['path'], 'r') as f: # open file
+        with ui.tab_panels(tabs, value=home).classes('w-full h-full fixed'):
+
+            # Create one Tab for displaying Homepage
+            LOGGER.debug(f"Creating Help Panel with the content of {CONFIG['main_page']['path']}...")
+            with tab_panel(home):
+                    with container('w-2/3'):
+                        with open(CONFIG['main_page']['path'], 'r') as f: # open file
                             ui.markdown(f.read())
-                    with ui.card().tight().classes('md:w-1/2 w-full md:h-full pl-10 pr-10 pb-20 m-0 bg-black text-base anitaliased font-light text-secondary'):
-                        with open(CONFIG['legende']['path'], 'r') as f: # open file 
-                            ui.markdown("#### Kategorien erklärt ℹ️")
-                            ui.html(f.read()).classes('w-full pt-5')
-            
-            # Create one Grid for displaying everything
+
+            # Create Calendar Page
             LOGGER.debug('Creating the List showing All Events...')
-            with ui.tab_panel(all_events).classes('p-0 m-0'):
+            with tab_panel(calendar):
                 ui.html(CONFIG['all_events']['iframe']).classes('w-screen h-screen p-0 m-0')
-                        
-            # Create Form View
+
+            # Create Form Page
             LOGGER.debug('Creating the Form to enter a new event...')
-            with ui.tab_panel(form).classes('p-0 m-0'):
+            with tab_panel(form):
                 ui.html(CONFIG['form']['iframe']).classes('w-screen h-screen p-0 m-0')
-            
+
+            # Create FAQ Page
+            with tab_panel(faq):
+                with container():
+                    with open(CONFIG['legende']['path'], 'r') as f:  # open file
+                        ui.html(f.read()).classes('flex-none')
+                    with open(CONFIG['FAQ']['path'], 'r') as f:  # open file
+                        ui.markdown(f.read()).classes('flex-initial')
+
+            # Create Links Page
+            with tab_panel(links):
+                with container():
+                    with open(CONFIG['links']['path'], 'r') as f:  # open file
+                        ui.markdown(f.read()).classes('w-full pt-5')
+
             # Create Map View
             LOGGER.debug('Creating the Map to show events...')
             with ui.tab_panel(CONFIG['map']['label']).classes('p-0 m-0'):                      
                 # new map with center set to center of germany
                 map = ui.leaflet(center=(CONFIG['map']['center']['lat'], CONFIG['map']['center']['lon']), zoom=CONFIG['map']['zoom']).classes('w-screen h-screen p-0 m-0')
-              #  map = await configure_map(map)
-            
-                
-                 # Create One List View for each Category (Calendar) #TODO #FIXME
+                map = await configure_map(map)
+
+
+
+                # Create One List View for each Category (Calendar) #TODO #FIXME
           #  for calendar in data:
            #     LOGGER.debug(f"Adding List View of {calendar.name} to UI...")
             #    if calendar.events != []:
@@ -78,7 +87,7 @@ async def main_page():
 #seperate start_ui out from main page
 def start_ui():
     LOGGER.debug('Finished. Starting UI...')
-    ui.run(title=CONFIG['title'], favicon=CONFIG['favicon'], port=CONFIG['port']) #storage_secret=storage_secret)
+    ui.run(title=CONFIG['title'], favicon=CONFIG['favicon'], port=CONFIG['port'], on_air=True) #storage_secret=storage_secret)
     LOGGER.debug('Successfully started UI.')
     # add static files
     app.add_static_files(CONFIG['assets']['url_path'], CONFIG['assets']['local_dir'])  

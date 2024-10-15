@@ -72,7 +72,7 @@ class MultiFormatMessage:
         self.txt += footer_title
         self.markdown += style(escape(footer_title), Format.MD, Style.BOLD)
         self.html += style(escape(footer_title), Format.HTML, Style.BOLD)
-        for item in config['links']:
+        for item in config['footer_links']:
             self.txt += f"{item['link']['text']}: {item['link']['url']}\n"
             self.markdown += md_link(escape(item['link']['text']), item['link']['url']) + "\n"
             self.html += md_link(escape(item['link']['text']), item['link']['url']) + "\n"
