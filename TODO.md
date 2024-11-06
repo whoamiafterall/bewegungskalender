@@ -3,9 +3,16 @@
 
 ## Nicegui
 
-### main_page.py
+### main_page.py/Layout
 
-See '#TODO' Comments in there
+- [] (LONG_TERM) change menu to have "Calendar", "Map" & "Form" as fixed items and to load additional pages from the config => after creating calendar and form ourselves
+- [] (LONG_TERM) Create Form out of nicegui elements
+- [] (LONG_TERM) Create Custom Calendar View
+- [] Make events filterable by:
+  - [] recurring events (yes/no)
+  - [] only events 23h+ (yes/no)
+  - [] by category
+  - [] by location
 
 ### Admin Panel
 
@@ -13,7 +20,7 @@ See '#TODO' Comments in there
 
 ### Map
 
-- [] create a leaflet map out of mapData and display it in a nicegui Tab
+- [x] create a leaflet map out of mapData and display it in a nicegui Tab
 
 ### Calendar
 
