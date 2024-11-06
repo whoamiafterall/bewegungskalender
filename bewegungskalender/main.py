@@ -1,24 +1,25 @@
 # external imports
 import asyncio
-from typing import NamedTuple
+import locale
 from locale import setlocale, LC_TIME
 
+from bewegungskalender.classes.category import Category
 # internal imports
-from bewegungskalender.functions.cli import FORMAT, ARGS, START, END #set_telegram_channel
+from bewegungskalender.functions.cli import FORMAT, ARGS
 from bewegungskalender.functions.logger import LOGGER
-from bewegungskalender.functions.config import CONFIG
+from bewegungskalender.functions.config import LOCALE
 from bewegungskalender.functions.nextcloud_forms import update_ncform
-from bewegungskalender.functions.calDAV import connect_davclient, search_events
-from bewegungskalender.output.message import MultiFormatMessage, create_message
-from bewegungskalender.output.telegram_bot import send_or_edit_telegram # get_telegram_updates
-from bewegungskalender.output.umap import createMapData
-from bewegungskalender.output.mailnewsletter import send_mail
+from bewegungskalender.functions.calDAV import search_events
+from bewegungskalender.classes.message import MultiFormatMessage, create_message
+from bewegungskalender.output.telegram_bot import get_telegram_updates, send_or_edit_telegram
+from bewegungskalender.output.map import create_mapdata
+from bewegungskalender.output.mail import send_mail
 from bewegungskalender.ui.main_page import start_ui
 
 # Set locale
 LOGGER.info(f"Args: {ARGS}")
 LOGGER.debug('Setting locale...')
-setlocale(LC_TIME, CONFIG['format']['locale'])
+setlocale(locale.LC_ALL, LOCALE)
 
 # Main Function if run as standalone program
 def main():
@@ -31,31 +32,27 @@ def main():
 
 # Main async function call if not running NiceGui
 async def main_async():
-    #FIXME get_telegram_updates
-    # Telegram Config
-    #if ARGS.get_telegram_updates: 
-    #    LOGGER.info('Getting telegram channel id...')
-    #    print(get_telegram_updates(config)); exit() 
+    # Get Telegram Channel ID
+    if ARGS.get_telegram_updates:
+        LOGGER.info('Getting telegram channel id...')
+        print(get_telegram_updates()); exit()
     
     # Input Section
-    ## WPForms Input
-    input_calendar = connect_davclient(CONFIG).calendar(url=CONFIG['input']['calendar'])
     ## Nextcloud Form Input
-    if ARGS.update_ncform != None:
-        update_ncform(CONFIG['ncform']['url'], input_calendar)
+    if ARGS.update_ncform:
+        update_ncform()
     
     # Server Section    
     ## Fetch Events from CalDav-Server
-    data:list[NamedTuple] = search_events(CONFIG, START, END, expand=True)
+    data:list[Category] = search_events()
     ## Create a Message in TXT, MD & HTML
-    message: MultiFormatMessage = create_message(CONFIG, data)
-    #print(message.__str__)
+    message: MultiFormatMessage = create_message(data)
         
     # Output Section
     ## UMap Output
     if ARGS.update_map: 
         LOGGER.info(f"Creating GeoJSON Data for the map...")
-        createMapData(data, CONFIG['mapdatadir'], CONFIG['locationcatchdir'])
+        create_mapdata(data)
     ## Print Output
     if ARGS.print: 
         LOGGER.info(f"Printing message in {FORMAT} Format: \n")
@@ -63,11 +60,10 @@ async def main_async():
     ## Mail Output
     if ARGS.send_mail: 
         LOGGER.info('Sending Message per Mail...')
-        send_mail(CONFIG, message, START, END)
+        send_mail(message)
     ## Send or Edit Telegram Message
     if ARGS.telegram:
-        channel = None #set_telegram_channel(ARGS.telegram, config)
-        await send_or_edit_telegram(channel, CONFIG['datadir'], message, edit=ARGS.telegram_edit)
+        await send_or_edit_telegram(message)
     LOGGER.info('Finished all Tasks - Quitting.')
     exit()
     

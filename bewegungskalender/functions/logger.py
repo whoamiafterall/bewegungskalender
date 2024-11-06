@@ -1,12 +1,16 @@
+import logging
 from logging import getLogger, Logger, DEBUG, INFO, ERROR
 from bewegungskalender.functions.cli import LOGLEVEL
 
 # Get Logger and set log level
-LOGGER:Logger = getLogger(__name__)
-if LOGLEVEL is not None:
-    if LOGLEVEL == 'debug':
+logging.basicConfig()
+LOGGER:Logger = getLogger("Bewegungskalender")
+match LOGLEVEL:
+    case 'debug':
         LOGGER.setLevel(DEBUG)
-    elif LOGLEVEL == 'info':
+    case 'info':
         LOGGER.setLevel(INFO)
-    elif LOGLEVEL == 'error':
+    case 'error':
         LOGGER.setLevel(ERROR)
+    case _:
+        LOGGER.setLevel(INFO)

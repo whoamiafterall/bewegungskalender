@@ -1,11 +1,11 @@
 from jinja2 import Environment, FileSystemLoader
-from bewegungskalender.functions.config import CONFIG
+from bewegungskalender.functions.config import TEMPLATING_DIR, MAP_POPUP_TEMPLATE
 
 #start templating engine
-environment = Environment(loader=FileSystemLoader(CONFIG['templating_dir']))
+environment = Environment(loader=FileSystemLoader(TEMPLATING_DIR))
 
 #load templates
-map_template = environment.get_template(CONFIG['map']['popup-template'])
+map_template = environment.get_template(MAP_POPUP_TEMPLATE)
 
 def render_map_template(context):
     return map_template.render(context)

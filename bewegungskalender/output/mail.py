@@ -1,27 +1,24 @@
 import smtplib, ssl
-from datetime import date
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.utils import formatdate, make_msgid
-from bewegungskalender.functions.formatting import Format
-from bewegungskalender.output.message import MultiFormatMessage
+from bewegungskalender.classes.message import MultiFormatMessage
 from bewegungskalender.functions.cli import MAIL_TO, START, END
+from bewegungskalender.functions.config import MAIL_ACC, MAIL_PW, MAIL_SUBJECT, MAIL_SENDER, MAIL_RECEIVER, SMTP, MAIL_SRV
 from bewegungskalender.functions.logger import LOGGER
 from bewegungskalender.functions.datetime import date_str
 
-def send_mail(config:dict, message:MultiFormatMessage):
-    server:str = config['mail']['server']
-    port:str = config['mail']['smtp_port']
+def send_mail(message:MultiFormatMessage):
     LOGGER.debug('Connecting to SMTP Server...')
-    with smtplib.SMTP_SSL(server, port, context=ssl.create_default_context()) as smtp:
+    with smtplib.SMTP_SSL(MAIL_SRV, SMTP, context=ssl.create_default_context()) as smtp:
         smtp.ehlo()
         smtp.set_debuglevel(1)
         LOGGER.debug('Logging into SMTP Client with credentials...')
-        smtp.login(config['mail']['account'], config['mail']['password']) 
+        smtp.login(MAIL_ACC, MAIL_PW)
         mail = MIMEMultipart("alternative")
-        subject = f"{config['newsletter']['subject']} {date_str(START)} - {date_str(END)}"
+        subject = f"{MAIL_SUBJECT} {date_str(START)} - {date_str(END)}"
         mail.add_header('subject', subject)
-        mail.add_header('from', config['newsletter']['sender'])
+        mail.add_header('from', MAIL_SENDER)
         mail.add_header('date', formatdate(localtime=True))
         mail.add_header('Message-ID', make_msgid())
         mail.add_header('Return-Path', 'noreply-bewegungskalender@systemli.org')
@@ -29,12 +26,12 @@ def send_mail(config:dict, message:MultiFormatMessage):
         mail.attach(MIMEText(message.html, "html"))
 
         # Set Receiver from command-line argument if specified - else from config       
-        receiver = MAIL_TO if MAIL_TO is not None else config['newsletter']['receiver']
+        receiver:list = [MAIL_TO] if MAIL_TO is not None else MAIL_RECEIVER
         if receiver is not None:
             for address in receiver:
                 mail["to"] = address
                 LOGGER.debug(f"Sending E-Mail to {address}...")
                 smtp.ehlo()
-                smtp.sendmail(config['newsletter']['sender'], address, mail.as_string())
+                smtp.sendmail(MAIL_SENDER, address, mail.as_string())
         LOGGER.debug('Quitting Connection to SMTP Server...')
         smtp.quit()

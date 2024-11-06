@@ -1,6 +1,6 @@
 import sys
 from argparse import ArgumentParser, Namespace
-from _datetime import date, timedelta
+from _datetime import timedelta, datetime
 from typing import Final
 #from bewegungskalender.output.telegram import Channel
 
@@ -19,7 +19,7 @@ def get_args() -> Namespace:
     cli.add_argument("-c", "--config", dest='config_file', type=str, help='specify path to config file, defaults to config.yml', action='store', nargs='?')
     cli.add_argument("-l", "--loglevel", dest='loglevel', type=str, help='set the log level, defaults to info', choices=['debug', 'error'], action='store', nargs='?')
     cli.add_argument("-g", "--get-telegram-updates", dest='get_telegram_updates', help='get telegram id of channel', action='store_true')
-    cli.add_argument("-m", "--map", dest='update_map', help='create MapData in geojson from loaction entries of events', action='store_true')
+    cli.add_argument("-m", "--leaflet", dest='update_map', help='create MapData in geojson from loaction entries of events', action='store_true')
     cli.add_argument("-n", "--newsletter", dest='send_mail', help='send email-to recipients specified or from config', action='store_true')
     cli.add_argument("-to", dest='mail_to', required='send_mail' in sys.argv, type=str, action='store',
                       help='override mail receiver from config - only accepts one string as mail address')
@@ -37,31 +37,20 @@ def get_args() -> Namespace:
     cli.add_argument("--edit", dest='telegram_edit', required='--telegram' in sys.argv, help='edit last telegram message instead of sending a new one', action='store_true')
     cli.add_argument("-toot", "--mastodon", dest='send_mastodon', help='send toot to mastodon', action='store_true')
     cli.add_argument("-ui", "--user-interface", dest='user_interface', help='start the user interface', action='store_true')
-    cli.add_argument("-wp", "--update-wpform", dest='update_wpform', help='check Mailbox for new events from WPForms and add them to calendar', action='store_true')
     cli.set_defaults(config_file="config.yml", loglevel='info', format='txt', last_update=1, query_start=1, query_end=14)
     # Show help if no argument specified
     if len(sys.argv) <= 1:
         sys.argv.append('--help')
     return cli.parse_args()
-        
-# Handle --telegram and set telegram Channel
-#def set_telegram_channel(type:str, config:dict) -> Channel:
-#    botToken = config['telegram']['token']
-#    if type == 'prod':
-#        return Channel(config['telegram']['production'], botToken, 'prod')
-#    if type == 'test':
-#     return Channel(config['telegram']['test'], botToken, 'test')
 
 # These are run when this module is imported
 ARGS: Final[Namespace] = get_args()
 CONFIG_FILE: Final[str] = ARGS.config_file
-START: Final[date] = date.today() + timedelta(ARGS.query_start)
-END: Final[date] = START + timedelta(ARGS.query_end)
+START: Final[datetime] = datetime.now() + timedelta(ARGS.query_start)
+END: Final[datetime] = START + timedelta(ARGS.query_end)
 LOGLEVEL: Final[str] = ARGS.loglevel
 LAST_UPDATE: Final[int] = ARGS.last_update # Specifies how many days in the past the Nextcloud Form events shall be considered
 FORMAT: Final[str] = ARGS.format 
 MAIL_TO: Final[str] = ARGS.mail_to
-# TELEGRAM_CHANNEL: Final[Channel] = 
-# TODO add set_telegram_channel 
-
-
+TELEGRAM_CHANNEL: Final[str] = ARGS.telegram
+TELEGRAM_EDIT: Final[bool] = ARGS.telegram_edit

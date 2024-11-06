@@ -11,8 +11,19 @@ def make_dir(path):
             pass
         else: raise
 
+def make_file(path):
+    if not os.path.exists(path):
+        os.mknod(path)
+
 def safe_open_write(path):
     make_dir(os.path.dirname(path))
     return open(path, "w")
 
+def safe_open_read(path):
+    make_dir(os.path.dirname(path))
+    make_file(path)
+    return open(path, "r+")
 
+def to_filename(text):
+    text = text.replace(' ', '_')
+    return os.path.basename(text)
