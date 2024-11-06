@@ -1,53 +1,43 @@
-import datetime
-from typing import NamedTuple
+from http.client import RemoteDisconnected
+
+from requests.exceptions import ConnectionError
 from caldav import Calendar, DAVClient
-import requests
-from bewegungskalender.functions.event import Event
+from bewegungskalender.classes.category import Category
+from bewegungskalender.classes.event import Event
 from bewegungskalender.functions.logger import LOGGER
+from bewegungskalender.functions.config import CALENDARS, CALDAV_URL, CALDAV_PW, CALDAV_USR
+from bewegungskalender.functions.cli import START, END
 import caldav
 import icalendar
-from collections import namedtuple
-
-
-def connect_davclient(config:dict):
-    # Try to connect to CalDAV-Server
-    LOGGER.info("Connecting to CalDav-Server using credentials from config...")
-    try:
-        with caldav.DAVClient(url=config['caldav']['url'], username=config['caldav']['username'], password=config['caldav']['password']) as client:
-            return client    
-    except ConnectionError:
-        LOGGER.exception("Connection to CalDav-Server failed.")
-        exit()
         
-def search_events(config: dict, start: datetime.date, stop: datetime.date, expand=bool) -> list[NamedTuple] :
+def search_events() -> list[Category] :
     # Connect to CalDAV Server
-    data:list[NamedTuple] = []
-    davclient:DAVClient = connect_davclient(config)
-    LOGGER.info(f"Looking for Events between {start} and {stop} in {len(config['calendars'])} calendars... ")
+    data:list[Category] = []
+    davclient:DAVClient = caldav.DAVClient(url=CALDAV_URL, username=CALDAV_USR, password=CALDAV_PW)
+    LOGGER.info(f"Looking for Events between {START} and {END} in {len(CALENDARS)} calendars... ")
     
     # Get Calendar Objects from Server
-    for configline in config['calendars']:
-        url = configline['calendar']['url']
+    for line in CALENDARS:
+        url = line['calendar']['url']
         LOGGER.debug(f"Getting Data from {url}...")
-        calobject:Calendar = davclient.calendar(url=url)
-        
-        # Search for Events this Calendar in the given timeframe and add them to a list
+        caldav_cal:Calendar = davclient.calendar(url=url)
+        # Search for Events in this Calendar in the given timeframe and add them to a list
         events:list[Event] = []
-        for cal_data in calobject.search(**{'start': start, 'end': stop}, event=True, expand=expand, sort_keys=['dtstart', 'summary']):
-            for component in icalendar.Event.from_ical(cal_data.data).walk():
+        try:
+            cal_data = caldav_cal.search(**{'start': START, 'end': END}, event=True, expand=True, sort_keys=['dtstart', 'summary'])
+            name = caldav_cal.get_properties([caldav.dav.DisplayName()])['{DAV:}displayname']
+        except ConnectionError or RemoteDisconnected:
+            LOGGER.exception("Couldn't get data from CalDAV-Server because of connection error. Please check your network connection and try again!")
+            return None and exit(1)
+        for cal in cal_data:
+            for component in icalendar.Event.from_ical(cal.data).walk():
                 if component.name == "VEVENT":
                     events.append(Event.from_icalendar(component))
-                    
-        # Create Namedtuple to store Calendar Data in a useful way (Name, Emojis, Events, Map Marker)
-        calendar:NamedTuple = namedtuple("Calendar", ["emoji", "name", "events","map_marker"], defaults=[[]])
-        try:
-            calendar.name = calobject.get_properties([caldav.dav.DisplayName()])['{DAV:}displayname']
-        except requests.ConnectionError:
-            LOGGER.exception("Couldn't get calendar name from DAV-Client because of connection error. Aborting, please check your network connection and try again!")
-            exit()
-        calendar.events = events
-        calendar.emoji = configline['calendar']['emoji']
-        calendar.map_marker_url = configline['calendar']['map_marker_url']
+        calendar:Category = Category(
+            name = name,
+            events = events,
+            emoji = line['calendar']['emoji'],
+            map_marker = line['calendar']['map_marker'])
         LOGGER.info(f"Successfully parsed {len(calendar.events)} events from {calendar.name}!")
         data.append(calendar)
     return data

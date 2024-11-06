@@ -1,14 +1,13 @@
 import icalendar
-from docutils.nodes import description
 from icalendar.cal import Component
 from datetime import datetime, timedelta
 from bewegungskalender.functions.datetime import check_datetime, date_str, fix_midnight
 from bewegungskalender.functions.logger import LOGGER
 
-class Event():
-    def __init__(self, sum:str = None, desc:str = None, loc:str = None,
+class Event:
+    def __init__(self, summ:str = None, desc:str = None, loc:str = None,
                  start:datetime = None, end:datetime = None, rec:str = None):
-        self.summary: str = sum
+        self.summary: str = summ
         self.description:str = desc
         self.location:str = loc
         self.start:datetime = start
@@ -24,7 +23,6 @@ class Event():
         event.location = component.get('location')
         event.start = check_datetime(component.get('dtstart').dt)
         event.end = check_datetime(component.get('dtend').dt)
-        print(component.get('rrule'))
         event.recurrence = component.get('recurrence-id')
 
         if date_str(event.start) != date_str(event.end):
