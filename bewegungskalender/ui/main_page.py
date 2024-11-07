@@ -5,7 +5,8 @@ from bewegungskalender.functions.config import CONFIG, UI_PORT, UI_FAVICON, UI_T
     MAP_CENTER_LON, MENU_ITEMS
 from bewegungskalender.functions.logger import LOGGER
 from bewegungskalender.static.history import history
-from bewegungskalender.ui.functions import container, show_links, render_iframe, loading
+from bewegungskalender.ui.functions import container, render_iframe, loading
+from bewegungskalender.ui.links import show_links
 from bewegungskalender.ui.map import configure_map
 from bewegungskalender.ui.router import Router
 
@@ -69,7 +70,7 @@ async def main_page():
     def links():
         loading(MENU_ITEMS['links']['label'], 0.2)
         with container('flex-row flex-wrap'):
-            show_links(MENU_ITEMS['links']['source'])
+            show_links()
 
     with ui.right_drawer(value=False, fixed=True, elevated=True, top_corner=True).classes('p-0 m-0').props(
             'width=auto') as right_drawer:
@@ -126,7 +127,7 @@ async def main_page():
 #seperate start_ui out from main page
 def start_ui():
     LOGGER.debug('Finished. Starting UI...')
-    ui.run(title=UI_TITLE, favicon=UI_FAVICON, port=UI_PORT, on_air=True) #storage_secret=storage_secret)
+    ui.run(title=UI_TITLE, favicon=UI_FAVICON, port=UI_PORT) #storage_secret=storage_secret)
     LOGGER.debug('Successfully started UI.')
     # add static files
     app.add_static_files(CONFIG['assets']['url_path'], CONFIG['assets']['local_dir'])  

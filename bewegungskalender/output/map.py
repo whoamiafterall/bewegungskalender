@@ -15,7 +15,7 @@ from bewegungskalender.functions.config import MAPDATA_CACHE, LOCATION_CACHE
 from bewegungskalender.functions.logger import LOGGER
 from bewegungskalender.functions.datetime import event_time
 from bewegungskalender.functions.formatting import add_link
-from bewegungskalender.functions.file import safe_open_write
+from bewegungskalender.functions.file import safe_open
 
 class MyPoint:
      def __init__(self, lon, lat):
@@ -43,17 +43,16 @@ def location_lookup(location: str) -> list|None:
         return nominatim.search(location, limit=1)
 
 def get_cached_coordinates(path: str):
-    f = open(path, 'r');
+    f = open(path, "r")
     return json.loads(f.read())["coordinates"]
 
 def cache_coordinates(path:str, location:str, coordinates:Tuple[float, float]):
     # Cache Coordinates
-    with safe_open_write(f"{path}") as f:
+    with safe_open(path,"w") as f:
         f.write(json.dumps({
             "location": location,
             "coordinates": coordinates
         }))
-        f = open(path, 'r');
 
 # method that uses cached lon lat locations
 def get_coordinates(location: str) -> Tuple[float, float]|None:
@@ -129,6 +128,6 @@ def create_mapdata(data: list[Category]) -> None:
 
         featureCollections.append(featureCollection)
 
-    with safe_open_write(f"{MAPDATA_CACHE}") as f: # write Data to file
+    with safe_open(f"{MAPDATA_CACHE}", "w") as f: # write Data to file
         f.write(json.dumps(featureCollections))
 

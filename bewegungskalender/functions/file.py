@@ -15,14 +15,10 @@ def make_file(path):
     if not os.path.exists(path):
         os.mknod(path)
 
-def safe_open_write(path):
-    make_dir(os.path.dirname(path))
-    return open(path, "w")
-
-def safe_open_read(path):
+def safe_open(path, mode):
     make_dir(os.path.dirname(path))
     make_file(path)
-    return open(path, "r+")
+    return open(path, mode)
 
 def to_filename(text):
     text = text.replace(' ', '_')

@@ -4,14 +4,14 @@ from telegram.error import BadRequest
 
 from bewegungskalender.functions.cli import TELEGRAM_CHANNEL, TELEGRAM_EDIT
 from bewegungskalender.functions.config import DATADIR, TELEGRAM_TEST, TELEGRAM_TOKEN, TELEGRAM_PRODUCTION
-from bewegungskalender.functions.file import safe_open_read, safe_open_write
+from bewegungskalender.functions.file import safe_open
 from bewegungskalender.functions.logger import LOGGER
 from bewegungskalender.classes.message import MultiFormatMessage
 
 bot:Bot = Bot(TELEGRAM_TOKEN)
 
 def get_last_msg_ids() -> dict:
-    with safe_open_read(f"{DATADIR}/message_ids.yml") as ids:
+    with safe_open(f"{DATADIR}/message_ids.yml", "r") as ids:
         last_msg_ids = yaml.load(ids, Loader=yaml.SafeLoader)
         if last_msg_ids is None and TELEGRAM_EDIT:
             LOGGER.exception("It seems like there is no message that could be edited. Please try to send one first."); exit(1)
@@ -32,7 +32,7 @@ async def send_or_edit_telegram(message:MultiFormatMessage) -> None:
         LOGGER.exception(f"Counted {len(message.markdown)} characters => Message too long. Limit = 8000 characters."); exit(1)
     channel_id = TELEGRAM_PRODUCTION if TELEGRAM_CHANNEL == 'prod' else TELEGRAM_TEST
     last_msg_ids:dict = get_last_msg_ids()
-    with safe_open_read(f"{DATADIR}/last_message.txt") as content:
+    with safe_open(f"{DATADIR}/last_message.txt", "r") as content:
         try:
             if not TELEGRAM_EDIT: # Send a New Message
                 LOGGER.info('Sending Message to Telegram Channel...')
@@ -42,7 +42,7 @@ async def send_or_edit_telegram(message:MultiFormatMessage) -> None:
                     parse_mode="MarkdownV2",
                     disable_web_page_preview=True)
                 last_msg_ids[TELEGRAM_CHANNEL] = last_message.message_id
-                with safe_open_write(f"{DATADIR}/message_ids.yml") as ids:
+                with safe_open(f"{DATADIR}/message_ids.yml", "w") as ids:
                     yaml.dump(last_msg_ids, ids, yaml.Dumper)
                 content.seek(0), content.write(message.txt), content.truncate() # write message content to file to be able to check if it has changed
                 LOGGER.info(f"Successfully sent message to Telegram Channel {TELEGRAM_CHANNEL}!")
