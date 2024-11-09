@@ -5,10 +5,10 @@ import yaml
 from nicegui import ui
 from slugify import slugify
 
-from bewegungskalender.functions.config import MAIN_MENU, DATADIR
-from bewegungskalender.functions.file import safe_open
-from bewegungskalender.ui.functions import ErrorChecker, loading, container
-from bewegungskalender.ui.navigation.router import ROUTER
+from bewegungskalender.backend.io.config import MAIN_MENU, DATADIR
+from bewegungskalender.backend.io.file import safe_open
+from bewegungskalender.frontend.functions import ErrorChecker, loading, container
+from bewegungskalender.frontend.navigation.router import ROUTER
 
 
 # Create Links Page

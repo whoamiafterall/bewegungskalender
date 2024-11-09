@@ -1,10 +1,10 @@
-from bewegungskalender.classes.style import Style, style
-from bewegungskalender.functions.cli import START, END
-from bewegungskalender.classes.event import Event
-from bewegungskalender.functions.config import FOOTER
-from bewegungskalender.functions.logger import LOGGER
-from bewegungskalender.functions.datetime import weekday_date, event_time
-from bewegungskalender.functions.formatting import add_link, escape, Format, newline, match_and_add_recurring
+from bewegungskalender.backend.formatting.style import Style, style
+from bewegungskalender.backend.io.cli import START, END
+from bewegungskalender.backend.calendar.event import Event
+from bewegungskalender.backend.io.config import FOOTER
+from bewegungskalender.libs.logger import LOGGER
+from bewegungskalender.libs.datetime import weekday_date, event_time
+from bewegungskalender.backend.formatting.formatting import add_link, escape, Format, newline, match_and_add_recurring
 
 
 class MultiFormatMessage:

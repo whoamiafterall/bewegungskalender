@@ -1,6 +1,6 @@
 import logging
 from logging import getLogger, Logger, DEBUG, INFO, ERROR
-from bewegungskalender.functions.cli import LOGLEVEL
+from bewegungskalender.backend.io.cli import LOGLEVEL
 
 # Get Logger and set log level
 logging.basicConfig()

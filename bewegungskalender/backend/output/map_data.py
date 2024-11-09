@@ -7,15 +7,15 @@ from typing import Tuple
 from geojson import Feature, FeatureCollection
 from slugify import slugify
 
-from bewegungskalender.classes.category import Category
-from bewegungskalender.classes.event import Event
-from bewegungskalender.classes.format import Format
-from bewegungskalender.classes.nominatim import Nominatim
-from bewegungskalender.functions.config import MAPDATA_CACHE, LOCATION_CACHE
-from bewegungskalender.functions.logger import LOGGER
-from bewegungskalender.functions.datetime import event_time
-from bewegungskalender.functions.formatting import add_link
-from bewegungskalender.functions.file import safe_open
+from bewegungskalender.backend.calendar.category import Category
+from bewegungskalender.backend.calendar.event import Event
+from bewegungskalender.backend.formatting.format import Format
+from bewegungskalender.libs.nominatim import Nominatim
+from bewegungskalender.backend.io.config import MAPDATA_CACHE, LOCATION_CACHE
+from bewegungskalender.libs.logger import LOGGER
+from bewegungskalender.libs.datetime import event_time
+from bewegungskalender.backend.formatting.formatting import add_link
+from bewegungskalender.backend.io.file import safe_open
 
 class MyPoint:
      def __init__(self, lon, lat):

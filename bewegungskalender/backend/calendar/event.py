@@ -1,8 +1,8 @@
 import icalendar
 from icalendar.cal import Component
 from datetime import datetime, timedelta
-from bewegungskalender.functions.datetime import check_datetime, date_str, fix_midnight
-from bewegungskalender.functions.logger import LOGGER
+from bewegungskalender.libs.datetime import check_datetime, date_str, fix_midnight
+from bewegungskalender.libs.logger import LOGGER
 
 class Event:
     def __init__(self, summ:str = None, desc:str = None, loc:str = None,

@@ -1,12 +1,12 @@
 from nicegui import ui
 from slugify import slugify
 
-from bewegungskalender.functions.config import MAIN_MENU, MAP_CENTER_LAT, MAP_CENTER_LON, MAP_ZOOM
-from bewegungskalender.functions.logger import LOGGER
-from bewegungskalender.output.map import read_mapdata
-from bewegungskalender.ui.functions import loading
-from bewegungskalender.ui.navigation.router import ROUTER
-from bewegungskalender.ui.templater import render_map_template
+from bewegungskalender.backend.io.config import MAIN_MENU, MAP_CENTER_LAT, MAP_CENTER_LON, MAP_ZOOM
+from bewegungskalender.libs.logger import LOGGER
+from bewegungskalender.backend.output.map_data import read_mapdata
+from bewegungskalender.frontend.functions import loading
+from bewegungskalender.frontend.navigation.router import ROUTER
+from bewegungskalender.frontend.templater import render_map_template
 
 # Create Map View
 @ROUTER.add(slugify(f"/{str(MAIN_MENU['map']['label'].lower())}"))
@@ -21,7 +21,7 @@ async def map_view(right_drawer):
                 'fab color=accent')
         leaflet.clear_layers()
 
-        # add ui on bottom right for copyright and set leaflet template(the style) + zoom
+        # add frontend on bottom right for copyright and set leaflet template(the style) + zoom
         leaflet.tile_layer(
 
             url_template=r'https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png',

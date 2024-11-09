@@ -2,11 +2,11 @@ import smtplib, ssl
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.utils import formatdate, make_msgid
-from bewegungskalender.classes.message import MultiFormatMessage
-from bewegungskalender.functions.cli import MAIL_TO, START, END
-from bewegungskalender.functions.config import MAIL_ACC, MAIL_PW, MAIL_SUBJECT, MAIL_SENDER, MAIL_RECEIVER, SMTP, MAIL_SRV
-from bewegungskalender.functions.logger import LOGGER
-from bewegungskalender.functions.datetime import date_str
+from bewegungskalender.backend.formatting.message import MultiFormatMessage
+from bewegungskalender.backend.io.cli import MAIL_TO, START, END
+from bewegungskalender.backend.io.config import MAIL_ACC, MAIL_PW, MAIL_SUBJECT, MAIL_SENDER, MAIL_RECEIVER, SMTP, MAIL_SRV
+from bewegungskalender.libs.logger import LOGGER
+from bewegungskalender.libs.datetime import date_str
 
 def send_mail(message:MultiFormatMessage):
     LOGGER.debug('Connecting to SMTP Server...')

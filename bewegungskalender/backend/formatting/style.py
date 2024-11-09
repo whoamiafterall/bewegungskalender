@@ -1,5 +1,5 @@
 from enum import Enum
-from bewegungskalender.classes.format import Format
+from bewegungskalender.backend.formatting.format import Format
 
 class Style(Enum):
     BOLD = 'bold'

@@ -1,5 +1,5 @@
 from jinja2 import Environment, FileSystemLoader
-from bewegungskalender.functions.config import TEMPLATING_DIR, MAP_POPUP_TEMPLATE
+from bewegungskalender.backend.io.config import TEMPLATING_DIR, MAP_POPUP_TEMPLATE
 
 #start templating engine
 environment = Environment(loader=FileSystemLoader(TEMPLATING_DIR))

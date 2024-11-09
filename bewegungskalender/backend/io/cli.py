@@ -36,7 +36,7 @@ def get_args() -> Namespace:
     cli.add_argument("-t", "--telegram", dest='telegram', type=str, help='send message to telegram - choose production or test_channel specified in config', choices=['prod', 'test'], action='store')
     cli.add_argument("--edit", dest='telegram_edit', required='--telegram' in sys.argv, help='edit last telegram message instead of sending a new one', action='store_true')
     cli.add_argument("-toot", "--mastodon", dest='send_mastodon', help='send toot to mastodon', action='store_true')
-    cli.add_argument("-ui", "--user-interface", dest='user_interface', help='start the user interface', action='store_true')
+    cli.add_argument("-frontend", "--user-interface", dest='user_interface', help='start the user interface', action='store_true')
     cli.set_defaults(config_file="config.yml", loglevel='info', format='txt', last_update=1, query_start=1, query_end=14)
     # Show help if no argument specified
     if len(sys.argv) <= 1:

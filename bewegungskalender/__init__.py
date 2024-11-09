@@ -4,16 +4,16 @@ from typing import NamedTuple
 from locale import setlocale, LC_TIME
 
 # internal imports
-from bewegungskalender.functions.cli import FORMAT, ARGS, START, END
-from bewegungskalender.functions.logger import LOGGER
-from bewegungskalender.functions.config import CONFIG
-from bewegungskalender.functions.nextcloud_forms import update_ncform
-from bewegungskalender.functions.calDAV import search_events
-from bewegungskalender.classes.message import MultiFormatMessage, create_message
-from bewegungskalender.output.telegram_bot import get_telegram_updates, send_or_edit_telegram
-from bewegungskalender.output.map import create_mapdata
-from bewegungskalender.output.mail import send_mail
-from bewegungskalender.ui.main_page import start_ui
+from bewegungskalender.backend.io.cli import FORMAT, ARGS, START, END
+from bewegungskalender.libs.logger import LOGGER
+from bewegungskalender.backend.io.config import CONFIG
+from bewegungskalender.backend.io.nextcloud_forms import update_ncform
+from bewegungskalender.backend.calendar.caldav_server import search_events
+from bewegungskalender.backend.formatting.message import MultiFormatMessage, create_message
+from bewegungskalender.backend.output.telegram_bot import get_telegram_updates, send_or_edit_telegram
+from bewegungskalender.backend.output.map_data import create_mapdata
+from bewegungskalender.backend.output.mail import send_mail
+from bewegungskalender.frontend.main_frame import start_ui
 
 __all__ =   ([asyncio, NamedTuple, setlocale, LC_TIME] +
              [CONFIG] +

@@ -2,14 +2,16 @@ from http.client import RemoteDisconnected
 
 from requests.exceptions import ConnectionError
 from caldav import Calendar, DAVClient
-from bewegungskalender.classes.category import Category
-from bewegungskalender.classes.event import Event
-from bewegungskalender.functions.logger import LOGGER
-from bewegungskalender.functions.config import CALENDARS, CALDAV_URL, CALDAV_PW, CALDAV_USR
-from bewegungskalender.functions.cli import START, END
+from bewegungskalender.backend.calendar.category import Category
+from bewegungskalender.backend.calendar.event import Event
+from bewegungskalender.libs.logger import LOGGER
+from bewegungskalender.backend.io.config import CALENDARS, CALDAV_URL, CALDAV_PW, CALDAV_USR
+from bewegungskalender.backend.io.cli import START, END
 import caldav
 import icalendar
-        
+
+# All Interactions with the CalDav Server are in this file
+
 def search_events() -> list[Category] :
     # Connect to CalDAV Server
     data:list[Category] = []

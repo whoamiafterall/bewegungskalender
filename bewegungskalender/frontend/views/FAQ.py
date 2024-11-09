@@ -2,9 +2,9 @@
 from nicegui import ui
 from slugify import slugify
 
-from bewegungskalender.functions.config import MAIN_MENU
-from bewegungskalender.ui.functions import container
-from bewegungskalender.ui.navigation.router import ROUTER
+from bewegungskalender.backend.io.config import MAIN_MENU
+from bewegungskalender.frontend.functions import container
+from bewegungskalender.frontend.navigation.router import ROUTER
 
 @ROUTER.add(slugify(f"/{str(MAIN_MENU['FAQ']['label'].lower())}"))
 def faq_view():

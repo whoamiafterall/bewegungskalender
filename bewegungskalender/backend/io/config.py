@@ -2,11 +2,10 @@ from typing import Final
 
 import pytz
 import yaml
-from docutils.nodes import strong
 from pytz.tzinfo import StaticTzInfo
 
-from bewegungskalender.functions.cli import CONFIG_FILE
-from bewegungskalender.functions.logger import LOGGER
+from bewegungskalender.backend.io.cli import CONFIG_FILE
+from bewegungskalender.libs.logger import LOGGER
 
 # get Config from yml file
 LOGGER.debug('Loading config file...')
@@ -32,9 +31,9 @@ DATADIR: Final[str] = CONFIG['datadir']
 TEMPLATING_DIR: Final[str] = CONFIG['templating_dir']
 
 # UI-Section
-UI_PORT: Final[int] = CONFIG['ui']['port']
-UI_TITLE: Final[str] = CONFIG['ui']['title']
-UI_FAVICON: Final[str] = CONFIG['ui']['favicon']
+UI_PORT: Final[int] = CONFIG['frontend']['port']
+UI_TITLE: Final[str] = CONFIG['frontend']['title']
+UI_FAVICON: Final[str] = CONFIG['frontend']['favicon']
 MAIN_MENU: Final[dict[str, dict]] = CONFIG['main_menu']
 SECONDARY_MENU: Final[dict[str,dict]] = CONFIG['secondary_menu']
 

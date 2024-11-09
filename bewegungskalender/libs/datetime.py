@@ -1,6 +1,6 @@
 from _datetime import datetime, timedelta, date
 
-from bewegungskalender.functions.config import TIMEZONE
+from bewegungskalender.backend.io.config import TIMEZONE
 
 def to_datetime(day:str, config) -> datetime:
     """returns a datetime.datetime Object from a String using format specified in config."""

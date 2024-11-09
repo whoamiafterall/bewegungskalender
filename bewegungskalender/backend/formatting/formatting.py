@@ -1,10 +1,10 @@
 import re
-from bewegungskalender.classes.format import Format
-from bewegungskalender.functions.datetime import date_str, event_time
-from bewegungskalender.classes.event import Event
-from bewegungskalender.functions.logger import LOGGER
+from bewegungskalender.backend.formatting.format import Format
+from bewegungskalender.libs.datetime import date_str, event_time
+from bewegungskalender.backend.calendar.event import Event
+from bewegungskalender.libs.logger import LOGGER
 
-# generic functions for handling different text formatting
+# generic libs for handling different text formatting
 def newline(frmt:Format) -> str:
     """Returns a newline statement depending on the Format "frmt". Useful to reuse when templating content.
 

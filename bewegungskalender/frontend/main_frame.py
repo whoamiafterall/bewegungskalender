@@ -1,15 +1,15 @@
 from nicegui import ui, app
 
-from bewegungskalender.functions.config import CONFIG, UI_PORT, UI_FAVICON, UI_TITLE, MAIN_MENU
-from bewegungskalender.functions.logger import LOGGER
-from bewegungskalender.ui.functions import container
-from bewegungskalender.ui.views.FAQ import faq_view
-from bewegungskalender.ui.views.about import about_view
-from bewegungskalender.ui.views.calendar import calendar_view
-from bewegungskalender.ui.views.form import form_view
-from bewegungskalender.ui.views.links import links_view
-from bewegungskalender.ui.views.map import map_view
-from bewegungskalender.ui.navigation.router import ROUTER
+from bewegungskalender.backend.io.config import CONFIG, UI_PORT, UI_FAVICON, UI_TITLE, MAIN_MENU
+from bewegungskalender.libs.logger import LOGGER
+from bewegungskalender.frontend.functions import container
+from bewegungskalender.frontend.views.FAQ import faq_view
+from bewegungskalender.frontend.views.about import about_view
+from bewegungskalender.frontend.views.calendar import calendar_view
+from bewegungskalender.frontend.views.form import form_view
+from bewegungskalender.frontend.views.links import links_view
+from bewegungskalender.frontend.views.map import map_view
+from bewegungskalender.frontend.navigation.router import ROUTER
 
 
 #nice gui support async function for page loading
@@ -70,8 +70,8 @@ async def main_page():
     #  for calendar in data:
     #     LOGGER.debug(f"Adding List View of {calendar.name} to UI...")
     #    if calendar.events != []:
-    #       with ui.tab_panel(calendar.name):
-    #          ui.html(message.html)
+    #       with frontend.tab_panel(calendar.name):
+    #          frontend.html(message.html)
 
 
 # storage_secret = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits) for _ in range(32))

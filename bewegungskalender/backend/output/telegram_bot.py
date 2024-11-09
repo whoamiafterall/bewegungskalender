@@ -2,11 +2,11 @@ import yaml
 from telegram._bot import Bot
 from telegram.error import BadRequest
 
-from bewegungskalender.functions.cli import TELEGRAM_CHANNEL, TELEGRAM_EDIT
-from bewegungskalender.functions.config import DATADIR, TELEGRAM_TEST, TELEGRAM_TOKEN, TELEGRAM_PRODUCTION
-from bewegungskalender.functions.file import safe_open
-from bewegungskalender.functions.logger import LOGGER
-from bewegungskalender.classes.message import MultiFormatMessage
+from bewegungskalender.backend.io.cli import TELEGRAM_CHANNEL, TELEGRAM_EDIT
+from bewegungskalender.backend.io.config import DATADIR, TELEGRAM_TEST, TELEGRAM_TOKEN, TELEGRAM_PRODUCTION
+from bewegungskalender.backend.io.file import safe_open
+from bewegungskalender.libs.logger import LOGGER
+from bewegungskalender.backend.formatting.message import MultiFormatMessage
 
 bot:Bot = Bot(TELEGRAM_TOKEN)
 
@@ -21,7 +21,7 @@ def get_last_msg_ids() -> dict:
 
 async def get_telegram_updates():
         """
-        telegram functions method to retrieve group_ids of groups that the bot joined
+        telegram libs method to retrieve group_ids of groups that the bot joined
         """
         LOGGER.debug('Getting telegram updates...')
         updates = await bot.get_updates()
