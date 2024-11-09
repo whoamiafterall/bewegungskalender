@@ -59,7 +59,7 @@ async def main_page():
             ui.button(MAIN_MENU['FAQ']['label'], icon=MAIN_MENU['FAQ']['icon'],
                       on_click=lambda: ROUTER.open(faq_view)).on_click(lambda: left_drawer.hide())
             ui.button(MAIN_MENU['links']['label'], icon=MAIN_MENU['links']['icon'],
-        ,              on_click=lambda: ROUTER.open(links_view)).on_click(lambda: left_drawer.hide())
+                      on_click=lambda: ROUTER.open(links_view)).on_click(lambda: left_drawer.hide())
             ui.separator()
             ui.button(icon='close', on_click=lambda: left_drawer.hide()).props('flat color=white align=center').classes(
                 'h-24px')
