@@ -6,7 +6,6 @@ from nicegui import background_tasks, helpers, ui
 class RouterFrame(ui.element, component='router_frame.js'):
     pass
 
-
 class Router:
 
     def __init__(self) -> None:
@@ -43,3 +42,6 @@ class Router:
     def frame(self) -> ui.element:
         self.content = RouterFrame().on('open', lambda e: self.open(e.args))
         return self.content
+
+
+ROUTER = Router()

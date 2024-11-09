@@ -1,10 +1,21 @@
-from contextlib import contextmanager
-
+# Create About Page
 from nicegui import ui
+from slugify import slugify
 
+from bewegungskalender.functions.config import MENU_ITEMS
+from bewegungskalender.functions.logger import LOGGER
+from bewegungskalender.ui.functions import container
+from bewegungskalender.ui.navigation.router import ROUTER
 
-@contextmanager
-def history(): #TODO Complete this
+@ROUTER.add(slugify(f"/{str(MENU_ITEMS['about']['label'].lower())}"))
+def about_view():
+    LOGGER.debug(f"Creating About Panel with the content of {MENU_ITEMS['about']['source']}...")
+    with container('md:w-2/3'):
+        with open(MENU_ITEMS['about']['source'], 'r') as f:  # open file
+            ui.markdown(f.read())
+        history()
+
+def history(): #TODO Complete this and load the content from a static file
     ui.markdown('### Geschichte des Bewegungskalenders')
     with ui.timeline(side='right'):
         ui.timeline_entry(
