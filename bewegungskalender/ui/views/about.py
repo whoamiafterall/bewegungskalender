@@ -2,16 +2,16 @@
 from nicegui import ui
 from slugify import slugify
 
-from bewegungskalender.functions.config import MENU_ITEMS
+from bewegungskalender.functions.config import MAIN_MENU
 from bewegungskalender.functions.logger import LOGGER
 from bewegungskalender.ui.functions import container
 from bewegungskalender.ui.navigation.router import ROUTER
 
-@ROUTER.add(slugify(f"/{str(MENU_ITEMS['about']['label'].lower())}"))
+@ROUTER.add(slugify(f"/{str(MAIN_MENU['about']['label'].lower())}"))
 def about_view():
-    LOGGER.debug(f"Creating About Panel with the content of {MENU_ITEMS['about']['source']}...")
+    LOGGER.debug(f"Creating About Panel with the content of {MAIN_MENU['about']['source']}...")
     with container('md:w-2/3'):
-        with open(MENU_ITEMS['about']['source'], 'r') as f:  # open file
+        with open(MAIN_MENU['about']['source'], 'r') as f:  # open file
             ui.markdown(f.read())
         history()
 

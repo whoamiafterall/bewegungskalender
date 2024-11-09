@@ -35,7 +35,8 @@ TEMPLATING_DIR: Final[str] = CONFIG['templating_dir']
 UI_PORT: Final[int] = CONFIG['ui']['port']
 UI_TITLE: Final[str] = CONFIG['ui']['title']
 UI_FAVICON: Final[str] = CONFIG['ui']['favicon']
-MENU_ITEMS: Final[dict[str, dict]] = CONFIG['menu']
+MAIN_MENU: Final[dict[str, dict]] = CONFIG['main_menu']
+SECONDARY_MENU: Final[dict[str,dict]] = CONFIG['secondary_menu']
 
 # Map-Section
 MAP_ZOOM: Final[int] = CONFIG['map']['zoom']

@@ -5,18 +5,18 @@ import yaml
 from nicegui import ui
 from slugify import slugify
 
-from bewegungskalender.functions.config import MENU_ITEMS, DATADIR
+from bewegungskalender.functions.config import MAIN_MENU, DATADIR
 from bewegungskalender.functions.file import safe_open
 from bewegungskalender.ui.functions import ErrorChecker, loading, container
 from bewegungskalender.ui.navigation.router import ROUTER
 
 
 # Create Links Page
-@ROUTER.add(slugify(f"/{str(MENU_ITEMS['links']['label'].lower())}"))
+@ROUTER.add(slugify(f"/{str(MAIN_MENU['links']['label'].lower())}"))
 def links_view():
-    loading(MENU_ITEMS['links']['label'], 0.2)
+    loading(MAIN_MENU['links']['label'], 0.2)
     with container('flex-row flex-wrap'):
-        path = MENU_ITEMS['links']['source']
+        path = MAIN_MENU['links']['source']
         with safe_open(path, "r") as file:
             links:dict[Tuple[str, str]] = yaml.load(file, Loader=yaml.FullLoader)
             categories:list = []

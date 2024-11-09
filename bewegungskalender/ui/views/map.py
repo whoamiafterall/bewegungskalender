@@ -1,7 +1,7 @@
 from nicegui import ui
 from slugify import slugify
 
-from bewegungskalender.functions.config import MENU_ITEMS, MAP_CENTER_LAT, MAP_CENTER_LON, MAP_ZOOM
+from bewegungskalender.functions.config import MAIN_MENU, MAP_CENTER_LAT, MAP_CENTER_LON, MAP_ZOOM
 from bewegungskalender.functions.logger import LOGGER
 from bewegungskalender.output.map import read_mapdata
 from bewegungskalender.ui.functions import loading
@@ -9,9 +9,9 @@ from bewegungskalender.ui.navigation.router import ROUTER
 from bewegungskalender.ui.templater import render_map_template
 
 # Create Map View
-@ROUTER.add(slugify(f"/{str(MENU_ITEMS['map']['label'].lower())}"))
+@ROUTER.add(slugify(f"/{str(MAIN_MENU['map']['label'].lower())}"))
 async def map_view(right_drawer):
-    loading(MENU_ITEMS['map']['label'])
+    loading(MAIN_MENU['map']['label'])
     LOGGER.debug('Creating the Map to show events...')
     # new leaflet with center set to center of germany
     with ui.leaflet(center=(MAP_CENTER_LAT, MAP_CENTER_LON), zoom=MAP_ZOOM).classes('w-full h-full') as leaflet:
