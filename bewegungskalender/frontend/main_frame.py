@@ -1,64 +1,55 @@
 from nicegui import ui, app
 
-from bewegungskalender.backend.io.config import CONFIG, UI_PORT, UI_FAVICON, UI_TITLE, MAIN_MENU
+from bewegungskalender.backend.io.config import CONFIG, UI_PORT, UI_FAVICON, UI_TITLE, MENU
 from bewegungskalender.libs.logger import LOGGER
-from bewegungskalender.frontend.functions import container
+from bewegungskalender.frontend.navigation.router import ROUTER
 from bewegungskalender.frontend.views.FAQ import faq_view
 from bewegungskalender.frontend.views.about import about_view
 from bewegungskalender.frontend.views.calendar import calendar_view
 from bewegungskalender.frontend.views.form import form_view
 from bewegungskalender.frontend.views.links import links_view
 from bewegungskalender.frontend.views.map import map_view
-from bewegungskalender.frontend.navigation.router import ROUTER
-
 
 #nice gui support async function for page loading
 @ui.page('/')
 @ui.page('/{_:path}')
 async def main_page():
+    print(ROUTER.routes)
     ui.query('.nicegui-content').classes('p-0')  # remove default padding from site
     ui.dark_mode(True)  # Set dark mode
     ui.colors(primary='#1c2329', secondary='white', accent='green')
 
-    with ui.right_drawer(value=False, fixed=True, elevated=True, top_corner=True).classes('p-0 m-0').props(
-            'width=auto') as right_drawer:
-        with container('px-0'):
-            with ui.column().classes('items-stretch w-full m-0 p-0'):
-                pass
-
     with ui.header(elevated=True).classes('fixed h-50px m-0 px-3 py-2 items-center'):
         with ui.button_group().props('flat'):
             ui.button(on_click=lambda: left_drawer.toggle(), icon='menu').props('flat color=white').classes('lg:hidden')
-            ui.button(MAIN_MENU['calendar']['label'], icon=MAIN_MENU['calendar']['icon'],
+            ui.button(MENU['calendar']['label'], icon=MENU['calendar']['icon'],
                       on_click=lambda: ROUTER.open(calendar_view))
-            ui.button(MAIN_MENU['map']['label'], icon=MAIN_MENU['map']['icon'],
+            ui.button(MENU['map']['label'], icon=MENU['map']['icon'],
                       on_click=lambda: ROUTER.open(map_view))
         ui.space().classes('max-sm:hidden')
         with ui.row().classes('max-lg:hidden m-0 p-0'):
             with ui.button_group().props('outline rounded'):
-                ui.button(MAIN_MENU['form']['label'], icon=MAIN_MENU['form']['icon'],
+                ui.button(MENU['form']['label'], icon=MENU['form']['icon'],
                           on_click=lambda: ROUTER.open(form_view))
-                ui.button(MAIN_MENU['about']['label'], icon=MAIN_MENU['about']['icon'],
+                ui.button(MENU['about']['label'], icon=MENU['about']['icon'],
                           on_click=lambda: ROUTER.open(about_view))
-                ui.button(MAIN_MENU['FAQ']['label'], icon=MAIN_MENU['FAQ']['icon'],
+                ui.button(MENU['FAQ']['label'], icon=MENU['FAQ']['icon'],
                           on_click=lambda: ROUTER.open(faq_view))
-                ui.button(MAIN_MENU['links']['label'], icon=MAIN_MENU['links']['icon'],
+                ui.button(MENU['links']['label'], icon=MENU['links']['icon'],
                           on_click=lambda: ROUTER.open(links_view))
         ui.space().classes('max-sm:hidden')
-        ui.button("Filter", icon='filter_alt', on_click=lambda: right_drawer.toggle()).props(
-            'flat color=white').classes('max-sm:hidden')
 
     with ui.left_drawer(value=False, fixed=True, elevated=True).classes('lg:hidden background-primary p-0 m-0').props(
             'width=auto persistent=False') as left_drawer:
         ui.space()
         with ui.column(wrap=False, align_items='stretch').classes('w-full p-5'):
-            ui.button(MAIN_MENU['form']['label'], icon=MAIN_MENU['form']['icon'],
+            ui.button(MENU['form']['label'], icon=MENU['form']['icon'],
                       on_click=lambda: ROUTER.open(form_view)).on_click(lambda: left_drawer.hide())
-            ui.button(MAIN_MENU['about']['label'], icon=MAIN_MENU['about']['icon'],
+            ui.button(MENU['about']['label'], icon=MENU['about']['icon'],
                       on_click=lambda: ROUTER.open(about_view)).on_click(lambda: left_drawer.hide())
-            ui.button(MAIN_MENU['FAQ']['label'], icon=MAIN_MENU['FAQ']['icon'],
+            ui.button(MENU['FAQ']['label'], icon=MENU['FAQ']['icon'],
                       on_click=lambda: ROUTER.open(faq_view)).on_click(lambda: left_drawer.hide())
-            ui.button(MAIN_MENU['links']['label'], icon=MAIN_MENU['links']['icon'],
+            ui.button(MENU['links']['label'], icon=MENU['links']['icon'],
                       on_click=lambda: ROUTER.open(links_view)).on_click(lambda: left_drawer.hide())
             ui.separator()
             ui.button(icon='close', on_click=lambda: left_drawer.hide()).props('flat color=white align=center').classes(
@@ -82,4 +73,4 @@ def start_ui():
     ui.run(title=UI_TITLE, favicon=UI_FAVICON, port=UI_PORT)  #storage_secret=storage_secret)
     LOGGER.debug('Successfully started UI.')
     # add static files
-    app.add_static_files(CONFIG['assets']['url_path'], CONFIG['assets']['local_dir'])
+    app.add_static_files(CONFIG['assets']['url_path'], CONFIG['assets_dir'])

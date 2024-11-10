@@ -5,23 +5,23 @@ import yaml
 from nicegui import ui
 from slugify import slugify
 
-from bewegungskalender.backend.io.config import MAIN_MENU, DATADIR
+from bewegungskalender.backend.io.config import MENU, DATADIR, STATIC_DIR
 from bewegungskalender.backend.io.file import safe_open
 from bewegungskalender.frontend.functions import ErrorChecker, loading, container
 from bewegungskalender.frontend.navigation.router import ROUTER
 
 
 # Create Links Page
-@ROUTER.add(slugify(f"/{str(MAIN_MENU['links']['label'].lower())}"))
+@ROUTER.add(slugify(f"/{str(MENU['links']['label'].lower())}"))
 def links_view():
-    loading(MAIN_MENU['links']['label'], 0.2)
+    loading(MENU['links']['label'], 0.2)
     with container('flex-row flex-wrap'):
-        path = MAIN_MENU['links']['source']
+        path = f"{STATIC_DIR}{MENU['links']['source']}"
         with safe_open(path, "r") as file:
             links:dict[Tuple[str, str]] = yaml.load(file, Loader=yaml.FullLoader)
             categories:list = []
             for category in links.items():
-                with ui.column().classes('h-2/3 mb-5 lg:w-1/4 max-lg:w-1/2 max-sm:w-full'):
+                with ui.column().classes('h-3/4 mb-5 lg:w-1/4 max-lg:w-1/2 max-sm:w-full'):
                     ui.markdown(f"##### {category[0]}")
                     categories.append(category[0])
                     with ui.scroll_area().classes('w-3/4 items-stretch').props("bar-style={width: '2px'}"):

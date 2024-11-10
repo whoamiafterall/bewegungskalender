@@ -2,6 +2,7 @@ import re
 import urllib.parse
 import codecs
 import json
+from json import JSONDecodeError
 from typing import Tuple
 
 from geojson import Feature, FeatureCollection
@@ -74,9 +75,11 @@ def get_coordinates(location: str) -> Tuple[float, float]|None:
 
 
 def read_mapdata() -> list:
-    with open(f"{MAPDATA_CACHE}", "r") as f:
-        return json.loads(f.read())
-
+    try:
+        with open(f"{MAPDATA_CACHE}", "r") as f:
+            return json.loads(f.read())
+    except FileNotFoundError and JSONDecodeError:
+        LOGGER.warning("No map_data is cached.")
 
 def filter_events(event:Event) -> bool:
     location: str = event.location
@@ -88,7 +91,7 @@ def filter_events(event:Event) -> bool:
     return False
 
 def create_mapdata(data: list[Category]) -> None:
-    featureCollections:list = []
+    featureCollections:list[FeatureCollection] = []
     for category in data:
         features:list = []
         recurrence:list = []
@@ -113,10 +116,10 @@ def create_mapdata(data: list[Category]) -> None:
                     feature = Feature(
                         geometry=MyPoint(coordinates[0], coordinates[1]),
                         properties={
-                            'summary': event.summary,
-                            'event_time': event_time(event.start, event.end),
-                            'location': event.location,
-                            'link': add_link(event.summary, event.description, Format.HTML)})
+                            'summary': f"ℹ️ {add_link(event.summary, event.description, Format.HTML)}<br>",
+                            'event_time': f"📅 {event_time(event.start, event.end)}\n",
+                            'location': f"📌 {event.location}",
+                            })
                     features.append(feature)
 
         LOGGER.info(f"Located {len(features)} Events from {category.name} on OpenStreetMap!")

@@ -27,15 +27,16 @@ MAIL_RECEIVER: Final[list] = CONFIG['mail']['receiver']
 # Data-Section
 MAPDATA_CACHE: Final[str] = CONFIG['mapdata_dir']
 LOCATION_CACHE: Final[str] = CONFIG['location_cache_dir']
+CALENDAR_CACHE: Final[str] = CONFIG['calendar_cache_dir']
 DATADIR: Final[str] = CONFIG['datadir']
 TEMPLATING_DIR: Final[str] = CONFIG['templating_dir']
+STATIC_DIR: Final[str] = CONFIG['static_dir']
 
 # UI-Section
 UI_PORT: Final[int] = CONFIG['frontend']['port']
 UI_TITLE: Final[str] = CONFIG['frontend']['title']
 UI_FAVICON: Final[str] = CONFIG['frontend']['favicon']
-MAIN_MENU: Final[dict[str, dict]] = CONFIG['main_menu']
-SECONDARY_MENU: Final[dict[str,dict]] = CONFIG['secondary_menu']
+MENU: Final[dict[str, dict]] = CONFIG['menu']
 
 # Map-Section
 MAP_ZOOM: Final[int] = CONFIG['map']['zoom']
