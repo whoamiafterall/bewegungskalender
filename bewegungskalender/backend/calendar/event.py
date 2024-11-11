@@ -7,7 +7,6 @@ from caldav.objects import CalendarObjectResource
 from bewegungskalender.libs.datetime import check_datetime, date_str, fix_midnight
 from bewegungskalender.libs.logger import LOGGER
 
-
 class Event:
     def __init__(self, summ: str, desc: str, loc: str, start: datetime, end: datetime, rec: str|None, dur:timedelta, url:validators.url = None):
         self.url:validators.url = url
@@ -24,13 +23,13 @@ class Event:
         for component in icalendar.Event.from_ical(event.data).walk():
             if component.name == "VEVENT":
                 event = Event(
-                    url=event.url,
-                    summ=component.get('summary'),
+                    url = event.url,
+                    summ = component.get('summary'),
                     desc = component.get('description'),
-                    loc=component.get('location'),
+                    loc = component.get('location'),
                     start = check_datetime(component.get('dtstart').dt),
                     end = check_datetime(component.get('dtend').dt),
-                    dur= event.get_duration(),
+                    dur = event.get_duration(),
                     rec = component.get('recurrence-id'),
                 )
         if date_str(event.start) != date_str(event.end):
