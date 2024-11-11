@@ -7,9 +7,9 @@ from bewegungskalender.backend.calendar.category import Category
 # internal imports
 from bewegungskalender.backend.io.cli import FORMAT, ARGS
 from bewegungskalender.libs.logger import LOGGER
-from bewegungskalender.backend.io.config import LOCALE
+from bewegungskalender.backend.io.config import LOCALE, CALENDARS
 from bewegungskalender.backend.io.nextcloud_forms import update_ncform
-from bewegungskalender.backend.calendar.caldav_server import search_events
+from bewegungskalender.backend.calendar.client import get_upcoming_events
 from bewegungskalender.backend.formatting.message import MultiFormatMessage, create_message
 from bewegungskalender.backend.output.telegram_bot import get_telegram_updates, send_or_edit_telegram
 from bewegungskalender.backend.output.map_data import create_mapdata
@@ -44,7 +44,7 @@ async def main_async():
     
     # Server Section    
     ## Fetch Events from CalDav-Server
-    data:list[Category] = search_events()
+    data:list[Category] =  [Category(line) for line in CALENDARS]
     ## Create a Message in TXT, MD & HTML
     message: MultiFormatMessage = create_message(data)
         
