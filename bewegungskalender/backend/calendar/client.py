@@ -1,3 +1,4 @@
+import functools
 from datetime import datetime
 from http.client import RemoteDisconnected
 
@@ -11,6 +12,7 @@ from bewegungskalender.backend.io.cli import START, END
 from bewegungskalender.backend.io.config import CALENDARS, CALDAV_URL, CALDAV_PW, CALDAV_USR
 from bewegungskalender.libs.logger import LOGGER
 
+# All Interactions with the CalDav Server are in this file
 DAVCLIENT:DAVClient = DAVClient(url=CALDAV_URL, username=CALDAV_USR, password=CALDAV_PW)
 
 def get_calendars() -> list[Calendar]:
@@ -26,7 +28,7 @@ def get_calendar_name(cal:Calendar):
 def get_calendar_color(cal:Calendar):
     return cal.get_property(CalendarColor(),True)
 
-# All Interactions with the CalDav Server are in this file
+@functools.cache
 def get_upcoming_events(cal:Calendar) -> list[Event]:
     LOGGER.info(f"Looking for Events between {datetime.date(START)} and {datetime.date(END)} in {len(CALENDARS)} calendars... ")
     # Search for Events in this Calendar in the given timeframe and add them to a list

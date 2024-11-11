@@ -1,22 +1,25 @@
+import orjson
+import orjson as json
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 
 import icalendar
-import validators
+from validators import url
 from caldav.objects import CalendarObjectResource
 
 from bewegungskalender.libs.datetime import check_datetime, date_str, fix_midnight
 from bewegungskalender.libs.logger import LOGGER
 
+@dataclass
 class Event:
-    def __init__(self, summ: str, desc: str, loc: str, start: datetime, end: datetime, rec: str|None, dur:timedelta, url:validators.url = None):
-        self.url:validators.url = url
-        self.summary: str = summ
-        self.description:str = desc
-        self.location:str = loc
-        self.start:datetime = start
-        self.end:datetime = end
-        self.duration:timedelta = dur
-        self.recurrence:str|None = rec
+    summary:str
+    description:str
+    location:str
+    start:datetime
+    end:datetime
+    duration:timedelta
+    recurrence:bool = field(default=False)
+    url:url = field(default=None)
 
     @classmethod
     def from_icalendar(cls, event:CalendarObjectResource):
@@ -24,13 +27,13 @@ class Event:
             if component.name == "VEVENT":
                 event = Event(
                     url = event.url,
-                    summ = component.get('summary'),
-                    desc = component.get('description'),
-                    loc = component.get('location'),
-                    start = check_datetime(component.get('dtstart').dt),
-                    end = check_datetime(component.get('dtend').dt),
-                    dur = event.get_duration(),
-                    rec = component.get('recurrence-id'),
+                    summary = component.get('summary'),
+                    description = component.get('description'),
+                    location = component.get('location'),
+                    start = check_datetime(component.decoded('dtstart')),
+                    end = check_datetime(component.decoded('dtend')),
+                    duration = event.get_duration(),
+                    recurrence = True if component.get('recurrence-id') else False,
                 )
         if date_str(event.start) != date_str(event.end):
             event.end = fix_midnight(event.end)
@@ -65,16 +68,16 @@ class Event:
         if row['Regelmäßig'] != "":
             match row['Regelmäßig']:
                 case 'jährlich':
-                    recurrence = None
+                    recurrence = False
 
         event = Event(
-            summ = f"{row['Titel']} ({row['Stadt/Region']})",
-            loc =  row['Adresse'],
-            desc = f"{row['Link']}\n{row['Beschreibung (lang)']}",
+            summary = f"{row['Titel']} ({row['Stadt/Region']})",
+            location =  row['Adresse'],
+            description = f"{row['Link']}\n{row['Beschreibung (lang)']}",
             start = start,
             end = end,
-            rec = None, #TODO Fix
-            dur = end-start, #TODO Test
+            recurrence = recurrence, #TODO Fix
+            duration = end-start, #TODO Test
         )
         return event
 
