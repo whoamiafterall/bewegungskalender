@@ -13,7 +13,10 @@ def fix_midnight(dt:datetime) -> timedelta|datetime:
 
 def check_datetime(day:date) -> datetime:
     return day if isinstance(day, datetime) else datetime.combine(day, datetime.min.time()).astimezone(TIMEZONE)
-    
+
+def calculate_duration(start:datetime, end:datetime) -> timedelta:
+    return end - start
+
 def date_str(day:datetime) -> str: # get date from a datetime object
     return day.strftime('%d.%m.')
 
