@@ -1,40 +1,38 @@
-import orjson
-import orjson as json
-from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 
 import icalendar
-from validators import url
-from caldav.objects import CalendarObjectResource
+from caldav import URL
+from icalendar.cal import Component
+from pydantic import BaseModel, Field
 
-from bewegungskalender.libs.datetime import check_datetime, date_str, fix_midnight
+from bewegungskalender.libs.datetime import check_datetime, date_str, fix_midnight, calculate_duration
 from bewegungskalender.libs.logger import LOGGER
 
-@dataclass
-class Event:
-    summary:str
-    description:str
-    location:str
-    start:datetime
-    end:datetime
-    duration:timedelta
-    recurrence:bool = field(default=False)
-    url:url = field(default=None)
+
+class Event(BaseModel):
+    summary: str = Field(examples=["A nice Event"])
+    start: datetime
+    end: datetime
+    duration: timedelta = None
+    category_name:str
+    description: str | None = Field(examples=["We will do really nice things"])
+    location: str | None = Field(examples=["example street 03, Berlin", 'https://osm.org/way/1234213'], default=None)
+    recurrence: bool = False
+    ics_url: str
 
     @classmethod
-    def from_icalendar(cls, event:CalendarObjectResource):
-        for component in icalendar.Event.from_ical(event.data).walk():
-            if component.name == "VEVENT":
-                event = Event(
-                    url = event.url,
-                    summary = component.get('summary'),
-                    description = component.get('description'),
-                    location = component.get('location'),
-                    start = check_datetime(component.decoded('dtstart')),
-                    end = check_datetime(component.decoded('dtend')),
-                    duration = event.get_duration(),
-                    recurrence = True if component.get('recurrence-id') else False,
-                )
+    def from_icalendar(cls, vevent: Component, ics_url:URL, category:str):
+        event = Event(
+            ics_url=str(ics_url),
+            category_name=category,
+            summary=vevent.get('summary'),
+            description=vevent.get('description'),
+            location=vevent.get('location'),
+            start=check_datetime(vevent.decoded('dtstart')),
+            end=check_datetime(vevent.decoded('dtend')),
+            recurrence=True if vevent.get('recurrence-id') else False,
+        )
+        event.duration = calculate_duration(event.start, event.end)
         if date_str(event.start) != date_str(event.end):
             event.end = fix_midnight(event.end)
 
