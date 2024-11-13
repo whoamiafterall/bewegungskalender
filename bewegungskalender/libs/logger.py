@@ -4,7 +4,7 @@ from bewegungskalender.backend.io.cli import LOGLEVEL
 
 # Get Logger and set log level
 logging.basicConfig()
-LOGGER:Logger = getLogger("Bewegungskalender")
+LOGGER:Logger = getLogger(__name__)
 match LOGLEVEL:
     case 'debug':
         LOGGER.setLevel(DEBUG)
