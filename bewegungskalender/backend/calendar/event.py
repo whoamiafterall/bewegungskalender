@@ -1,41 +1,49 @@
 from datetime import datetime, timedelta
+from typing import TYPE_CHECKING
 
 import icalendar
-from caldav import URL
+from caldav.objects import URL
 from icalendar.cal import Component
-from pydantic import BaseModel, Field
+from sqlmodel import SQLModel, Field, Relationship
 
 from bewegungskalender.libs.datetime import check_datetime, date_str, fix_midnight, calculate_duration
 from bewegungskalender.libs.logger import LOGGER
 
+if TYPE_CHECKING: # Necessary for SQLModel Relationships across Files
+    from bewegungskalender.backend.calendar.category import Category
 
-class Event(BaseModel):
-    summary: str = Field(examples=["A nice Event"])
+class Event(SQLModel, table=True):
+    id: int = Field(default=None, primary_key=True)
+    summary: str
     start: datetime
     end: datetime
-    duration: timedelta = None
-    category_name:str
-    description: str | None = Field(examples=["We will do really nice things"])
-    location: str | None = Field(examples=["example street 03, Berlin", 'https://osm.org/way/1234213'], default=None)
+    duration: timedelta = Field(index=True)
+    category: "Category" = Relationship(back_populates="events")
+    category_id: int = Field(foreign_key="category.id", ondelete="CASCADE")
+    description: str | None = Field(default=None)
+    location: str | None = Field(default=None)
+    lat: float | None = None
+    lon: float | None = None
+    #bbox: list[float] | None = None
     recurrence: bool = False
-    ics_url: str
+    ics_url: str = None
 
     @classmethod
-    def from_icalendar(cls, vevent: Component, ics_url:URL, category:str):
+    def from_icalendar(cls, vevent: Component, ics_url:URL):
+        start = check_datetime(vevent.decoded('dtstart'))
+        end = check_datetime(vevent.decoded('dtend'))
+        if date_str(start) != date_str(end):
+            end = fix_midnight(end)
         event = Event(
             ics_url=str(ics_url),
-            category_name=category,
             summary=vevent.get('summary'),
             description=vevent.get('description'),
             location=vevent.get('location'),
-            start=check_datetime(vevent.decoded('dtstart')),
-            end=check_datetime(vevent.decoded('dtend')),
+            start=start,
+            end=end,
+            duration=calculate_duration(start, end),
             recurrence=True if vevent.get('recurrence-id') else False,
         )
-        event.duration = calculate_duration(event.start, event.end)
-        if date_str(event.start) != date_str(event.end):
-            event.end = fix_midnight(event.end)
-
         LOGGER.debug(f"Success parsing {event.summary}...")
         return event
 

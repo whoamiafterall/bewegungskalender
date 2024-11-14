@@ -3,6 +3,7 @@ from typing import Final
 import pytz
 import yaml
 from pytz.tzinfo import StaticTzInfo
+from pydantic import FilePath
 
 from bewegungskalender.backend.io.cli import CONFIG_FILE
 from bewegungskalender.libs.logger import LOGGER
@@ -25,10 +26,8 @@ MAIL_SENDER: Final[str] = CONFIG['mail']['sender']
 MAIL_RECEIVER: Final[list] = CONFIG['mail']['receiver']
 
 # Data-Section
-MAPDATA_CACHE: Final[str] = CONFIG['mapdata_dir']
-LOCATION_CACHE: Final[str] = CONFIG['location_cache_dir']
-CALENDAR_CACHE: Final[str] = CONFIG['calendar_cache_dir']
 DATADIR: Final[str] = CONFIG['datadir']
+DB_FILE: Final[FilePath] = CONFIG['database']
 TEMPLATING_DIR: Final[str] = CONFIG['templating_dir']
 STATIC_DIR: Final[str] = CONFIG['static_dir']
 

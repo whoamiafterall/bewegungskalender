@@ -1,13 +1,17 @@
-# external imports
+# builtin imports
 import asyncio
 import locale
 from locale import setlocale
+
+# external imports
+from sqlmodel import Session
 
 # internal imports
 from bewegungskalender.backend.calendar.category import Category
 from bewegungskalender.backend.formatting.message import MultiFormatMessage, create_message
 from bewegungskalender.backend.io.cli import FORMAT, ARGS
 from bewegungskalender.backend.io.config import LOCALE, CALENDARS
+from bewegungskalender.backend.io.db import create_db_and_tables, ENGINE
 from bewegungskalender.backend.io.nextcloud_forms import update_ncform
 from bewegungskalender.backend.output.mail import send_mail
 from bewegungskalender.backend.output.map_data import create_mapdata
@@ -43,15 +47,22 @@ async def main_async():
     
     # Server Section    
     ## Fetch Events from CalDav-Server using urls from Config
-    data:list[Category] =  [Category(line) for line in CALENDARS]
+    create_db_and_tables()
+    data: list[Category] = [Category.create(configline=line) for line in CALENDARS]
+    ## Save the data to the database
+    with Session(ENGINE) as session:
+        # This populates both the category and the event table because the events are related to their category
+        [session.add(category) for category in data]
+        session.commit()
     ## Create a Message in TXT, MD & HTML
     message: MultiFormatMessage = create_message(data)
         
     # Output Section
     ## UMap Output
-    if ARGS.update_map: 
+    if ARGS.update_map:
+        LOGGER.name = __name__
         LOGGER.info(f"Creating GeoJSON Data for the map...")
-        create_mapdata(data)
+        [create_mapdata(category.events) for category in data]
     ## Print Output
     if ARGS.print: 
         LOGGER.info(f"Printing message in {FORMAT} Format: \n")
