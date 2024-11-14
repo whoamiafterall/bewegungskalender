@@ -4,8 +4,7 @@ from bewegungskalender.backend.calendar.event import Event
 from bewegungskalender.backend.io.config import FOOTER
 from bewegungskalender.libs.logger import LOGGER
 from bewegungskalender.libs.datetime import weekday_date, event_time
-from bewegungskalender.backend.formatting.formatting import add_link, escape, Format, newline, match_and_add_recurring
-
+from bewegungskalender.backend.formatting.format import add_link, escape, Format, match_and_add_recurring
 
 class MultiFormatMessage:
     def __init__(self) -> None:
@@ -43,9 +42,9 @@ class MultiFormatMessage:
         return f"MultiFormatMessage:\nstart={self.start}\nend={self.end}\ntxt=\n{self.txt}"
     
     def newline(self):
-        self.txt += newline(Format.TXT)
-        self.markdown += newline(Format.MD)
-        self.html += newline(Format.HTML)
+        self.txt += Format.TXT.newline()
+        self.markdown += Format.MD.newline()
+        self.html += Format.HTML.newline()
         
     def header(self): # Displayed as Head of the Message => style info on the Timerange
         header = f"Die Termine vom " + weekday_date(self.start) + " - " + weekday_date(self.end)
@@ -93,7 +92,7 @@ def create_message(data:list) -> MultiFormatMessage:
             message.calendar_title(calendar.emoji, calendar.name) 
             message.newline()
             for event in calendar.events:
-                if event.recurrence is not None:
+                if event.recurrence:
                     message.add_recurring_event(event)
                 else:
                     message.add_event(event)
