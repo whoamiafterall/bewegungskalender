@@ -1,16 +1,20 @@
-import sys
 from datetime import datetime
 from functools import cache
 from http.client import RemoteDisconnected
+from time import sleep
 
 from caldav.davclient import Calendar, DAVClient
 from caldav.elements.ical import CalendarColor
 from caldav.objects import CalendarObjectResource
+from requests import Timeout
 from requests.exceptions import ConnectionError
 
 from bewegungskalender.backend.io.cli import START, END
 from bewegungskalender.backend.io.config import CALDAV_URL, CALDAV_PW, CALDAV_USR
 from bewegungskalender.libs.logger import LOGGER
+
+class NetworkConnectionError(Exception):
+    """A Connection error occurred."""
 
 # All Interactions with the CalDav Server are in this file
 DAVCLIENT:DAVClient = DAVClient(url=CALDAV_URL, username=CALDAV_USR, password=CALDAV_PW)
@@ -23,45 +27,6 @@ def get_calendar_by_url(url: str) -> Calendar:
     """Get a calendar by its URL."""
     LOGGER.debug(f"Getting data from {url}…")
     return DAVCLIENT.calendar(url=url)
-
-def _catch_connection_error(func, *args):
-    """
-    Executes a given function with the provided arguments, handling
-    connection-related errors.
-
-    This function attempts to call the specified function (`func`) with
-    the supplied positional arguments (`*args`). If a `ConnectionError`
-    or `RemoteDisconnected` exception is raised during the function call,
-    it logs the error message and terminates the program with an
-    exit status code of 1.
-
-    Parameters:
-    -----------
-    func : callable
-        The function to be executed.
-    *args : tuple
-        Positional arguments to be passed to the function.
-
-    Returns:
-    --------
-    Any
-        The return value of the executed function if no exceptions occur.
-
-    Raises:
-    -------
-    SystemExit
-        Exits the program when a connection error occurs.
-
-    Example:
-    --------
-    result = _catch_connection_error(some_network_function, arg1, arg2)
-    """
-    try:
-        return func(*args)
-    except (ConnectionError, RemoteDisconnected) as e:
-        LOGGER.exception("Couldn't get data from CalDAV server due to connection error: %s", e)
-        sys.exit(1)  # Exit the program with code 1
-
 
 def get_calendar_name(cal: Calendar) -> str:
     """Get the display name of a calendar."""
@@ -79,3 +44,59 @@ def get_upcoming_events(cal:Calendar, start:datetime = START, end:datetime = END
         lambda:cal.search(**{'start': start, 'end': end}, event=True, expand=True,
                           sort_keys=['dtstart', 'summary']))
 
+
+def _catch_connection_error(func, retries:int = 3, seconds_to_wait:int = 30, *args:tuple, **kwargs:tuple):
+    """
+    Executes a given function with the provided arguments, handling
+    connection-related errors.
+
+    This function calls the specified function (`func`) with
+    the supplied positional arguments (`*args`) and keyword arguments (`**kwargs`).
+
+    If a `ConnectionError` or `RemoteDisconnected` exception is raised during the function call,
+    it sleeps for (`seconds_to_wait = 30`) seconds and tries to connect again for (`retries = 3`) times.
+
+    After failing on the last retry it raises a `NetworkConnectionError`.
+
+    Parameters:
+    -----------
+    func : callable
+        The function to be executed.
+    retries : int
+        The number of attempts to execute the function. Defaults to 3.
+    seconds_to_wait : int
+        The number of seconds to wait before retrying. Defaults to 30.
+    *args : tuple
+        Positional arguments to be passed to the function.
+    **kwargs: tuple
+        Keyword arguments to be passed to the function.
+
+    Returns:
+    --------
+    Any
+        The return value of the executed function if no exceptions occur.
+
+    Raises:
+    -------
+    NetworkConnectionError
+        Prints an Error message leading the user to check their Network connection.
+
+    Example:
+    --------
+    result = _catch_connection_error(some_network_function, arg1, arg2)
+    """
+    for attempt in range(retries):
+        try:
+            result = func(*args, **kwargs)
+        except (ConnectionError, RemoteDisconnected, Timeout):
+            LOGGER.name = __name__
+            LOGGER.info(f"\n\nCouldn't connect to {CALDAV_URL}. Please check your network Connection! "
+                        f"\n\nRetrying in {seconds_to_wait} seconds..."
+                        f"\nRetry attempt: {attempt} "
+                        f"\nStopping after {retries} attempts.\n")
+            sleep(seconds_to_wait)
+            continue
+        return result
+    else:
+        raise NetworkConnectionError(f"\nCouldn't get data from your CalDAV Server ({CALDAV_URL}) due to bad or no network connection.\n\n"
+                                     f"Please check your network connection and rerun the program.")
