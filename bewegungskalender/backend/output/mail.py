@@ -6,7 +6,6 @@ from bewegungskalender.backend.formatting.message import MultiFormatMessage
 from bewegungskalender.backend.io.cli import MAIL_TO, START, END
 from bewegungskalender.backend.io.config import MAIL_ACC, MAIL_PW, MAIL_SUBJECT, MAIL_SENDER, MAIL_RECEIVER, SMTP, MAIL_SRV
 from bewegungskalender.libs.logger import LOGGER
-from bewegungskalender.libs.datetime import date_str
 
 def send_mail(message:MultiFormatMessage):
     LOGGER.debug('Connecting to SMTP Server...')
@@ -16,7 +15,7 @@ def send_mail(message:MultiFormatMessage):
         LOGGER.debug('Logging into SMTP Client with credentials...')
         smtp.login(MAIL_ACC, MAIL_PW)
         mail = MIMEMultipart("alternative")
-        subject = f"{MAIL_SUBJECT} {date_str(START)} - {date_str(END)}"
+        subject = f"{MAIL_SUBJECT} {START:%d.%m.} - {END:%d.%m.}"
         mail.add_header('subject', subject)
         mail.add_header('from', MAIL_SENDER)
         mail.add_header('date', formatdate(localtime=True))

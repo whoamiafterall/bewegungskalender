@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time, date
 from typing import TYPE_CHECKING
 
 import icalendar
@@ -6,7 +6,7 @@ from caldav.objects import URL
 from icalendar.cal import Component
 from sqlmodel import SQLModel, Field, Relationship
 
-from bewegungskalender.libs.datetime import check_datetime, date_str, fix_midnight, calculate_duration
+from bewegungskalender.backend.io.config import TIMEZONE
 from bewegungskalender.libs.logger import LOGGER
 
 if TYPE_CHECKING: # Necessary for SQLModel Relationships across Files
@@ -30,10 +30,20 @@ class Event(SQLModel, table=True):
 
     @classmethod
     def from_icalendar(cls, vevent: Component, ics_url:URL):
-        start = check_datetime(vevent.decoded('dtstart'))
-        end = check_datetime(vevent.decoded('dtend'))
-        if date_str(start) != date_str(end):
-            end = fix_midnight(end)
+
+        # Make sure all the values are datetime not date in case of all day events
+        def to_datetime(dt: date | datetime) -> datetime:
+            if isinstance(dt, datetime):
+                return dt
+            return datetime.combine(dt, time.min).astimezone(TIMEZONE)
+        start = to_datetime(vevent.decoded('dtstart'))
+        end = to_datetime(vevent.decoded('dtend'))
+
+        # Fix Issue with multi-day events by changing 'ends' midnight to 23:59:59 the day before instead of 00:00:00
+        if start.date() != end.date() and end.time() == time.min:
+            end = end - timedelta(seconds=1)
+
+        # Create object
         event = Event(
             ics_url=str(ics_url),
             summary=vevent.get('summary'),
@@ -41,7 +51,7 @@ class Event(SQLModel, table=True):
             location=vevent.get('location'),
             start=start,
             end=end,
-            duration=calculate_duration(start, end),
+            duration=end-start,
             recurrence=True if vevent.get('recurrence-id') else False,
         )
         LOGGER.debug(f"Success parsing {event.summary}...")
@@ -57,17 +67,23 @@ class Event(SQLModel, table=True):
         """
 
         # Handle Start of Event
-        if row['Start-Zeit'] != "":
-            start = datetime.strptime(f"{row['Start-Datum']}-{row['Start-Zeit']}", '%Y-%m-%d-%H:%M')
-        else:  # When start-time is None
-            start = datetime.strptime(row['Start-Datum'], '%Y-%m-%d')
+        start_date = row['Start-Datum']
+        start_time = row['Start-Zeit']
+
+        if start_time != "":
+            start = datetime.strptime(f"{start_date}-{start_time}", '%Y-%m-%d-%H:%M')
+        else:  # When start-time is None return date
+            start = datetime.strptime(start_date, '%Y-%m-%d')
 
         # Handle End of Event
-        if row['End-Datum'] != "" and row['End-Uhrzeit'] != "":
-            end = datetime.strptime(f"{row['End-Datum']}-{row['End-Uhrzeit']}", '%Y-%m-%d-%H:%M')
-        elif row['End-Datum'] != "":  # When end-time is None
-            end = datetime.strptime(row['End-Datum'], '%Y-%m-%d')
-        else:  # When both end-date and end-time are None
+        end_date = row['End-Datum']
+        end_time = row['End-Uhrzeit']
+
+        if  end_date != "" and end_time != "":
+            end = datetime.strptime(f"{end_date}-{end_time}", '%Y-%m-%d-%H:%M')
+        elif end_date != "":  # When end-time is None return date
+            end = datetime.strptime(end_date, '%Y-%m-%d')
+        else:  # When both end-date and end-time are None return next day 00:00
             end = datetime.combine(start.date() + timedelta(1), datetime.min.time())
 
         # Handle recurrence #TODO Fix this, add RRULE

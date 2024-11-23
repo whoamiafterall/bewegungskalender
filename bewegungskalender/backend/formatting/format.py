@@ -1,7 +1,7 @@
+from datetime import datetime, time
 from enum import StrEnum
 
 import re
-from bewegungskalender.libs.datetime import date_str, event_time
 from bewegungskalender.backend.calendar.event import Event
 from bewegungskalender.libs.logger import LOGGER
 
@@ -80,9 +80,17 @@ def match_and_add_recurring(event: Event, message: str, frmt: Format) -> str:
                                                                                                      event.end)
         return message + first_date + add_link(event.summary, event.description, frmt) + frmt.newline()
     else:  # If it's not the first occurrence add just the date and return
-        date_to_add = escape(f"& {date_str(event.start)} ") if frmt is Format.MD else f"& {date_str(event.start)} "
+        date_to_add = escape(f"& {event.start:%d.%m.} ") if frmt is Format.MD else f"& {event.start:%d.%m.} "
         if match.group(2) is None:  # If there is no start time add the date after the first date
             substitute = match.group(1) + date_to_add + match.group(3)
         else:  # If there is a start time add the date between the first date and the start time
             substitute = match.group(1) + date_to_add + match.group(2) + match.group(3)
         return message[:match.span()[0]] + substitute + message[match.span()[1]:]
+
+
+def event_time(start: datetime, end: datetime) -> str:
+    if start.time() == time.min and start.date() != end.date():
+        return f"{start:%d.%m.} - {end:%d.%m.}"
+    elif start.time() == time.min and start.date() == end.date():
+        return f"{start:%d.%m.}:"
+    return f"{start:%d.%m.} {start:(%H:%M)}:"

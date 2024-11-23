@@ -3,8 +3,8 @@ from bewegungskalender.backend.io.cli import START, END
 from bewegungskalender.backend.calendar.event import Event
 from bewegungskalender.backend.io.config import FOOTER
 from bewegungskalender.libs.logger import LOGGER
-from bewegungskalender.libs.datetime import weekday_date, event_time
-from bewegungskalender.backend.formatting.format import add_link, escape, Format, match_and_add_recurring
+from bewegungskalender.backend.formatting.format import add_link, escape, Format, match_and_add_recurring, event_time
+
 
 class MultiFormatMessage:
     def __init__(self) -> None:
@@ -47,7 +47,7 @@ class MultiFormatMessage:
         self.html += Format.HTML.newline()
         
     def header(self): # Displayed as Head of the Message => style info on the Timerange
-        header = f"Die Termine vom " + weekday_date(self.start) + " - " + weekday_date(self.end)
+        header = f"Die Termine vom {self.start:%a %d.%m.} - {self.end:%a %d.%m.}"
         self.txt += header
         self.markdown += style(escape(header), Format.MD, Style.BOLD)
         self.html += style(header, Format.HTML, Style.BOLD)
