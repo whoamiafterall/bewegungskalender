@@ -3,15 +3,14 @@ import asyncio
 import locale
 from locale import setlocale
 
-# external imports
-from sqlmodel import Session
+from sqlmodel import select
 
 # internal imports
 from bewegungskalender.backend.calendar.category import Category
 from bewegungskalender.backend.formatting.message import MultiFormatMessage, create_message
+from bewegungskalender.backend.io import db
 from bewegungskalender.backend.io.cli import FORMAT, ARGS
 from bewegungskalender.backend.io.config import LOCALE, CALENDARS
-from bewegungskalender.backend.io.db import create_db_and_tables, ENGINE
 from bewegungskalender.backend.io.nextcloud_forms import update_ncform
 from bewegungskalender.backend.output.mail import send_mail
 from bewegungskalender.backend.output.map_data import create_mapdata
@@ -19,8 +18,10 @@ from bewegungskalender.backend.output.telegram_bot import get_telegram_updates, 
 from bewegungskalender.frontend.main_frame import start_ui
 from bewegungskalender.libs.logger import LOGGER
 
+# external imports
+
 # Set locale
-LOGGER.info(f"Args: {ARGS}")
+LOGGER.debug(f"Args: {ARGS}")
 LOGGER.debug('Setting locale...')
 setlocale(locale.LC_ALL, LOCALE)
 
@@ -47,16 +48,32 @@ async def main_async():
     
     # Server Section    
     ## Fetch Events from CalDav-Server using urls from Config
-    create_db_and_tables()
     data: list[Category] = [Category.create(configline=line) for line in CALENDARS]
+
+    # Database Section
+    ## Create Tables
+    db.create_tables()
+
     ## Save the data to the database
-    with Session(ENGINE) as session:
-        # This populates both the category and the event table because the events are related to their category
-        [session.add(category) for category in data]
-        session.commit()
+    ### This populates both the category and the event table because the events are related to their category
+    sess = db.session()
+    for category in data:
+        LOGGER.debug(f"Saving {category.name} to database...")
+        sess.add(category)
+    sess.commit()
+    LOGGER.info("Saved all data to the database!\n")
+
     ## Create a Message in TXT, MD & HTML
-    message: MultiFormatMessage = create_message(data)
-        
+    data = db.exe(select(Category)).all()
+    print(db.exe(select(Category)).first())
+    for category in data:
+        print(category.name)
+        if category.events:
+            print(category.events)
+
+    message: MultiFormatMessage = create_message()
+
+
     # Output Section
     ## UMap Output
     if ARGS.update_map:
@@ -65,7 +82,7 @@ async def main_async():
         [create_mapdata(category.events) for category in data]
     ## Print Output
     if ARGS.print: 
-        LOGGER.info(f"Printing message in {FORMAT} Format: \n")
+        LOGGER.debug(f"Printing message in {FORMAT} Format: \n")
         print(message.get(FORMAT))
     ## Mail Output
     if ARGS.send_mail: 
@@ -74,7 +91,7 @@ async def main_async():
     ## Send or Edit Telegram Message
     if ARGS.telegram:
         await send_or_edit_telegram(message)
-    LOGGER.info('Finished all Tasks - Quitting.')
+    LOGGER.info('Finished all Tasks - Quitting.\n')
     exit()
     
 # send mastodon newsletter #TODO Implement Mastodon
