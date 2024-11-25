@@ -6,8 +6,8 @@ from caldav.objects import URL
 from icalendar.cal import Component
 from sqlmodel import SQLModel, Field, Relationship
 
+from bewegungskalender.backend.calendar.location import Location, get_location_data
 from bewegungskalender.backend.io.config import TIMEZONE
-from bewegungskalender.backend.output.map_data import Location
 
 if TYPE_CHECKING: # Necessary for SQLModel Relationships across Files
     from bewegungskalender.backend.calendar.category import Category
@@ -21,7 +21,7 @@ class Event(SQLModel, table=True):
     category: "Category" = Relationship(back_populates="events")
     category_id: int = Field(foreign_key="category.id", ondelete="CASCADE")
     description: str | None = Field(default=None)
-    location: "Location" = Relationship(back_populates="events")
+    location: Location = Relationship(back_populates="event")
     location_id: int = Field(foreign_key="location.id")
     recurrence: bool = False
     ics_url: str = None
@@ -45,7 +45,7 @@ class Event(SQLModel, table=True):
             ics_url=str(ics_url),
             summary=vevent.get('summary'),
             description=vevent.get('description'),
-            location=vevent.get('location'),
+            location=get_location_data(vevent.get('location')),
             start=start,
             end=end,
             duration=end-start,
