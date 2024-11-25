@@ -13,7 +13,6 @@ from bewegungskalender.backend.io.cli import FORMAT, ARGS
 from bewegungskalender.backend.io.config import LOCALE, CALENDARS
 from bewegungskalender.backend.io.nextcloud_forms import update_ncform
 from bewegungskalender.backend.output.mail import send_mail
-from bewegungskalender.backend.output.map_data import create_mapdata
 from bewegungskalender.backend.output.telegram_bot import get_telegram_updates, send_or_edit_telegram
 from bewegungskalender.frontend.main_frame import start_ui
 from bewegungskalender.libs.logger import LOGGER
@@ -72,7 +71,6 @@ async def main_async():
             print(category.events)
 
     message: MultiFormatMessage = create_message()
-
 
     # Output Section
     ## UMap Output
