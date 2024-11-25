@@ -7,24 +7,22 @@ from icalendar.cal import Component
 from sqlmodel import SQLModel, Field, Relationship
 
 from bewegungskalender.backend.io.config import TIMEZONE
-from bewegungskalender.libs.logger import LOGGER
+from bewegungskalender.backend.output.map_data import Location
 
 if TYPE_CHECKING: # Necessary for SQLModel Relationships across Files
     from bewegungskalender.backend.calendar.category import Category
 
 class Event(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
-    summary: str
-    start: datetime
-    end: datetime
+    summary: str = Field()
+    start: datetime = Field()
+    end: datetime = Field()
     duration: timedelta = Field(index=True)
     category: "Category" = Relationship(back_populates="events")
     category_id: int = Field(foreign_key="category.id", ondelete="CASCADE")
     description: str | None = Field(default=None)
-    location: str | None = Field(default=None)
-    lat: float | None = None
-    lon: float | None = None
-    #bbox: list[float] | None = None
+    location: "Location" = Relationship(back_populates="events")
+    location_id: int = Field(foreign_key="location.id")
     recurrence: bool = False
     ics_url: str = None
 
@@ -84,20 +82,14 @@ class Event(SQLModel, table=True):
         else:  # When both end-date and end-time are None return next day 00:00
             end = datetime.combine(start.date() + timedelta(1), datetime.min.time())
 
-        # Handle recurrence #TODO Fix this, add RRULE
-        if row['Regelmäßig'] != "":
-            match row['Regelmäßig']:
-                case 'jährlich':
-                    recurrence = False
-
         event = Event(
             summary = f"{row['Titel']} ({row['Stadt/Region']})",
             location =  row['Adresse'],
             description = f"{row['Link']}\n{row['Beschreibung (lang)']}",
             start = start,
             end = end,
-            recurrence = recurrence, #TODO Fix
-            duration = end-start, #TODO Test
+            recurrence = None,
+            duration = end-start
         )
         return event
 

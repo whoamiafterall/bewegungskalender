@@ -20,7 +20,7 @@ def update_ncform():
         for row in csv.DictReader(f):
             if datetime.fromisoformat(row['Timestamp']) > datetime.now(tz=pytz.utc) - timedelta(LAST_UPDATE):
                 event = Event.from_nextcloud_form(row)
-                calendar.add_event(event.to_ical())
+                calendar.add_event(event.to_icalendar().to_ical())
                 LOGGER.info(f"Successfully added {row['Start-Datum']}: {row['Titel']} to calender!")
             else:
                 LOGGER.info(f"No Events found to add between {LAST_UPDATE} and now.")
