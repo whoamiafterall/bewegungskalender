@@ -3,7 +3,7 @@ from logging import getLogger, Logger, DEBUG, INFO, ERROR
 from bewegungskalender.backend.io.cli import LOGLEVEL
 
 # Get Logger and set log level
-logging.basicConfig()
+logging.basicConfig(format='%(relativeCreated)dms %(module)s: %(message)s')
 LOGGER:Logger = getLogger(__name__)
 match LOGLEVEL:
     case 'debug':

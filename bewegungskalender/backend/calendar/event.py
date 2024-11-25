@@ -30,7 +30,6 @@ class Event(SQLModel, table=True):
 
     @classmethod
     def from_icalendar(cls, vevent: Component, ics_url:URL):
-
         # Make sure all the values are datetime not date in case of all day events
         def to_datetime(dt: date | datetime) -> datetime:
             if isinstance(dt, datetime):
@@ -54,7 +53,6 @@ class Event(SQLModel, table=True):
             duration=end-start,
             recurrence=True if vevent.get('recurrence-id') else False,
         )
-        LOGGER.debug(f"Success parsing {event.summary}...")
         return event
 
     @classmethod

@@ -29,11 +29,11 @@ class Category(SQLModel, table=True):
             map_marker = configline['calendar']['map_marker'],
         )
         category._update_events(get_upcoming_events(cal))
-        LOGGER.name = category.name
-        LOGGER.info(f"Found {len(category.events)} events! Saving...")
+        LOGGER.info(f"Found {len(category.events)} events in {category.name}!\n")
         return category
 
     def _update_events(self, cal_data: list[CalendarObjectResource]) -> list[Event]:
+        LOGGER.debug("Parsing events...")
         for ics in cal_data:
             for comp in icalendar.Event.from_ical(ics.data).walk(name='VEVENT'):
                 self.events.append(Event.from_icalendar(comp, ics.url))

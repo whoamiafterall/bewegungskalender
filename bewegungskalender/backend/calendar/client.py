@@ -11,10 +11,8 @@ from requests.exceptions import ConnectionError
 
 from bewegungskalender.backend.io.cli import START, END
 from bewegungskalender.backend.io.config import CALDAV_URL, CALDAV_PW, CALDAV_USR
+from bewegungskalender.libs.exceptions import NetworkConnectionError
 from bewegungskalender.libs.logger import LOGGER
-
-class NetworkConnectionError(Exception):
-    """A Connection error occurred."""
 
 # All Interactions with the CalDav Server are in this file
 DAVCLIENT:DAVClient = DAVClient(url=CALDAV_URL, username=CALDAV_USR, password=CALDAV_PW)
@@ -25,21 +23,24 @@ def get_all_calendars() -> list[Calendar]:
 
 def get_calendar_by_url(url: str) -> Calendar:
     """Get a calendar by its URL."""
-    LOGGER.debug(f"Getting data from {url}…")
+    LOGGER.info(f"Looking up {url}…")
     return DAVCLIENT.calendar(url=url)
 
 def get_calendar_name(cal: Calendar) -> str:
     """Get the display name of a calendar."""
+    LOGGER.debug("Getting name...")
     return _catch_connection_error(lambda:cal.get_display_name())
 
 def get_calendar_color(cal: Calendar) -> str:
     """Get the color property of a calendar."""
+    LOGGER.debug("Getting color...")
     return _catch_connection_error(lambda:cal.get_property(CalendarColor(), True))
 
 @cache
 def get_upcoming_events(cal:Calendar, start:datetime = START, end:datetime = END) -> list[CalendarObjectResource]:
     """Fetch upcoming events from a calendar within the given timerange.\n
     Sorts them by start-time and summary."""
+    LOGGER.debug(f"Getting events between {start:%d.%m.} and {end:%d.%m.}...")
     return _catch_connection_error(
         lambda:cal.search(**{'start': start, 'end': end}, event=True, expand=True,
                           sort_keys=['dtstart', 'summary']))
@@ -92,11 +93,9 @@ def _catch_connection_error(func, retries:int = 3, seconds_to_wait:int = 30, *ar
             LOGGER.name = __name__
             LOGGER.info(f"\n\nCouldn't connect to {CALDAV_URL}. Please check your network Connection! "
                         f"\n\nRetrying in {seconds_to_wait} seconds..."
-                        f"\nRetry attempt: {attempt} "
-                        f"\nStopping after {retries} attempts.\n")
+                        f"\nAttempts left: {retries - attempt - 1} ")
             sleep(seconds_to_wait)
             continue
         return result
     else:
-        raise NetworkConnectionError(f"\nCouldn't get data from your CalDAV Server ({CALDAV_URL}) due to bad or no network connection.\n\n"
-                                     f"Please check your network connection and rerun the program.")
+        raise NetworkConnectionError(CALDAV_URL)
