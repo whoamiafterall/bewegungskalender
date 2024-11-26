@@ -1,10 +1,12 @@
+import re
 from datetime import datetime, time
 from enum import StrEnum
+from typing import TYPE_CHECKING
 
-import re
-from bewegungskalender.backend.calendar.event import Event
 from bewegungskalender.libs.logger import LOGGER
 
+if TYPE_CHECKING:
+    from bewegungskalender.backend.calendar.event import Event
 # TODO Break functions into smaller pieces and move them into class
 # TODO Think of a way to make enum types inherit from format
 
@@ -43,25 +45,20 @@ def escape(text: str, charset: str = "?_–*[]()~`>#+-=|.!'{''}''") -> str:
     translate_dict = {c: "\\" + c for c in charset}
     return text.translate(str.maketrans(translate_dict))
 
-
-def add_link(summary: str, description: str, frmt: Format) -> str:
-    if description is not None:
-        try:  #
-            url = re.search("(?P<url>https?://\S+)", description).group("url")
-            match frmt:
-                case Format.TXT:
-                    return f" {summary}: {url}"
-                case Format.MD:
-                    return f" [{escape(summary)}]({url})"
-                case Format.HTML:
-                    return ' <a href=' + f"{url}" + '>' + f"{summary}" + '</a>'
-        except AttributeError:
-            LOGGER.warning(f"L: {summary}: No Link in: {description}")
-    return f" {escape(summary)}" if frmt is Format.MD else f" {summary}"
+def add_link(summary: str, url: str, frmt: Format) -> str:
+    if url is None:
+        return f" {escape(summary)}" if frmt is Format.MD else f" {summary}"
+    match frmt:
+        case Format.TXT:
+            return f" {summary}: {url}"
+        case Format.MD:
+            return f" [{escape(summary)}]({url})"
+        case Format.HTML:
+            return ' <a href=' + f"{url}" + '>' + f"{summary}" + '</a>'
 
 
 # Temporarily moved this here - should be reworked when introducing templating
-def match_and_add_recurring(event: Event, message: str, frmt: Format) -> str:
+def match_and_add_recurring(event: "Event", message: str, frmt: Format) -> str:
     # Prepare regex, the primary entry of the event and the date to add if it's not the first occurrence
     regex = r'(\d{2}\.\d{2}\.\s)+(\(\d{2}\:\d{2}\)\:\s)?'
     match frmt:  # change the regex depending on the format

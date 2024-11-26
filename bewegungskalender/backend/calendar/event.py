@@ -1,3 +1,4 @@
+import re
 from datetime import datetime, timedelta, time, date
 from typing import TYPE_CHECKING
 
@@ -21,10 +22,11 @@ class Event(SQLModel, table=True):
     category: "Category" = Relationship(back_populates="events")
     category_id: int = Field(foreign_key="category.id", ondelete="CASCADE")
     description: str | None = Field(default=None)
+    link: str | None = Field(default=None)
     location: Location = Relationship(back_populates="event")
     location_id: int = Field(foreign_key="location.id")
-    recurrence: bool = False
-    ics_url: str = None
+    recurrence: bool = Field(default=False)
+    ics_url: str = Field(default=None)
 
     @classmethod
     def from_icalendar(cls, vevent: Component, ics_url:URL):
@@ -45,6 +47,7 @@ class Event(SQLModel, table=True):
             ics_url=str(ics_url),
             summary=vevent.get('summary'),
             description=vevent.get('description'),
+            link = get_link(vevent.get('description')),
             location=get_location_data(vevent.get('location')),
             start=start,
             end=end,
@@ -85,7 +88,8 @@ class Event(SQLModel, table=True):
         event = Event(
             summary = f"{row['Titel']} ({row['Stadt/Region']})",
             location =  row['Adresse'],
-            description = f"{row['Link']}\n{row['Beschreibung (lang)']}",
+            description = f"{row['Beschreibung (lang)']}",
+            link = f"{row['Link']}",
             start = start,
             end = end,
             recurrence = None,
@@ -96,9 +100,15 @@ class Event(SQLModel, table=True):
     def to_icalendar(self) -> icalendar.Event:
         event = icalendar.Event()
         event.add('summary', self.summary)
-        event.add('description', self.description)
+        event.add('description', self.link + self.description)
         event.add('location', self.location)
         event.add('dtstart', self.start)
         event.add('dtend', self.end)
         event.add('recurrence', self.recurrence)
         return event
+
+def get_link(string: str):
+    try:
+        return re.search("(?P<url>https?://\S+)", string).group('url')
+    except (TypeError, AttributeError):
+        return None
