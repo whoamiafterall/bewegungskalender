@@ -1,22 +1,27 @@
 
 # TODOs
+ 
+- [x] Rewrite nominatim.py using [geopy](https://geopy.readthedocs.io)
+- [ ] Check if it makes sense to use io-bound tasks [(async io in nicegui)](https://nicegui.io/documentation/section_action_events#running_i_o-bound_tasks)
+- [X] add coordinates and bounding-box directly to event_data to cache it altogether
+- [X] Use [geopy](https://geopy.readthedocs.io/en/latest/#module-geopy.distance) to calculate distance when filtering by location
 
 ## Nicegui
 
 ### main_page.py/Layout
 
-- [] (LONG_TERM) change menu to have "Calendar", "Map" & "Form" as fixed items and to load additional pages from the config => after creating calendar and form ourselves
-- [] (LONG_TERM) Create Form out of nicegui elements
-- [] (LONG_TERM) Create Custom Calendar View
-- [] Make events filterable by:
-  - [] recurring events (yes/no)
-  - [] only events 23h+ (yes/no)
-  - [] by category
-  - [] by location
+- [ ] (LONG_TERM) change menu to have "Calendar", "Map" & "Form" as fixed items and to load additional pages from the config => after creating calendar and form ourselves
+- [ ] (LONG_TERM) Create Form out of nicegui elements
+- [ ] (LONG_TERM) Create Custom Calendar View
+- [ ] Make events filterable by:
+  - [ ] recurring events (yes/no)
+  - [ ] only events 23h+ (yes/no)
+  - [ ] by category
+  - [ ] by location
 
 ### Admin Panel
 
-- [] create an admin panel for settings
+- [ ] create an admin panel for settings
 
 ### Map
 
@@ -26,14 +31,14 @@
 
 - [X] create a nice calendar-view
 => embedded iframe from nextcloud
-- [] or look for existing software
-- [] could use calendar.HTMLCalendar
-- [] could use fullcalendar.js
+- [ ] or look for existing software
+- [ ] could use calendar.HTMLCalendar
+- [ ] could use fullcalendar.js
 
 ## switch to asyncio
 
-- [] change all the relevant functions
-- [] test
+- [ ] change all the relevant functions
+- [ ] test
 
 ## Multilingual Support?
 
@@ -58,12 +63,12 @@
 => works, just use csv or ods file that is automatically updated and cron that on to the server, then search from last timestamp to now. Store timestamp.
 - [X] check if web embedding is already shipped
 - [X] implement
-- [ ] ship
+- [x] ship
 
 ## Mail-Newsletter (fixed 22.08.)
 
 - [x] fixed the SpamAssasin problem by properly creating a MimeMultiPart Message (txt and html)
-- [ ] ship
+- [x] ship
 
 ## Auto-Update Telegram Message (Fixed 22.08.)
 

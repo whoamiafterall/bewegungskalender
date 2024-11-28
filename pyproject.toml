@@ -20,6 +20,7 @@ urllib3 = "^2.2.3"
 python-telegram-bot = "^21.6"
 validators = "^0.34.0"
 sqlmodel = "^0.0.22"
+geopy = "^2.4.1"
 
 [build-system]
 requires = ["poetry-core"]
