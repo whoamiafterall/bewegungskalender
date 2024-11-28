@@ -1,4 +1,7 @@
+from contextlib import contextmanager
+
 from nicegui import ui, app
+from nicegui.page_layout import LeftDrawer
 
 from bewegungskalender.backend.io.config import CONFIG, UI_PORT, UI_FAVICON, UI_TITLE, MENU
 from bewegungskalender.libs.logger import LOGGER
@@ -10,35 +13,43 @@ from bewegungskalender.frontend.views.form import form_view
 from bewegungskalender.frontend.views.links import links_view
 from bewegungskalender.frontend.views.map import map_view
 
-#nice gui support async function for page loading
-@ui.page('/')
-@ui.page('/{_:path}')
-async def main_page():
-    print(ROUTER.routes)
+@contextmanager
+def theme():
     ui.query('.nicegui-content').classes('p-0')  # remove default padding from site
     ui.dark_mode(True)  # Set dark mode
     ui.colors(primary='#1c2329', secondary='white', accent='green')
 
+@contextmanager
+def header(left_drawer:LeftDrawer):
     with ui.header(elevated=True).classes('fixed h-50px m-0 px-3 py-2 items-center'):
-        with ui.button_group().props('flat'):
-            ui.button(on_click=lambda: left_drawer.toggle(), icon='menu').props('flat color=white').classes('lg:hidden')
-            ui.button(MENU['calendar']['label'], icon=MENU['calendar']['icon'],
-                      on_click=lambda: ROUTER.open(calendar_view))
-            ui.button(MENU['map']['label'], icon=MENU['map']['icon'],
-                      on_click=lambda: ROUTER.open(map_view))
+        ui.button(on_click=lambda: left_drawer.toggle(), icon='menu').props('flat color=white').classes('lg:hidden')
+        main_menu()
         ui.space().classes('max-sm:hidden')
         with ui.row().classes('max-lg:hidden m-0 p-0'):
-            with ui.button_group().props('outline rounded'):
-                ui.button(MENU['form']['label'], icon=MENU['form']['icon'],
-                          on_click=lambda: ROUTER.open(form_view))
-                ui.button(MENU['about']['label'], icon=MENU['about']['icon'],
-                          on_click=lambda: ROUTER.open(about_view))
-                ui.button(MENU['FAQ']['label'], icon=MENU['FAQ']['icon'],
-                          on_click=lambda: ROUTER.open(faq_view))
-                ui.button(MENU['links']['label'], icon=MENU['links']['icon'],
-                          on_click=lambda: ROUTER.open(links_view))
+            secondary_menu()
         ui.space().classes('max-sm:hidden')
 
+@contextmanager
+def main_menu():
+    with ui.button_group().props('flat'):
+        ui.button(MENU['calendar']['label'], icon=MENU['calendar']['icon'],
+                  on_click=lambda: ROUTER.open(calendar_view))
+        ui.button(MENU['map']['label'], icon=MENU['map']['icon'],
+                  on_click=lambda: ROUTER.open(map_view))
+@contextmanager
+def secondary_menu():
+    with ui.button_group().props('outline rounded'):
+        ui.button(MENU['form']['label'], icon=MENU['form']['icon'],
+                  on_click=lambda: ROUTER.open(form_view))
+        ui.button(MENU['about']['label'], icon=MENU['about']['icon'],
+                  on_click=lambda: ROUTER.open(about_view))
+        ui.button(MENU['FAQ']['label'], icon=MENU['FAQ']['icon'],
+                  on_click=lambda: ROUTER.open(faq_view))
+        ui.button(MENU['links']['label'], icon=MENU['links']['icon'],
+                  on_click=lambda: ROUTER.open(links_view))
+
+@contextmanager
+def left_drawer():
     with ui.left_drawer(value=False, fixed=True, elevated=True).classes('lg:hidden background-primary p-0 m-0').props(
             'width=auto persistent=False') as left_drawer:
         ui.space()
@@ -54,6 +65,19 @@ async def main_page():
             ui.separator()
             ui.button(icon='close', on_click=lambda: left_drawer.hide()).props('flat color=white align=center').classes(
                 'h-24px')
+    return left_drawer
+
+
+#nice gui support async function for page loading
+@ui.page('/')
+@ui.page('/views/{_:path}')
+async def main_page():
+    await ui.context.client.connected()
+    print(ROUTER.routes)
+
+    theme()
+    ld = left_drawer()
+    header(ld)
 
     ROUTER.frame().classes('w-screen h-[calc(100vh-50px)] mt-50')
 
