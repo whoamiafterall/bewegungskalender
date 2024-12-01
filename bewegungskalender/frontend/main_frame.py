@@ -70,10 +70,13 @@ def left_drawer():
 
 #nice gui support async function for page loading
 @ui.page('/')
-@ui.page('/views/{_:path}')
+@ui.page('/{_:path}')
 async def main_page():
     await ui.context.client.connected()
     print(ROUTER.routes)
+
+    print(ui.context.client.page.path)
+
 
     theme()
     ld = left_drawer()

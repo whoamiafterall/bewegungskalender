@@ -15,7 +15,7 @@ from bewegungskalender.libs.logger import LOGGER
 
 
 # Create Map View
-@ROUTER.add(slugify(f"{str(MENU['map']['label'].lower())}"))
+@ROUTER.add(f"/{slugify(str(MENU['map']['label'].lower()))}")
 async def map_view():
     loading(MENU['map']['label'])
     await ui.context.client.connected()

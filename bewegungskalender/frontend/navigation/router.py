@@ -13,6 +13,9 @@ class Router:
         self.content: ui.element = None
 
     def add(self, path: str):
+        # ensure that path starts with a "/" Note: It might also be an Option to modify the path variable by simple appending the "/" at the beginning in this case 
+        if path.startswith("/") == False:
+            raise Warning('When adding a path to the Router it must begin with a "/" for the router to work correctly')
         def decorator(func: Callable):
             self.routes[path] = func
             return func
