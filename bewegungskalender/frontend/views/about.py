@@ -7,7 +7,7 @@ from bewegungskalender.libs.logger import LOGGER
 from bewegungskalender.frontend.functions import container
 from bewegungskalender.frontend.navigation.router import ROUTER
 
-@ROUTER.add(f"/{slugify(str(MENU['about']['label'].lower()))}/")
+@ROUTER.add(f"/{slugify(str(MENU['about']['label'].lower()))}")
 def about_view():
     LOGGER.debug(f"Creating About Panel with the content of {MENU['about']['source']}...")
     with container('md:w-2/3'):

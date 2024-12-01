@@ -13,6 +13,9 @@ from bewegungskalender.frontend.views.form import form_view
 from bewegungskalender.frontend.views.links import links_view
 from bewegungskalender.frontend.views.map import map_view
 
+app.add_static_files(CONFIG['assets']['url_path'], CONFIG['assets_dir'])
+
+
 @contextmanager
 def theme():
     ui.query('.nicegui-content').classes('p-0')  # remove default padding from site
@@ -70,7 +73,7 @@ def left_drawer():
 
 #nice gui support async function for page loading
 @ui.page('/')
-@ui.page('/{_:path}/')
+@ui.page('/{_:path}')
 async def main_page():
     await ui.context.client.connected()
     print(ROUTER.routes)
@@ -93,7 +96,6 @@ async def main_page():
 
 #seperate start_ui out from main page
 def start_ui():
-    app.add_static_files(CONFIG['assets']['url_path'], CONFIG['assets_dir'])
 
     LOGGER.debug('Finished. Starting UI...')
     ui.run(title=UI_TITLE, favicon=UI_FAVICON, port=UI_PORT)  #storage_secret=storage_secret)
