@@ -70,13 +70,10 @@ def left_drawer():
 
 #nice gui support async function for page loading
 @ui.page('/')
-@ui.page('/{_:path}')
+@ui.page('/{_:path}/')
 async def main_page():
     await ui.context.client.connected()
     print(ROUTER.routes)
-
-    print(ui.context.client.page.path)
-
 
     theme()
     ld = left_drawer()
@@ -96,8 +93,9 @@ async def main_page():
 
 #seperate start_ui out from main page
 def start_ui():
+    app.add_static_files(CONFIG['assets']['url_path'], CONFIG['assets_dir'])
+
     LOGGER.debug('Finished. Starting UI...')
     ui.run(title=UI_TITLE, favicon=UI_FAVICON, port=UI_PORT)  #storage_secret=storage_secret)
     LOGGER.debug('Successfully started UI.')
     # add static files
-    app.add_static_files(CONFIG['assets']['url_path'], CONFIG['assets_dir'])

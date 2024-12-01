@@ -16,6 +16,8 @@ class Router:
         # ensure that path starts with a "/" Note: It might also be an Option to modify the path variable by simple appending the "/" at the beginning in this case 
         if path.startswith("/") == False:
             raise Warning('When adding a path to the Router it must begin with a "/" for the router to work correctly')
+        if path.endswith("/") == False:
+            raise Warning('When adding a path to the Router it must end with a "/" for the router to work correctly')
         def decorator(func: Callable):
             self.routes[path] = func
             return func
@@ -24,7 +26,8 @@ class Router:
     def open(self, target: Union[Callable, str]) -> None:
         if isinstance(target, str):
             path = target
-            builder = self.routes[target]
+
+            builder = self.routes[path]
         else:
             path = {v: k for k, v in self.routes.items()}[target]
             builder = target
