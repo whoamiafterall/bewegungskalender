@@ -8,10 +8,13 @@ from bewegungskalender.libs.logger import LOGGER
 from bewegungskalender.frontend.navigation.router import ROUTER
 from bewegungskalender.frontend.views.FAQ import faq_view
 from bewegungskalender.frontend.views.about import about_view
+from bewegungskalender.frontend.views.list import list_view
 from bewegungskalender.frontend.views.calendar import calendar_view
 from bewegungskalender.frontend.views.form import form_view
 from bewegungskalender.frontend.views.links import links_view
 from bewegungskalender.frontend.views.map import map_view
+from bewegungskalender.frontend.views.custom_calendar import custom_calendar_view
+
 
 app.add_static_files(CONFIG['assets']['url_path'], CONFIG['assets_dir'])
 
@@ -19,7 +22,7 @@ app.add_static_files(CONFIG['assets']['url_path'], CONFIG['assets_dir'])
 @contextmanager
 def theme():
     ui.query('.nicegui-content').classes('p-0')  # remove default padding from site
-    ui.dark_mode(True)  # Set dark mode
+    ui.dark_mode(False)  # Set dark mode
     ui.colors(primary='#1c2329', secondary='white', accent='green')
 
 @contextmanager
@@ -35,8 +38,12 @@ def header(left_drawer:LeftDrawer):
 @contextmanager
 def main_menu():
     with ui.button_group().props('flat'):
+        ui.button(MENU['list']['label'], icon=MENU['list']['icon'],
+                  on_click=lambda: ROUTER.open(list_view))
         ui.button(MENU['calendar']['label'], icon=MENU['calendar']['icon'],
                   on_click=lambda: ROUTER.open(calendar_view))
+        ui.button(MENU['calendar']['label']+" Test", icon=MENU['calendar']['icon'],
+                  on_click=lambda: ROUTER.open(custom_calendar_view))
         ui.button(MENU['map']['label'], icon=MENU['map']['icon'],
                   on_click=lambda: ROUTER.open(map_view))
 @contextmanager

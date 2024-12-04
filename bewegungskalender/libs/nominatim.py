@@ -41,6 +41,18 @@ def search(query, accept_language='', limit=None):
         url += '&limit=' + str(limit)
     return _query(url)
 
+def search_city(query, accept_language='', limit=None):
+    """Class for querying text address: https://nominatim.org/release-docs/develop/api/Search/
+    Method takes query string, accept_language string (rfc2616 language code), limit integer (limits number of results)."""
+    query = query.replace(' ', '+')
+    url = SEARCH_URL + '&q=' + query
+    if accept_language:
+        url += '&accept-language=' + accept_language
+    if limit:
+        url += '&limit=' + str(limit)
+    url += '&featureType=city'
+    return _query(url)
+
 def reverse(lat=None, lon=None, accept_language='', zoom=18):
     """Method for querying gps coordinates: https://nominatim.org/release-docs/develop/api/Reverse/
     Method takes lat and lon for GPS coordinates, accept_language string, zoom integer (between from 0 to 18)."""
