@@ -41,7 +41,7 @@ def list_view():
                                 auto_close=True).classes('font-normal capitalize hover:font-medium text-break grow items-start'):
                             with ui.card().tight().classes('m-0 p-2 flex-row space-x-3 items-center bg-primary text-white font-medium float-left'):
                                 if event.location.name != "nicht bekannt":
-                                    ui.label(f"📌: {event.location.name}")
+                                    ui.link(f"📌: {event.location.name}", event.location.osm_link, new_tab=True)
                                 if event.link:
                                     ui.link(f"🌐: {event.link}", event.link, new_tab=True)
                                 ui.button(icon='file_download',

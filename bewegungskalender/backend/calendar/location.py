@@ -13,14 +13,19 @@ if TYPE_CHECKING: # Necessary for SQLModel Relationships across Files
     from bewegungskalender.backend.calendar.event import Event
 
 # Regular expression to match OSM links
-OSM_ENTITY_LINK:re.Pattern = re.compile(r"(https?://www.openstreetmap.org/(way|node|relation)/\d{4,15})")
+OSM_LINK_PATTERN:re.Pattern = re.compile(r"(https?://www.openstreetmap.org/(way|node|relation)/\d{4,15})")
+OSM_LINK:str = "https://www.openstreetmap.org"
 
 class Location(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
     name: str
     event: "Event" = Relationship(back_populates="location") #TODO use list of events or id
+    osm_link: str | None = None
     lat: float | None = None
     lon: float | None = None
+    city: str | None = None
+    country: str | None = None
+    country_code: str | None = None
 
 def lookup_osm_link(result: str) -> Optional[Tuple[float, float]]:
     lon, lat = None, None
@@ -43,15 +48,27 @@ def get_location_data(location:str) -> Location:
             return Location(name='nicht bekannt')
         case "Online" | "online":  # Filter events with online/Online as location
             return Location(name='online')
-        case link if OSM_ENTITY_LINK.match(link): # Check if location matches a link to an OSM-Entity
+        case link if OSM_LINK_PATTERN.match(link): # Check if location matches a link to an OSM-Entity
             try:
                 result = lookup_entity(link)
             except NoResultError:
                 return Location(name='nicht bekannt')
         case _: # Geocode location otherwise
             try:
-                result = Nominatim(user_agent=__name__).geocode(location, language=LOCALE).raw
+                result = Nominatim(user_agent=__name__).geocode(location, addressdetails=True, language=LOCALE)
             except AttributeError: # No result found
                 LOGGER.warning(NoResultError(location))
                 return Location(name=location)
-    return Location(name=location, lat=result['lat'], lon=result['lon'])
+    def catch_key_error(key):
+        try:
+            return result.raw['address'][key]
+        except KeyError:
+            return None
+
+    return Location(name=location,
+                    lat=result.raw['lat'],
+                    lon=result.raw['lon'],
+                    osm_link=f"{OSM_LINK}/{result.raw['osm_type']}/{result.raw['osm_id']}",
+                    city=catch_key_error('city'),
+                    country=catch_key_error('country'),
+                    country_code=catch_key_error('country_code'))
