@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 import icalendar
 from caldav.objects import URL
 from icalendar.cal import Component
+from pydantic.v1 import UUID4
 from sqlmodel import SQLModel, Field, Relationship
 
 from bewegungskalender.backend.calendar.location import Location, get_location_data
@@ -26,10 +27,11 @@ class Event(SQLModel, table=True):
     location: Location = Relationship(back_populates="event")
     location_id: int = Field(foreign_key="location.id")
     recurrence: bool = Field(default=False)
-    ics_url: str = Field(default=None)
+    cloud_id: str = Field(default=None)
+    ics_url: str = Field()
 
     @classmethod
-    def from_icalendar(cls, vevent: Component, ics_url:URL):
+    def from_icalendar(cls, vevent: Component, uid:str, ics_url:URL):
         # Make sure all the values are datetime not date in case of all day events
         def to_datetime(dt: date | datetime) -> datetime:
             if isinstance(dt, datetime):
@@ -44,6 +46,7 @@ class Event(SQLModel, table=True):
 
         # Create object
         event = Event(
+            cloud_id=uid,
             ics_url=str(ics_url),
             summary=vevent.get('summary'),
             description=vevent.get('description'),
