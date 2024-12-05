@@ -1,15 +1,15 @@
-import math 
+import math
+from datetime import timedelta, datetime
+from typing import Callable
 
-from typing import Callable, Dict, Union
-from nicegui import background_tasks, helpers, ui
-from datetime import timedelta,datetime
-from bewegungskalender.backend.calendar.location import Location
-from bewegungskalender.backend.calendar.event import Event
-from bewegungskalender.backend.calendar.category import Category
-from bewegungskalender.backend.formatting.format import event_time
-from bewegungskalender.backend.io import db
+from nicegui import ui
 from sqlmodel import select
-from bewegungskalender.libs.nominatim import searchCity
+
+from bewegungskalender.backend.calendar.event import Event
+from bewegungskalender.backend.calendar.location import Location
+from bewegungskalender.backend.io import db
+from bewegungskalender.libs.nominatim import search_city
+
 
 # todo manage text via config
 class Eventfilter:
