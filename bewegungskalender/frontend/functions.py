@@ -1,3 +1,4 @@
+import math
 from contextlib import contextmanager
 
 import validators
@@ -34,3 +35,8 @@ def render_iframe(source:str): #TODO Add Input Validation - check for <iframe> a
 @contextmanager
 def loading(page_label:str, timeout:float = 0.7):
     ui.notification(f"Lade {page_label}...", position='center', type='ongoing', spinner=True, timeout=timeout)
+
+def opacity(percentage:int, color:str):
+    alpha = int((percentage / 100)*255)
+    color += f'{alpha:02x}'
+    return color
