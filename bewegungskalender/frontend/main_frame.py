@@ -3,7 +3,8 @@ from contextlib import contextmanager
 from nicegui import ui, app
 from nicegui.page_layout import LeftDrawer
 
-from bewegungskalender.backend.io.config import CONFIG, UI_PORT, UI_FAVICON, UI_TITLE, MENU
+from bewegungskalender.backend.io.config import CONFIG, UI_PORT, UI_FAVICON, UI_TITLE, MENU, ICONS_DIR
+from bewegungskalender.frontend.views.table import table_view
 from bewegungskalender.libs.logger import LOGGER
 from bewegungskalender.frontend.navigation.router import ROUTER
 from bewegungskalender.frontend.views.FAQ import faq_view
@@ -16,7 +17,7 @@ from bewegungskalender.frontend.views.map import map_view
 from bewegungskalender.frontend.views.custom_calendar import custom_calendar_view
 
 
-app.add_static_files(CONFIG['assets']['url_path'], CONFIG['assets_dir'])
+app.add_static_files(CONFIG['assets']['url_path'], ICONS_DIR)
 
 
 @contextmanager
@@ -46,6 +47,8 @@ def main_menu():
                   on_click=lambda: ROUTER.open(custom_calendar_view))
         ui.button(MENU['map']['label'], icon=MENU['map']['icon'],
                   on_click=lambda: ROUTER.open(map_view))
+        ui.button(MENU['table']['label'], icon=MENU['table']['icon'],
+                  on_click=lambda: ROUTER.open(table_view))
 @contextmanager
 def secondary_menu():
     with ui.button_group().props('outline rounded'):
@@ -83,8 +86,6 @@ def left_drawer():
 @ui.page('/{_:path}')
 async def main_page():
     await ui.context.client.connected()
-    print(ROUTER.routes)
-
     theme()
     ld = left_drawer()
     header(ld)
