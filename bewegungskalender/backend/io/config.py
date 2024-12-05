@@ -30,6 +30,7 @@ DATADIR: Final[str] = CONFIG['datadir']
 DB_FILE: Final[FilePath] = CONFIG['database']
 TEMPLATING_DIR: Final[str] = CONFIG['templating_dir']
 STATIC_DIR: Final[str] = CONFIG['static_dir']
+ICONS_DIR: Final[str] = CONFIG['icons_dir']
 
 # UI-Section
 UI_PORT: Final[int] = CONFIG['frontend']['port']

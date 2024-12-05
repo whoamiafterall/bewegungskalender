@@ -12,7 +12,8 @@ from bewegungskalender.libs.logger import LOGGER
 class Category(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
     name: str
-    url: str
+    internal: str
+    public_id: str
     emoji: str
     color: str
     map_marker: str
@@ -20,10 +21,11 @@ class Category(SQLModel, table=True):
 
     @classmethod
     def create(cls, configline:dict):
-        cal = get_calendar_by_url(configline['calendar']['url'])
+        cal = get_calendar_by_url(configline['calendar']['internal'])
         category = Category(
             name = get_calendar_name(cal),
-            url = cal.canonical_url,
+            internal = configline['calendar']['internal'],
+            public_id = configline['calendar']['public'],
             emoji = configline['calendar']['emoji'],
             color = get_calendar_color(cal),
             map_marker = configline['calendar']['map_marker'],
@@ -36,5 +38,5 @@ class Category(SQLModel, table=True):
         LOGGER.debug("Parsing events...")
         for ics in cal_data:
             for comp in icalendar.Event.from_ical(ics.data).walk(name='VEVENT'):
-                self.events.append(Event.from_icalendar(comp, ics.url))
+                self.events.append(Event.from_icalendar(comp, str(comp['UID']), ics.url))
         return self.events

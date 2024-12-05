@@ -24,7 +24,7 @@ def get_all_calendars() -> list[Calendar]:
 def get_calendar_by_url(url: str) -> Calendar:
     """Get a calendar by its URL."""
     LOGGER.info(f"Looking up {url}…")
-    return DAVCLIENT.calendar(url=url)
+    return DAVCLIENT.calendar(url=f"{CALDAV_USR}/{url}/")
 
 def get_calendar_name(cal: Calendar) -> str:
     """Get the display name of a calendar."""
