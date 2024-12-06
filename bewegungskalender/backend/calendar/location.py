@@ -19,7 +19,7 @@ OSM_LINK:str = "https://www.openstreetmap.org"
 class Location(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
     name: str
-    event: "Event" = Relationship(back_populates="location") #TODO use list of events or id
+    event: "Event" = Relationship(back_populates="location",  sa_relationship_kwargs={"lazy": "selectin"}) #TODO use list of events or id
     osm_link: str | None = None
     lat: float | None = None
     lon: float | None = None
@@ -61,7 +61,7 @@ def get_location_data(location:str) -> Location:
                 return Location(name=location)
     def catch_key_error(key):
         try:
-            return result.raw['address'][key]
+            return str(result.raw['address'][key])
         except KeyError:
             return None
 
