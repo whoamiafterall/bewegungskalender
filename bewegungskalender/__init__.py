@@ -9,7 +9,6 @@ from bewegungskalender.backend.io.config import CONFIG
 from bewegungskalender.backend.io.nextcloud_forms import update_ncform
 from bewegungskalender.backend.output.mail import send_mail
 from bewegungskalender.backend.output.telegram_bot import get_telegram_updates, send_or_edit_telegram
-from bewegungskalender.frontend.main_frame import start_ui
 from bewegungskalender.libs.logger import LOGGER
 
 __all__ =   ([asyncio, NamedTuple, setlocale, LC_TIME] +
@@ -20,6 +19,5 @@ __all__ =   ([asyncio, NamedTuple, setlocale, LC_TIME] +
              [get_upcoming_events] +
              [LOGGER] +
              [get_telegram_updates, send_or_edit_telegram] +
-             [start_ui] +
              [send_mail])
             

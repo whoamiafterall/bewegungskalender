@@ -14,7 +14,7 @@ from bewegungskalender.backend.io.config import LOCALE, CALENDARS
 from bewegungskalender.backend.io.nextcloud_forms import update_ncform
 from bewegungskalender.backend.output.mail import send_mail
 from bewegungskalender.backend.output.telegram_bot import get_telegram_updates, send_or_edit_telegram
-from bewegungskalender.frontend.main_frame import start_ui
+from bewegungskalender.frontend.main.theme import start_ui
 from bewegungskalender.libs.logger import LOGGER
 
 # external imports
@@ -27,7 +27,7 @@ setlocale(locale.LC_ALL, LOCALE)
 # Main Function if run as standalone program
 def main():
     # frontend.run can't be called from async call
-    if ARGS.user_interface: 
+    if ARGS.user_interface:
         LOGGER.info("Starting User Interface!")
         start_ui()
     else:
