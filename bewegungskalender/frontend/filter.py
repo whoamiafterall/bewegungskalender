@@ -100,10 +100,16 @@ class Eventfilter:
 
             
 
-            result = db.exe(select(Event,Location).where(Event.start < until).where(Location.lat > float(minlat)).where(Location.lat < float(maxlat)).where(Location.lon > float(minlon)).where(Location.lon < float(maxlon)).join(Location)).all()
+            result = db.exe(select(Event,Location).where(
+                Event.start < until,
+                Location.lat > float(minlat),
+                Location.lat < float(maxlat),
+                Location.lon > float(minlon),
+                Location.lon < float(maxlon),
+            ).join(Location).order_by(Event.start)).all()
 
             return [n.Event for n in result]
         else:
-            events:list[Event] = db.exe(select(Event).where(Event.start < until)).all()
+            events:list[Event] = db.exe(select(Event).where(Event.start < until).order_by(Event.start)).all()
             return events
 

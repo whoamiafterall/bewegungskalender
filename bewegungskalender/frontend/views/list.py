@@ -17,22 +17,24 @@ async def list_view():
     await ui.context.client.connected()
 
     with (container('xl:w-1/2 lg:w-3/5 md:w-4/5 max-sm:w-full')):
-#        ui.label('Einige kürzere Termine werden nicht angezeigt. Bearbeite die Filter einstellungen um dies zu ändern.')
-
+        #        ui.label('Einige kürzere Termine werden nicht angezeigt. Bearbeite die Filter einstellungen um dies zu ändern.')
+        
+        ui_list_element = ui.list().classes('w-full')
+        events_ui_list = []
         def use_filter():
             events = filterUI.events_using_filter()
-
-            with ui.list().classes('w-full'):
-                events_ui_list = []
+            
+            with ui_list_element:
                 for event_ui in events_ui_list:
                     event_ui.delete()
                 events_ui_list.clear()
-                ui.markdown(f"#### {today():%B}").classes('text-center'); month = today().month
+                events_ui_list.append(ui.markdown(f"#### {today():%B}").classes('text-center'))
+                month = today().month
                 for event in events:
                     if event.start.month != month:
-                        ui.markdown(f"#### {event.start:%B}").classes('text-center')
+                        events_ui_list.append(ui.markdown(f"#### {event.start:%B}").classes('text-center'))
                     month = event.start.month
-
+                    
                     # The row for each event
                     with ui.row().classes('flex break-words flex-row gap-0 max-sm:mb-2') as event_item:
                         with ui.card().tight().classes('m-0 p-1 sm:p-2 flex-row bg-black float-left order-first'):
@@ -46,13 +48,13 @@ async def list_view():
                                 ui.space()
                             else:
                                 ui.label(f"{event.location.country}").classes('grow text-right')
-
+                        
                         with ui.dropdown_button(
                                 text=event.summary,
                                 color=opacity(60, event.category.color),
                                 auto_close=True
                         ).classes('font-normal capitalize hover:font-medium max-sm:w-full max-sm:order-3 grow items-start'):
-
+                            
                             # DropDown Content
                             with ui.card().tight(
                             ).classes('m-0 p-2 flex-row space-x-3 items-center bg-primary text-white font-medium float-left'):
@@ -63,15 +65,15 @@ async def list_view():
                                 ui.button(icon='file_download',
                                           on_click=lambda: ui.download(event.ics_url)
                                           ).props('flat color=white')
-
-                              #TODO find out how to solve authentication problem
-                              #  print(event.ics_url)
-                               # print(f"{CALDAV_URL}public-calendars/{event.category.public_id}/{event.cloud_id}.ics?export")
-                                #print(f"{CALDAV_URL}public-calendars/{event.category.public_id}/{event.ics_url.split('/')[-1]}?export")
-
+                            
+                            #TODO find out how to solve authentication problem
+                            #  print(event.ics_url)
+                            # print(f"{CALDAV_URL}public-calendars/{event.category.public_id}/{event.cloud_id}.ics?export")
+                            #print(f"{CALDAV_URL}public-calendars/{event.category.public_id}/{event.ics_url.split('/')[-1]}?export")
+                    
                     events_ui_list.append(event_item)
-
-
+        
+        
         filterUI = Eventfilter(use_filter)
         use_filter()
     
