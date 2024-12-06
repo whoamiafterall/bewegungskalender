@@ -22,7 +22,7 @@ def tab_panel(tab:str):
 @contextmanager
 def container(classes:str = None):
     with (ui.card().tight().classes(
-            'container mx-auto min-h-full overflow-auto p-10 ' # Layout - Trailing White Space is important!
+            'container mx-auto min-h-full overflow-auto px-10 py-5 ' # Layout - Trailing White Space is important!
             'bg-black text-base font-light text-secondary') # Text
     as card):
         card.classes(classes) # Add Custom Classes
