@@ -98,17 +98,12 @@ class Eventfilter:
             maxlon = coords[1] + distance / 111.320*math.cos(maxlat * math.pi / 180)
             minlon = coords[1] - distance / 111.320*math.cos(minlat * math.pi / 180)
 
+            
 
-            events = db.exe(select(Event).where(
-                Event.start < until,
-                Event.location.lat > float(minlat),
-                Event.location.lat < float(maxlat),
-                Event.location.lon > float(minlon),
-                Event.location.lon < float(maxlon)
-            ).order_by(Event.start)).all()
+            result = db.exe(select(Event,Location).where(Event.start < until).where(Location.lat > float(minlat)).where(Location.lat < float(maxlat)).where(Location.lon > float(minlon)).where(Location.lon < float(maxlon)).join(Location)).all()
 
-            return events
+            return [n.Event for n in result]
         else:
-            events:list[Event] = db.exe(select(Event).where(Event.start < until).order_by(Event.start)).all()
+            events:list[Event] = db.exe(select(Event).where(Event.start < until)).all()
             return events
 
