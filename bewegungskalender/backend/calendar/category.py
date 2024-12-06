@@ -17,7 +17,9 @@ class Category(SQLModel, table=True):
     emoji: str
     color: str
     map_marker: str
-    events: list[Event] = Relationship(back_populates="category", cascade_delete=True)
+    events: list[Event] = Relationship(back_populates="category",
+                                       sa_relationship_kwargs={"lazy": "selectin"},
+                                       cascade_delete=True)
 
     @classmethod
     def create(cls, configline:dict):
