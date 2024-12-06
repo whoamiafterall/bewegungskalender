@@ -1,6 +1,5 @@
-from sqlalchemy import Engine, ScalarResult
-from sqlalchemy.engine import TupleResult
-from sqlmodel import create_engine, SQLModel, Session, select
+from sqlalchemy import Engine
+from sqlmodel import create_engine, SQLModel, Session
 
 from bewegungskalender.backend.io.config import DB_FILE, DATADIR
 
