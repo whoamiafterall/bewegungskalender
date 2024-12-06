@@ -42,8 +42,9 @@ async def map_view():
         )
 
         # get cached data
-        locations:list[Location] = db.exe(select(Location).where(Location.lat is not None)).all()
-        LOGGER.info(f"Got {locations.__len__()} to display...")
+        locations:list[Location] = db.exe(select(Location).where(Location.lat != 'None')).all()
+        print(locations)
+        LOGGER.info(f"Got {locations.__len__()} locations to display...")
 
         # wait for leaflet to be initialized
         LOGGER.debug("Waiting for Leaflet to be initialized...")
