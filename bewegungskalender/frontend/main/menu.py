@@ -22,22 +22,23 @@ class MenuButton(Button):
         self.view = view
         self.drawer = drawer
         super().__init__(item['label'], icon=item['icon'],
-                  on_click=lambda: self._open_view_close_drawer())
+            on_click=lambda: self._open_view_close_drawer())
         
     def _open_view_close_drawer(self) -> Any:
         ROUTER.open(self.view)
         if self.drawer:
             self.drawer.hide()
             
-def main_menu(classes:str=None):
-        MenuButton(MENU['list'], list_view).classes(classes)
-        MenuButton(MENU['calendar'], calendar_view).classes(classes)
-    #    MenuButton(MENU['calendar'], custom_calendar_view)
-        MenuButton(MENU['map'], map_view).classes(classes)
-      #  MenuButton(MENU['table'], table_view)
+def main_menu(left_drawer:LeftDrawer, classes:str=None, props:str=None):
+    ui.button(on_click=lambda: left_drawer.toggle(), icon='menu').classes(classes).props(props)
+    MenuButton(MENU['list'], list_view).classes(classes).props(props)
+    MenuButton(MENU['calendar'], calendar_view).classes(classes).props(props)
+#    MenuButton(MENU['calendar'], custom_calendar_view).props(props)
+    MenuButton(MENU['map'], map_view).classes(classes).props(props)
+  #  MenuButton(MENU['table'], table_view).props(props)
 
-def secondary_menu(left_drawer:LeftDrawer, classes:str=None):
-    MenuButton(MENU['form'], form_view, left_drawer).classes(classes)
-    MenuButton(MENU['about'], about_view, left_drawer).classes(classes)
-    MenuButton(MENU['FAQ'], faq_view, left_drawer).classes(classes)
-    MenuButton(MENU['links'], links_view, left_drawer).classes(classes)
+def secondary_menu(left_drawer:LeftDrawer, classes:str=None, props:str=None):
+    MenuButton(MENU['form'], form_view, left_drawer).classes(classes).props(props)
+    MenuButton(MENU['about'], about_view, left_drawer).classes(classes).props(props)
+    MenuButton(MENU['FAQ'], faq_view, left_drawer).classes(classes).props(props)
+    MenuButton(MENU['links'], links_view, left_drawer).classes(classes).props(props)
