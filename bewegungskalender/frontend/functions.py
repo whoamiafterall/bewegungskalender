@@ -20,19 +20,22 @@ def tab_panel(tab:str):
         yield panel
 
 @contextmanager
-def container(classes:str = None):
-    with (ui.card().tight().classes(
+def container(classes:str=None):
+    with ui.card().tight().classes(
             'container mx-auto min-h-full overflow-auto px-10 py-5 ' # Layout - Trailing White Space is important!
-            'bg-black text-base font-light text-secondary') # Text
-    as card):
+            'bg-primary text-base font-light max-[430px]:mb-[50px] text-secondary') as card: # Text
         card.classes(classes) # Add Custom Classes
         yield card
-
+        
 @contextmanager
+def mini_card(classes:str=None):
+    with ui.card().tight().classes('m-0 p-2 flex-row bg-primary shadow-none items-center ') as card:
+        card.classes(classes)
+        yield card
+
 def render_iframe(source:str): #TODO Add Input Validation - check for <iframe> and url
     ui.html(source).classes('w-screen h-screen p-0 m-0')
 
-@contextmanager
 def loading(page_label:str, timeout:float = 0.7):
     ui.notification(f"Lade {page_label}...", position='center', type='ongoing', spinner=True, timeout=timeout)
 
