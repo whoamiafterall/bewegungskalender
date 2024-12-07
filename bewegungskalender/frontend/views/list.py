@@ -4,12 +4,15 @@ from dateutil.utils import today
 from nicegui import ui
 from slugify import slugify
 
+from bewegungskalender.backend.io.config import CALDAV_URL
+from bewegungskalender.backend.io.config import CONFIG
 from bewegungskalender.backend.io.config import MENU
 from bewegungskalender.frontend.filter import Eventfilter
 from bewegungskalender.frontend.functions import loading, container, opacity
 from bewegungskalender.frontend.functions import mini_card
 from bewegungskalender.frontend.navigation.router import ROUTER
 
+import requests
 
 def heading(month:datetime=today()):
     return ui.markdown(f"#### {month:%B}").classes('text-center')
@@ -70,6 +73,7 @@ async def list_view():
                                 auto_close=True
                         ).classes('font-normal text-sm sm:text-base capitalize hover:font-medium max-sm:w-full max-sm:order-3 grow items-start'):
                             
+                            
                             # Create the dropdown content
                             with mini_card('flex-col text-sm w-full'):
                                 if event.location.name != "nicht bekannt":
@@ -80,15 +84,22 @@ async def list_view():
                                     with mini_card('space-x-2'):
                                         ui.icon('map', size='20px')
                                         ui.link(event.link, event.link, new_tab=True)
+
+
+                                # Create donwload button
+                                # In order to download we first fetch the isc contents and then serve them to the client. 
+                                # We need to to it this way because else nice gui passes some headers that mess with next cloud authentication
+
+                                # TODO: event.ics_url is useless as it requires authentication. We should perhaps just catch the id we split out of ics_url here instead
+
                                 ui.button(text='Add to Calendar (.ics)', icon='file_download',
-                                          on_click=lambda: ui.download(event.ics_url)
+                                          on_click=lambda: ui.download(str.encode(f"{CONFIG["caldav"]["public_calendars_url"]}{event.category.public_id}/{event.ics_url.split('/')[-1]}?export"),
+                                          f'{slugify(event.summary)}.isc')
                                           ).props('flat color=white').classes('font-normal hover:font-medium normal-case')
-                            
-                            #TODO find out how to solve authentication problem
-                            #  print(event.ics_url)
-                            # print(f"{CALDAV_URL}public-calendars/{event.category.public_id}/{event.cloud_id}.ics?export")
-                            #print(f"{CALDAV_URL}public-calendars/{event.category.public_id}/{event.ics_url.split('/')[-1]}?export")
+                                
+                      
                     
+
                     events_ui_list.append(event_item)
         
         
