@@ -17,8 +17,9 @@ def get_args() -> Namespace:
     cli = ArgumentParser(prog="bewegungskalender", description='Use a CalDAV-Server to send automatic calendar newsletters to the world.')
     # Add Arguments
     cli.add_argument("-c", "--config", dest='config_file', type=str, help='specify path to config file, defaults to config.yml', action='store', nargs='?')
-    cli.add_argument("-l", "--loglevel", dest='loglevel', type=str, help='set the log level, defaults to info', choices=['debug', 'error'], action='store', nargs='?')
+    cli.add_argument("-db", "--database", dest='create_db', help='(Re-)create the database and sync all events from the server', action='store_true')
     cli.add_argument("-g", "--get-telegram-updates", dest='get_telegram_updates', help='get telegram id of channel', action='store_true')
+    cli.add_argument("-l", "--loglevel", dest='loglevel', type=str, help='set the log level, defaults to info', choices=['debug', 'error'], action='store', nargs='?')
     cli.add_argument("-m", "--leaflet", dest='update_map', help='create MapData in geojson from loaction entries of events', action='store_true')
     cli.add_argument("-n", "--newsletter", dest='send_mail', help='send email-to recipients specified or from config', action='store_true')
     cli.add_argument("-to", dest='mail_to', required='send_mail' in sys.argv, type=str, action='store',
