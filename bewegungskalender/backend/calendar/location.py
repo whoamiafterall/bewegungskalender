@@ -1,11 +1,13 @@
 import re
+from time import sleep
 from typing import Optional, Tuple, TYPE_CHECKING
 
+from geopy.exc import GeocoderUnavailable
 from geopy.geocoders.nominatim import Nominatim
 from sqlmodel import SQLModel, Field, Relationship
 
 from bewegungskalender.backend.io.config import LOCALE
-from bewegungskalender.libs.exceptions import NoResultError
+from bewegungskalender.libs.exceptions import NoResultError, NetworkConnectionError
 from bewegungskalender.libs.logger import LOGGER
 from bewegungskalender.libs.nominatim import lookup_entity
 
@@ -18,7 +20,7 @@ OSM_LINK:str = "https://www.openstreetmap.org"
 
 class Location(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
-    name: str
+    name: str | None = None
     event: "Event" = Relationship(back_populates="location",  sa_relationship_kwargs={"lazy": "selectin"}) #TODO use list of events or id
     osm_link: str | None = None
     lat: float | None = None
@@ -26,49 +28,58 @@ class Location(SQLModel, table=True):
     city: str | None = None
     country: str | None = None
     country_code: str | None = None
-
-def lookup_osm_link(result: str) -> Optional[Tuple[float, float]]:
-    lon, lat = None, None
-    # Assume result is a list of items, we process the first one
-    if isinstance(result, list) and len(result) > 0:
-        for key, value in result[0].items():
-            if key == 'lon':
-                lon = float(value)
-            elif key == 'lat':
-                lat = float(value)
-    # Return coordinates as a tuple
-    if lon is not None and lat is not None:
-        return lon, lat
+    
+    @classmethod
+    def parse(cls, result, location):
+        return Location(name=location,
+                        lat=result['lat'],
+                        lon=result['lon'],
+                        osm_link=f"{OSM_LINK}/{result['osm_type']}/{result['osm_id']}",
+                        city=_catch_key_error(result, 'city'),
+                        country=_catch_key_error(result, 'country'),
+                        country_code=_catch_key_error(result, 'country_code'))
+    
+def geocode(location:str, retries:int = 3, seconds_to_wait:int = 30) -> Location:
+    for attempt in range(retries):
+        try:
+            result = Nominatim(user_agent=__name__).geocode(location, addressdetails=True, language=LOCALE).raw
+            return Location.parse(result, location)
+        except AttributeError:  # No result found
+            LOGGER.warning(NoResultError(location))
+            return Location(name=location)
+        except GeocoderUnavailable:
+            LOGGER.info(
+                f"\n\nCouldn't connect to {Nominatim.__name__} to look up {location}. "
+                f"\nPlease check your network Connection and wait for the script to retry! "
+                f"\nAttempts left: {retries - attempt - 1} ")
+            for seconds_waited in range(seconds_to_wait):
+                print(f"Retrying in {seconds_to_wait - seconds_waited} seconds...")
+                sleep(1)
+            continue
     else:
+        raise NetworkConnectionError(Nominatim.__name__)
+    
+def _catch_key_error(result, key):
+    try:
+        return str(result['address'][key])
+    except KeyError:
         return None
 
 def get_location_data(location:str) -> Location:
     match location:
         case None:  # Filter events without location
-            return Location(name='nicht bekannt')
+            return Location()
         case "Online" | "online":  # Filter events with online/Online as location
-            return Location(name='online')
+            return Location(name=location.lower())
         case link if OSM_LINK_PATTERN.match(link): # Check if location matches a link to an OSM-Entity
             try:
                 result = lookup_entity(link)
+                return Location.parse(result, location)
             except NoResultError:
-                return Location(name='nicht bekannt')
-        case _: # Geocode location otherwise
-            try:
-                result = Nominatim(user_agent=__name__).geocode(location, addressdetails=True, language=LOCALE)
-            except AttributeError: # No result found
                 LOGGER.warning(NoResultError(location))
-                return Location(name=location)
-    def catch_key_error(key):
-        try:
-            return str(result.raw['address'][key])
-        except KeyError:
-            return None
+                return Location()
+        case _: # Geocode location otherwise
+            return geocode(location)
 
-    return Location(name=location,
-                    lat=result.raw['lat'],
-                    lon=result.raw['lon'],
-                    osm_link=f"{OSM_LINK}/{result.raw['osm_type']}/{result.raw['osm_id']}",
-                    city=catch_key_error('city'),
-                    country=catch_key_error('country'),
-                    country_code=catch_key_error('country_code'))
+
+   
