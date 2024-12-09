@@ -1,9 +1,20 @@
 import logging
+import time
 from logging import getLogger, Logger, DEBUG, INFO, ERROR
+
 from bewegungskalender.backend.io.cli import LOGLEVEL
 
+
+class RelativeSeconds(logging.Formatter):
+    def format(self, record):
+        record.relativeCreated = record.relativeCreated // 1000
+        return super().format(record)
+
+formatter = RelativeSeconds("%(relativeCreated)ds %(levelname)s %(module)s.%(funcName)s:\n%(message)s")
+
 # Get Logger and set log level
-logging.basicConfig(format='%(relativeCreated)dms %(module)s: %(message)s')
+logging.basicConfig()
+logging.root.handlers[0].setFormatter(formatter)
 LOGGER:Logger = getLogger(__name__)
 match LOGLEVEL:
     case 'debug':
