@@ -1,0 +1,68 @@
+# Mail Section
+mail:
+  sender: 'Bewegungskalender <bewegungskalender@systemli.org>'
+  subject: '[BK] (TEST) Die Bewegungstermine vom '
+  receiver: ['Bewegungskalender-Newsletter <bewegungskalender@lists.riseup.net>']
+
+# Input Section
+input_calendar: 'calendars/bewegungskalender/neue-termine/'
+ncform:
+  url: "https://cloud.systemli.org/s/qkgznWaGjMTseGa/download/Termin%20eintragen%20%28responses%29.csv"
+
+# Data Section
+datadir: "bewegungskalender/data"
+database: "db.sqlite"
+static_dir: "bewegungskalender/frontend/static/"
+templating_dir: "bewegungskalender/frontend/templates"
+icons_dir: "bewegungskalender/frontend/assets/icons"
+
+calendars: # list of calendars to use from your caldav server (URL)
+  - calendar: {emoji: '🔴', internal: 'als-info-gegenveranstaltung', public: 'zJsbBZJSQLCfkSsQ', map_marker: 'System-Events_&_Termine.svg',
+      description: 'Termine, die für eine Intervention relevant sein könnten. Meist gibt es auch schon ein Bündnis dafür. (Farbe = Rot)'}
+  - calendar: {emoji: '🟠', internal: 'demos', public: 'gGA9ttt2T6PQgcKq', map_marker: 'Jahres_&_Gedenktage.svg',
+      description: 'Tage, die dem Gedenken an ein bestimmtes Ereignis oder einem politischen Thema bzw. einer (meist marginalisierten) Identität gewidmet sind, an denen oft politische Aktionen mit Bezug auf den Anlass stattfinden. Im Netz findest du häufig Veranstaltungen in deiner Nähe (Farbe = Orange)'}
+  - calendar: {emoji: '🟡', internal: 'bewegungskalender-1', public: 'GeG6jNfCLSENW2Fs', map_marker: 'Prozesse_&_Repression.svg',
+      description:  'Gerichtsprozesse, Haftprüfungen, Freilassungen und weiteres was mit Repression zu tun hat. (Farbe = Dunkelgelb)'}
+  - calendar: { emoji: '🟢', internal: 'aktionstage', public: 'a7nAXkDxDETZJm58', map_marker: 'Aktionstage_&_Demos.svg',
+      description: 'Demos, Aktionen und Aktionstage, an denen du mit deiner Gruppe oder alleine einfach teilnehmen kannst. Bei Aktionstagen ist es meist sinnvoll im Vorfeld mit der Orga Kontakt aufzunehmen. (Farbe = Grün)'}
+  - calendar: {emoji: '👥', internal: 'konferenzen', public: 'df5QdyrBKa6H9Kpa', map_marker: 'Konferenzen_&_Treffen.svg',
+      description: 'Konferenzen, Treffen von Bündnissen und On-Boardings, an denen du teilnehmen kannst. Oft ist eine Anmeldung notwendig. (Farbe = Türkis)'}
+  - calendar: {emoji: '🔵', internal: 'camps', public: 'NpegYZLCqZjpxMa2', map_marker: 'Camps_&_Festivals.svg',
+      description: 'Camps, Festivals, und Straßenfeste, an denen du mit deiner Gruppe oder alleine einfach teilnehmen kannst. Informiere dich, ob es eine Anmeldung gibt. (Farbe = Blau)'}
+  - calendar: {emoji: '🟣', internal: 'workshops-skillshare', public: 'Rgk2wiaFQtLXGa5W', map_marker: 'Workshops_&_Vorträge.svg',
+      description: 'Workshops, Skillshares, Vorträge und weiteres über Politik, Aktivismus und Anti-Diskriminierung. Manche finden online statt, und oft ist eine Anmeldung notwendig :) (Farbe = Lila)'}
+
+# Format Section
+format:
+  locale: "de_DE.UTF-8"
+  timezone: "Europe/Berlin"
+footer:
+  - link: {text: '❓ FAQ', url: 'https://pad.kanthaus.online/s/Bewegungskalender'}
+  - link: {text: '🔎 Weitere Kalender', url: 'https://pad.kanthaus.online/s/Bewegungskalender#Weitere-Kalender'}
+  - link: {text: '🌐 Website', url: 'https://klimax.online/bewegungskalender'}
+  - link: {text: '✅ Termine eintragen', url: 'https://klimax.online/bewegungskalender/#Termine-eintragen'}
+  - link: {text: '🗺️  Karte', url: 'https://umap.openstreetmap.de/en/map/bewegungskalender-karte_42841#5/50.219/7.339'}
+  - link: {text: '🗓️  Monatsansicht', url: 'https://cloud.systemli.org/apps/calendar/p/zJsbBZJSQLCfkSsQ-gGA9ttt2T6PQgcKq-Brn9ook4EJWMx3ki-a7nAXkDxDETZJm58-df5QdyrBKa6H9Kpa-NpegYZLCqZjpxMa2-Rgk2wiaFQtLXGa5W-Sb94a9Q4pw4fGXTm/dayGridMonth/now'}
+#  - link: {text: '📩 EMail Newsletter', url: 'https://klimax.online/bewegungskalender/#Newsletter'}
+
+# UI Section
+frontend:
+  port: 8081
+  title: Bewegungskalender
+  favicon: bewegungskalender/assets/icons/favicon.jpeg
+assets:
+  url_path: "/local/assets"
+menu:
+  calendar: {label: 'Monat', icon: 'calendar_month', source: '<iframe width="100%" height="100%" src="https://cloud.systemli.org/apps/calendar/embed/zJsbBZJSQLCfkSsQ-gGA9ttt2T6PQgcKq-GeG6jNfCLSENW2Fs-Brn9ook4EJWMx3ki-a7nAXkDxDETZJm58-df5QdyrBKa6H9Kpa-NpegYZLCqZjpxMa2-Rgk2wiaFQtLXGa5W-Sb94a9Q4pw4fGXTm/multiMonthYear/now"></iframe>'}
+  list: {label: 'Liste', icon: 'event_note'}
+  table: {label: 'Tabelle', icon: 'table_rows'}
+  map: {label: 'Karte', icon: 'map'}
+  form: {label: 'Formular', icon: 'edit_calendar', source: '<iframe src="https://cloud.systemli.org/apps/forms/embed/3ZADPY58PF9EYXGHEE4PQraL" width="100%" height="100%"></iframe>'}
+  about: {label: 'Über Uns', icon: 'group', source: About.md}
+  FAQ: {label: 'FAQ', icon: 'help', source: FAQ.html}
+  links: {label: 'Links', icon: 'link', source: links.yml}
+map:
+  popup-template: mappopup.html
+  center_lat: 51.165691
+  center_lon: 10.451526
+  zoom: 5

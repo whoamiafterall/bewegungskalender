@@ -12,12 +12,12 @@ from requests import Timeout
 from requests.exceptions import ConnectionError
 
 from bewegungskalender.backend.io.cli import START, END
-from bewegungskalender.backend.io.config import CALDAV_URL, CALDAV_PW, CALDAV_USR
+from bewegungskalender.backend.io.credentials import NC_DOMAIN, NC_PW, NC_USR
 from bewegungskalender.libs.exceptions import NetworkConnectionError
 from bewegungskalender.libs.logger import LOGGER
 
 # All Interactions with the CalDav Server are in this file
-DAVCLIENT:DAVClient = DAVClient(url=CALDAV_URL, username=CALDAV_USR, password=CALDAV_PW)
+DAVCLIENT:DAVClient = DAVClient(url=f"https://{NC_DOMAIN}/remote.php/dav/calendars", username=NC_USR, password=NC_PW)
 
 def get_all_calendars() -> list[Calendar]:
 	"""Retrieve all calendars from the CalDAV server."""
@@ -26,7 +26,7 @@ def get_all_calendars() -> list[Calendar]:
 def get_calendar_by_url(url: str) -> Calendar:
 	"""Get a calendar by its URL."""
 	LOGGER.debug(f"Looking up {url}…")
-	return DAVCLIENT.calendar(url=f"{CALDAV_USR}/{url}/")
+	return DAVCLIENT.calendar(url=f"{NC_USR}/{url}/")
 
 def get_calendar_name(cal: Calendar) -> str:
 	"""Get the display name of a calendar."""
@@ -104,7 +104,7 @@ def _catch_connection_error(func, retries:int = 3, seconds_to_wait:int = 10, *ar
 			result = func(*args, **kwargs)
 		except (ConnectionError, RemoteDisconnected, Timeout):
 			LOGGER.name = __name__
-			LOGGER.info(f"\n\nCouldn't connect to {CALDAV_URL}. Please check your network Connection and wait for the script to retry! "
+			LOGGER.info(f"\n\nCouldn't connect to {NC_DOMAIN}. Please check your network Connection and wait for the script to retry! "
 			            f"\n\nRetrying in {seconds_to_wait} seconds..."
 			            f"\nAttempts left: {retries - attempt - 1} ")
 			for seconds_waited in range(seconds_to_wait):
@@ -113,6 +113,6 @@ def _catch_connection_error(func, retries:int = 3, seconds_to_wait:int = 10, *ar
 			continue
 		return result
 	else:
-		raise NetworkConnectionError(CALDAV_URL)
+		raise NetworkConnectionError(NC_DOMAIN)
 		
 			

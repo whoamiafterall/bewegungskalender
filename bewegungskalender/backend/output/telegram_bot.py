@@ -3,7 +3,8 @@ from telegram._bot import Bot
 from telegram.error import BadRequest
 
 from bewegungskalender.backend.io.cli import TELEGRAM_CHANNEL, TELEGRAM_EDIT
-from bewegungskalender.backend.io.config import DATADIR, TELEGRAM_TEST, TELEGRAM_TOKEN, TELEGRAM_PRODUCTION
+from bewegungskalender.backend.io.config import DATADIR
+from bewegungskalender.backend.io.credentials import TELEGRAM_TEST, TELEGRAM_TOKEN, TELEGRAM_PRODUCTION
 from bewegungskalender.backend.io.file import safe_open
 from bewegungskalender.libs.logger import LOGGER
 from bewegungskalender.backend.formatting.message import MultiFormatMessage
