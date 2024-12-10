@@ -9,6 +9,7 @@ from starlette.config import undefined
 from bewegungskalender.backend.calendar.client import get_calendar_by_url, get_calendar_name, get_calendar_color, \
 	sync_all_events, get_sync_token, get_all_events, get_upcoming_events
 from bewegungskalender.backend.calendar.event import Event
+from bewegungskalender.backend.formatting.nextcloud_urls import get_ics_url
 from bewegungskalender.backend.io import db
 from bewegungskalender.libs.logger import LOGGER
 
@@ -19,9 +20,11 @@ class Category(SQLModel, table=True):
 	name: str
 	internal: str
 	public_id: str
+	ics_url:str
 	emoji: str
 	color: str
 	map_marker: str
+	description: str
 	sync_token: str|None = None
 	events: list[Event] = Relationship(back_populates="category",
 	                                   sa_relationship_kwargs={"lazy": "selectin"},
@@ -34,10 +37,12 @@ class Category(SQLModel, table=True):
 			name = get_calendar_name(cal),
 			internal = configline['calendar']['internal'],
 			public_id = configline['calendar']['public'],
+			ics_url = get_ics_url(configline['calendar']['public']),
 			emoji = configline['calendar']['emoji'],
 			color = get_calendar_color(cal),
 			sync_token = str(get_sync_token(cal)),
 			map_marker = configline['calendar']['map_marker'],
+			description = configline['calendar']['description'],
 		)
 		if full_db is False:
 			category._update_events(get_upcoming_events(cal))

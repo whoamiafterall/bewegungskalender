@@ -53,7 +53,7 @@ frontend:
 assets:
   url_path: "/local/assets"
 menu:
-  calendar: {label: 'Monat', icon: 'calendar_month', source: '<iframe width="100%" height="100%" src="https://cloud.systemli.org/apps/calendar/embed/zJsbBZJSQLCfkSsQ-gGA9ttt2T6PQgcKq-GeG6jNfCLSENW2Fs-Brn9ook4EJWMx3ki-a7nAXkDxDETZJm58-df5QdyrBKa6H9Kpa-NpegYZLCqZjpxMa2-Rgk2wiaFQtLXGa5W-Sb94a9Q4pw4fGXTm/multiMonthYear/now"></iframe>'}
+  calendar: {label: 'Monat', icon: 'calendar_month'}
   list: {label: 'Liste', icon: 'event_note'}
   table: {label: 'Tabelle', icon: 'table_rows'}
   map: {label: 'Karte', icon: 'map'}

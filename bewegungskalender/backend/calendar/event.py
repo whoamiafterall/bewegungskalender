@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING
 import icalendar
 from caldav.objects import URL
 from icalendar.cal import Component
-from pydantic.v1 import UUID4
 from sqlmodel import SQLModel, Field, Relationship
 
 from bewegungskalender.backend.calendar.location import Location, get_location_data

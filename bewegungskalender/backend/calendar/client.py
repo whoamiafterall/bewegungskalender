@@ -11,13 +11,14 @@ from caldav.objects import CalendarObjectResource
 from requests import Timeout
 from requests.exceptions import ConnectionError
 
+from bewegungskalender.backend.formatting.nextcloud_urls import NC_CALDAV_URL
 from bewegungskalender.backend.io.cli import START, END
 from bewegungskalender.backend.io.credentials import NC_DOMAIN, NC_PW, NC_USR
 from bewegungskalender.libs.exceptions import NetworkConnectionError
 from bewegungskalender.libs.logger import LOGGER
 
 # All Interactions with the CalDav Server are in this file
-DAVCLIENT:DAVClient = DAVClient(url=f"https://{NC_DOMAIN}/remote.php/dav/calendars", username=NC_USR, password=NC_PW)
+DAVCLIENT:DAVClient = DAVClient(url=NC_CALDAV_URL, username=NC_USR, password=NC_PW)
 
 def get_all_calendars() -> list[Calendar]:
 	"""Retrieve all calendars from the CalDAV server."""

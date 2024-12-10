@@ -1,4 +1,5 @@
 # Create Form Page
+from nicegui import ui
 from slugify import slugify
 
 from bewegungskalender.backend.io.config import MENU
@@ -10,4 +11,4 @@ from bewegungskalender.frontend.navigation.router import ROUTER
 def form_view():
     loading(MENU['form']['label'])
     LOGGER.debug(f"Creating the Form using {MENU['form']['source']}.")
-    render_iframe(MENU['form']['source'])
+    ui.html(MENU['form']['source']).classes('w-screen h-screen m-0 p-0')

@@ -1,10 +1,8 @@
-import math
 from contextlib import contextmanager
 
-import validators
 from nicegui import ui
 from nicegui.elements.mixins.validation_element import ValidationElement
-from typing import Callable, Dict, Union
+
 
 class ErrorChecker:
     def __init__(self, *elements: ValidationElement) -> None:
@@ -33,8 +31,8 @@ def mini_card(classes:str=None):
         card.classes(classes)
         yield card
 
-def render_iframe(source:str): #TODO Add Input Validation - check for <iframe> and url
-    ui.html(source).classes('w-screen h-screen p-0 m-0')
+def render_iframe(height:str, width:str, source:str):
+    ui.html(f"<iframe src={source} width={width} height={height}></iframe>").classes('w-screen h-screen p-0 m-0')
 
 def loading(page_label:str, timeout:float = 0.7):
     ui.notification(f"Lade {page_label}...", position='center', type='ongoing', spinner=True, timeout=timeout)
