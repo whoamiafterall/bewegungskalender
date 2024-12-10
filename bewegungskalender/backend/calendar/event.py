@@ -30,6 +30,33 @@ class Event(SQLModel, table=True):
     cloud_id: str = Field(default=None)
     ics_url: str = Field()
 
+    def update_from_icalendar(vevent: Component):
+        # Make sure all the values are datetime not date in case of all day events
+        def to_datetime(dt: date | datetime) -> datetime:
+            if isinstance(dt, datetime):
+                return dt
+            return datetime.combine(dt, time.min).astimezone(TIMEZONE)
+
+        temp_start = to_datetime(vevent.decoded('dtstart'))
+        temp_end = to_datetime(vevent.decoded('dtend'))
+
+        # Fix Issue with multi-day events by changing 'ends' midnight to 23:59:59 the day before instead of 00:00:00
+        if temp_start.date() != temp_end.date() and temp_end.time() == time.min:
+            end = temp_end - timedelta(seconds=1)
+
+        summary=vevent.get('summary')
+        description=vevent.get('description')
+        link=get_link(vevent.get('description'))
+
+        # Todo: prevent this from redoing nominations
+        location=get_location_data(vevent.get('location'))
+
+        start=temp_start
+        end=temp_end
+        duration=temp_end - temp_start
+        recurrence=True if vevent.get('recurrence-id') else False
+
+
     @classmethod
     def from_icalendar(cls, vevent: Component, uid:str, ics_url:URL):
         # Make sure all the values are datetime not date in case of all day events

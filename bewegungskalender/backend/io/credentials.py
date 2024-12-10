@@ -26,8 +26,8 @@ MAIL_PW: Final[str] = CREDENTIALS['mail']['password']
 
 # Telegram-Section
 TELEGRAM_TOKEN: Final[str] = CREDENTIALS['telegram']['token']
-TELEGRAM_PRODUCTION: Final[str] = CREDENTIALS['telegram']['production']
-TELEGRAM_TEST: Final[str] = CREDENTIALS['telegram']['test_channel']
+TELEGRAM_PRODUCTION: Final[str] = CREDENTIALS['telegram']['production_channel_id']
+TELEGRAM_TEST: Final[str] = CREDENTIALS['telegram']['test_channel_id']
 
 # Mastodon-Section
 MASTODON_CLIENT_KEY: Final[str] = CREDENTIALS['mastodon']['client_key']
