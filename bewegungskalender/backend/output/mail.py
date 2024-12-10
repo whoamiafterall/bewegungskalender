@@ -4,12 +4,13 @@ from email.mime.multipart import MIMEMultipart
 from email.utils import formatdate, make_msgid
 from bewegungskalender.backend.formatting.message import MultiFormatMessage
 from bewegungskalender.backend.io.cli import MAIL_TO, START, END
-from bewegungskalender.backend.io.config import MAIL_ACC, MAIL_PW, MAIL_SUBJECT, MAIL_SENDER, MAIL_RECEIVER, SMTP, MAIL_SRV
+from bewegungskalender.backend.io.config import MAIL_SUBJECT, MAIL_SENDER, MAIL_RECEIVER
+from bewegungskalender.backend.io.credentials import MAIL_SRV, MAIL_PORT, MAIL_ACC, MAIL_PW
 from bewegungskalender.libs.logger import LOGGER
 
 def send_mail(message:MultiFormatMessage):
     LOGGER.debug('Connecting to SMTP Server...')
-    with smtplib.SMTP_SSL(MAIL_SRV, SMTP, context=ssl.create_default_context()) as smtp:
+    with smtplib.SMTP_SSL(MAIL_SRV, MAIL_PORT, context=ssl.create_default_context()) as smtp:
         smtp.ehlo()
         smtp.set_debuglevel(1)
         LOGGER.debug('Logging into SMTP Client with credentials...')

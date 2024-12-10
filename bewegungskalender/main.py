@@ -3,10 +3,12 @@ import asyncio
 import locale
 import sys
 from locale import setlocale
+
+# external imports
 from sqlmodel import select
 
-from bewegungskalender.backend.calendar.category import Category
 # internal imports
+from bewegungskalender.backend.calendar.category import Category
 from bewegungskalender.backend.formatting.message import MultiFormatMessage, create_message
 from bewegungskalender.backend.io import db
 from bewegungskalender.backend.io.cli import FORMAT, ARGS
@@ -27,7 +29,6 @@ setlocale(locale.LC_ALL, LOCALE)
 # Main Function if run as standalone program
 def main():
 	# frontend.run can't be called from async call
-
 	if ARGS.user_interface:
 		LOGGER.info("Starting User Interface!")
 		start_ui()

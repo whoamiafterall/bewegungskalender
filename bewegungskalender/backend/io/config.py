@@ -17,10 +17,6 @@ except FileNotFoundError:
     LOGGER.exception('Config File not Found:', CONFIG_FILE); exit()
 
 # Mail Section
-MAIL_SRV: Final[str] = CONFIG['mail']['server']
-SMTP: Final[int] = CONFIG['mail']['smtp_port']
-MAIL_ACC: Final[str] = CONFIG['mail']['account']
-MAIL_PW: Final[str] = CONFIG['mail']['password']
 MAIL_SUBJECT: Final[str] = CONFIG['mail']['subject']
 MAIL_SENDER: Final[str] = CONFIG['mail']['sender']
 MAIL_RECEIVER: Final[list] = CONFIG['mail']['receiver']
@@ -48,16 +44,8 @@ MAP_POPUP_TEMPLATE: Final[str] = CONFIG['map']['popup-template']
 INPUT_CALENDAR: Final[str] = CONFIG['input_calendar']
 NCFORM_URL: Final[str] = CONFIG['ncform']['url']
 
-# Telegram-Section
-TELEGRAM_TOKEN: Final[str] = CONFIG['telegram']['token']
-TELEGRAM_PRODUCTION: Final[str] = CONFIG['telegram']['production']
-TELEGRAM_TEST: Final[str] = CONFIG['telegram']['test_channel']
-
-# CalDav-Section
+# Nextcloud-Section
 CALENDARS: Final[list[dict]] = CONFIG['calendars']
-CALDAV_URL: Final[str] = CONFIG['caldav']['url']
-CALDAV_USR: Final[str] = CONFIG['caldav']['username']
-CALDAV_PW: Final[str] = CONFIG['caldav']['password']
 
 # Format-Section
 FOOTER: Final[list[dict]] = CONFIG['footer']
