@@ -52,6 +52,8 @@ class Category(SQLModel, table=True):
 		cal = get_calendar_by_url(self.internal)
 		updated_events = sync_all_events(cal, self.sync_token)
 
+
+
 		print(f"Syncing {self.sync_token} to {str(updated_events.sync_token)}")
 		print("|")
 		for ics in updated_events:
@@ -63,24 +65,34 @@ class Category(SQLModel, table=True):
 
 				#check if event is being deleted
 				if "EXDATE" in comp:
-
-					print(f"| {ics.url} deleted")
 					with db.session() as sess:
 						event = sess.exec(select(Event).where(Event.ics_url == str(ics.url))).one()
 						sess.delete(event)
 						sess.commit()
+					print(f"| deleted 1 Event")
 
 				else:
 					#for comp in icalendar.Event.from_ical(ics.data).walk(name='VEVENT'):
 						#print(Event.from_icalendar(comp, str(comp['UID']), ics.url))
-					print(f"| {ics.url} changed")
 					#db.session().exec()
-					with db.session() as sess:
-						event = sess.exec(select(Event).where(Event.ics_url == str(ics.url))).one()
-						event.update_from_icalendar(comp)
-						sess.add(event)
-						sess.commit()
-						sess.refresh(event)
+					try:
+						with db.session() as sess:
+							event = sess.exec(select(Event).where(Event.ics_url == str(ics.url))).one()
+							event.update_from_icalendar(comp)
+							sess.add(event)
+							sess.commit()
+							sess.refresh(event)
+						print(f"| changed 1 Event")
+					except:
+						with db.session() as sess:
+							category = sess.exec(select(Category).where(Category.id == self.id)).one()
+							category.events.append(Event.from_icalendar(comp, str(comp['UID']), ics.url))
+							sess.add(category)
+							sess.commit()
+							sess.refresh(category)
+						print(f"| added 1 Event")
+
+
 		print("--------------------")
 
 		with db.session() as sess:
@@ -89,7 +101,7 @@ class Category(SQLModel, table=True):
 			sess.add(category)
 			sess.commit()
 			sess.refresh(category)
-	
+
 	def _update_events(self, cal_data: list[CalendarObjectResource]|SynchronizableCalendarObjectCollection) -> list[Event]:
 		LOGGER.info("Parsing events...")
 		for ics in cal_data:
