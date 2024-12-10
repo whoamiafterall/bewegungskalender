@@ -93,8 +93,8 @@ async def list_view():
                                 # TODO: event.ics_url is useless as it requires authentication. We should perhaps just catch the id we split out of ics_url here instead
 
                                 ui.button(text='Add to Calendar (.ics)', icon='file_download',
-                                          on_click=lambda: ui.download(str.encode(f"{CONFIG["caldav"]["public_calendars_url"]}{event.category.public_id}/{event.ics_url.split('/')[-1]}?export"),
-                                          f'{slugify(event.summary)}.isc')
+                                          on_click=lambda: ui.download(str.encode(f"{CALDAV_URL}/public-calendars/{event.category.public_id}/{event.ics_url.split('/')[-1]}?export"),
+                                          f"{slugify(event.summary)}.isc")
                                           ).props('flat color=white').classes('font-normal hover:font-medium normal-case')
                                 
                       
