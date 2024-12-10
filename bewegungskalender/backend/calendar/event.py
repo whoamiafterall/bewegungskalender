@@ -30,7 +30,7 @@ class Event(SQLModel, table=True):
     cloud_id: str = Field(default=None)
     ics_url: str = Field()
 
-    def update_from_icalendar(vevent: Component):
+    def update_from_icalendar(self,vevent: Component):
         # Make sure all the values are datetime not date in case of all day events
         def to_datetime(dt: date | datetime) -> datetime:
             if isinstance(dt, datetime):
@@ -44,17 +44,17 @@ class Event(SQLModel, table=True):
         if temp_start.date() != temp_end.date() and temp_end.time() == time.min:
             end = temp_end - timedelta(seconds=1)
 
-        summary=vevent.get('summary')
-        description=vevent.get('description')
-        link=get_link(vevent.get('description'))
+        self.summary=vevent.get('summary')
+        self.description=vevent.get('description')
+        self.link=get_link(vevent.get('description'))
 
         # Todo: prevent this from redoing nominations
-        location=get_location_data(vevent.get('location'))
+        self.location=get_location_data(vevent.get('location'))
 
-        start=temp_start
-        end=temp_end
-        duration=temp_end - temp_start
-        recurrence=True if vevent.get('recurrence-id') else False
+        self.start=temp_start
+        self.end=temp_end
+        self.duration=temp_end - temp_start
+        self.recurrence=True if vevent.get('recurrence-id') else False
 
 
     @classmethod

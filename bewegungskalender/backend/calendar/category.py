@@ -66,22 +66,29 @@ class Category(SQLModel, table=True):
 
 					print(f"| {ics.url} deleted")
 					with db.session() as sess:
-						event = sess.exec(select(Event).where(Event.ics_url == str(ics.url))).all()
+						event = sess.exec(select(Event).where(Event.ics_url == str(ics.url))).one()
 						sess.delete(event)
 						sess.commit()
+
 				else:
 					#for comp in icalendar.Event.from_ical(ics.data).walk(name='VEVENT'):
 						#print(Event.from_icalendar(comp, str(comp['UID']), ics.url))
 					print(f"| {ics.url} changed")
 					#db.session().exec()
 					with db.session() as sess:
-						event = sess.exec(select(Event).where(Event.ics_url == str(ics.url))).all()
-						event.update_event_in_database(comp)
+						event = sess.exec(select(Event).where(Event.ics_url == str(ics.url))).one()
+						event.update_from_icalendar(comp)
+						sess.add(event)
 						sess.commit()
-
+						sess.refresh(event)
 		print("--------------------")
 
-		#self.sync_token = str(updated_events.sync_token)
+		with db.session() as sess:
+			category = sess.exec(select(Category).where(Category.id == self.id)).one()
+			category.sync_token = str(updated_events.sync_token)
+			sess.add(category)
+			sess.commit()
+			sess.refresh(category)
 	
 	def _update_events(self, cal_data: list[CalendarObjectResource]|SynchronizableCalendarObjectCollection) -> list[Event]:
 		LOGGER.info("Parsing events...")

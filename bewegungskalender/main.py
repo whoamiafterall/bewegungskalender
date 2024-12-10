@@ -65,7 +65,7 @@ async def main_async():
 		print(category.name)
 		if category.events:
 			pass
-			#print(category.events)
+			print(category.events)
 	
 	# Output Section
 	## UMap Output
