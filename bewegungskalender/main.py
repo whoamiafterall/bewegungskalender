@@ -3,15 +3,13 @@ import asyncio
 import locale
 import sys
 from locale import setlocale
-
 from sqlmodel import select
 
 from bewegungskalender.backend.calendar.category import Category
 # internal imports
-from bewegungskalender.backend.calendar.event import Event
 from bewegungskalender.backend.formatting.message import MultiFormatMessage, create_message
 from bewegungskalender.backend.io import db
-from bewegungskalender.backend.io.cli import FORMAT, ARGS, START, END
+from bewegungskalender.backend.io.cli import FORMAT, ARGS
 from bewegungskalender.backend.io.config import LOCALE, CALENDARS
 from bewegungskalender.backend.io.nextcloud_forms import update_ncform
 from bewegungskalender.backend.output.mail import send_mail
@@ -29,6 +27,7 @@ setlocale(locale.LC_ALL, LOCALE)
 # Main Function if run as standalone program
 def main():
 	# frontend.run can't be called from async call
+
 	if ARGS.user_interface:
 		LOGGER.info("Starting User Interface!")
 		start_ui()
@@ -46,26 +45,26 @@ async def main_async():
 	## Nextcloud Form Input
 	if ARGS.update_ncform:
 		update_ncform()
-	
+
 	# Create Database
 	if ARGS.create_db:
 		## Create Tables
 		db.create_tables()
 		## Fetch All Events using urls from Config and add them to db
-		[Category.create(configline=line) for line in CALENDARS]
-		
+		[Category.create(configline=line,full_db=ARGS.full_db) for line in CALENDARS]
+
 	# Sync Events in Database
-	else:
+	elif ARGS.sync_db:
 		## Sync Events using sync token stored in database
 		[Category.sync(category) for category in  db.exe(select(Category)).all()]
-	
+
 	# For Debugging
 	data = db.exe(select(Category)).all()
 	for category in data:
 		print(category.name)
 		if category.events:
 			pass
-		#	print(category.events)
+			#print(category.events)
 	
 	# Output Section
 	## UMap Output
