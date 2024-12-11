@@ -1,15 +1,17 @@
 from nicegui import ui, events
 
+from bewegungskalender.backend.formatting.nextcloud_urls import NC_YEAR_VIEW
 from bewegungskalender.backend.io.config import MENU
 from bewegungskalender.libs.logger import LOGGER
 from bewegungskalender.frontend.functions import loading, render_iframe
 from bewegungskalender.frontend.navigation.router import ROUTER
-from bewegungskalender.frontend.calendar.fullcalendar import FullCalendar as fullcalendar
+from bewegungskalender.frontend.calendar.fullcalendar import FullCalendar
 
 # Create Calendar Page
 @ROUTER.add('/calendar2')
-def custom_calendar_view():
-    LOGGER.debug(f"Creating the Calendar View using {MENU['calendar']['source']}")
+async def custom_calendar_view():
+    await ui.context.client.connected()
+    LOGGER.debug(f"Creating the Calendar View using {NC_YEAR_VIEW}")
     loading(MENU['calendar']['label'])
 
     options = {
@@ -31,5 +33,5 @@ def custom_calendar_view():
             ui.notify(event.args['info']['event'])
 
 
-    fullcalendar(options, on_click=handle_click).add_event(title="test",start="2024-12-04 08:00:00",end="2024-12-04 10:00:00",color='red')
+    FullCalendar(options, on_click=handle_click).add_event(title="test",start="2024-12-04 08:00:00",end="2024-12-04 10:00:00",color='red')
 

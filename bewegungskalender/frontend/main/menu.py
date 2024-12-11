@@ -30,7 +30,7 @@ class MenuButton(Button):
             self.drawer.hide()
             
 def main_menu(left_drawer:LeftDrawer, classes:str=None, props:str=None):
-    ui.button(on_click=lambda: left_drawer.toggle(), icon='menu').classes(classes).props(props)
+    ui.button(on_click=lambda: left_drawer.toggle(), icon='menu').classes(classes).props(props).tailwind('lg:hidden')
     MenuButton(MENU['list'], list_view).classes(classes).props(props)
     MenuButton(MENU['calendar'], calendar_view).classes(classes).props(props)
 #    MenuButton(MENU['calendar'], custom_calendar_view).props(props)
