@@ -10,7 +10,7 @@ from bewegungskalender.backend.io import db
 from bewegungskalender.backend.io.config import MENU, MAP_CENTER_LAT, MAP_CENTER_LON, MAP_ZOOM
 from bewegungskalender.frontend.functions import loading
 from bewegungskalender.frontend.navigation.router import ROUTER
-from bewegungskalender.frontend.templater import render_map_template
+from bewegungskalender.frontend.templates.templater import render_map_template
 from bewegungskalender.libs.logger import LOGGER
 
 

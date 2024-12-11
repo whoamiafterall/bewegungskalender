@@ -1,7 +1,7 @@
 from typing import Final
 
 from bewegungskalender.backend.io.config import CALENDARS
-from bewegungskalender.backend.io.credentials import NC_DOMAIN
+from bewegungskalender.backend.io.credentials import NC_DOMAIN, NC_USR
 
 # This File forges all relevant Links related to Nextcloud
 
@@ -25,10 +25,9 @@ _YEARLY:Final[str] = "multiMonthYear"
 _LIST:Final[str] = "listMonth"
 
 # Public Nextcloud Views
-NC_MONTHLY_VIEW:Final[str] = f"{_view_base_url}/{PUBLIC_IDS}/{_MONTHLY}/now"
-NC_YEARLY_VIEW:Final[str] = f"{_view_base_url}/{PUBLIC_IDS}/{_YEARLY}/now"
+NC_MONTH_VIEW:Final[str] = f"{_view_base_url}/{PUBLIC_IDS}/{_MONTHLY}/now"
+NC_YEAR_VIEW:Final[str] = f"{_view_base_url}/{PUBLIC_IDS}/{_YEARLY}/now"
 NC_LIST_VIEW:Final[str] = f"{_view_base_url}/{PUBLIC_IDS}/{_LIST}/now"
-print(NC_LIST_VIEW)
 
 # Embed Link
 NC_MONTHLY_EMBED:Final[str] = f"{_embed_base_url}/{PUBLIC_IDS}/{_YEARLY}/now"

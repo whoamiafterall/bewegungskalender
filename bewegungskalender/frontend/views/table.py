@@ -3,9 +3,10 @@ from slugify import slugify
 
 from bewegungskalender.backend.formatting.format import event_time
 from bewegungskalender.backend.io.config import MENU
-from bewegungskalender.frontend.filter import Eventfilter
-from bewegungskalender.frontend.functions import loading, container, opacity
+from bewegungskalender.frontend.filter.filter import Eventfilter
+from bewegungskalender.frontend.functions import loading, opacity
 from bewegungskalender.frontend.navigation.router import ROUTER
+
 
 # Create Table Page
 @ROUTER.add(f"/{slugify(str(MENU['table']['label'].lower()))}")
