@@ -1,7 +1,10 @@
 from contextlib import contextmanager
 
 from nicegui import ui
+from nicegui.elements.button import Button
 from nicegui.elements.mixins.validation_element import ValidationElement
+
+from bewegungskalender.backend.formatting.nextcloud_urls import NC_LIST_VIEW, NC_MONTH_VIEW, NC_YEAR_VIEW
 
 
 class ErrorChecker:
@@ -30,6 +33,20 @@ def mini_card(classes:str=None):
     with ui.card().tight().classes('m-0 p-2 flex-row bg-primary shadow-none items-center ') as card:
         card.classes(classes)
         yield card
+        
+class NavigateButton(Button):
+    def __init__(self, icon: str, text: str, link: str) -> None:
+        super().__init__(text=text, icon=icon, on_click=lambda: ui.navigate.to(link, new_tab=True))
+        self.classes('font-normal grow text-sm bg-accent hover:font-medium normal-case')
+
+def view_buttons(classes:str='None'):
+    NavigateButton('calendar_view_day', 'Listenansicht', NC_LIST_VIEW).classes(classes)
+    NavigateButton('calendar_month', 'Monatsansicht', NC_MONTH_VIEW).classes(classes)
+    NavigateButton('grid_on', 'Jahresansicht', NC_YEAR_VIEW).classes(classes)
+    ui.separator().classes(classes)
+    
+def new_tab_icon():
+    ui.icon('launch', size='15px').classes('p-[2px]')
 
 def render_iframe(height:str, width:str, source:str):
     ui.html(f"<iframe src={source} width={width} height={height}></iframe>").classes('w-screen h-screen p-0 m-0')

@@ -20,7 +20,7 @@ async def main_page():
     ui.colors(primary='#1c2329', secondary='white', accent='#005a5a')
     ROUTER.frame().classes('w-screen h-[calc(100vh-50px)]')
     ld = left_drawer()
-    rd = right_drawer()
+    rd = await right_drawer()
     header(ld, rd)
     with ui.footer(elevated=True).classes('min-[430px]:hidden h-50px flex flex-nowrap items-center fixed p-0 gap-0'):
         main_menu(ld, props='label="" outline', classes='flex-auto bg-accent m-0 p-4')

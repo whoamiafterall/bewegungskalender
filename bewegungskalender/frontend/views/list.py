@@ -6,34 +6,48 @@ from slugify import slugify
 
 from bewegungskalender.backend.io.config import MENU
 from bewegungskalender.backend.io.credentials import NC_DOMAIN
-from bewegungskalender.frontend.filter import Eventfilter
-from bewegungskalender.frontend.functions import loading, container, opacity
+from bewegungskalender.frontend.filter.category_filter import category_filters
+from bewegungskalender.frontend.filter.filter import Eventfilter
+from bewegungskalender.frontend.filter.location_filter import location_filter
+from bewegungskalender.frontend.filter.time_filter import timespan_filter
+from bewegungskalender.frontend.functions import loading, container, opacity #view_buttons
 from bewegungskalender.frontend.functions import mini_card
 from bewegungskalender.frontend.navigation.router import ROUTER
 
-
 def heading(month:datetime=today()):
-    return ui.markdown(f"#### {month:%B}").classes('text-center')
+    with ui.row().classes('justify-center'):
+        ui.markdown(f"#### {month:%B}").classes('text-center')
 
 # Create List Page
 @ROUTER.add(f"/{slugify(str(MENU['list']['label'].lower()))}")
 async def list_view():
     loading(MENU['list']['label'])
     await ui.context.client.connected()
-
-    with (container('xl:w-1/2 lg:w-3/5 md:w-4/5 max-sm:w-full')):
-        #        ui.label('Einige kürzere Termine werden nicht angezeigt. Bearbeite die Filter einstellungen um dies zu ändern.')
-        
-        #
-        ui_list_element = ui.list().classes('w-full')
+    
+    # Create Buttons linking to Nextcloud views
+  #  with ui.row().classes('m-0  gap-0 text-sm sm:text-base max-sm:hidden'):
+   #     view_buttons('max-sm:hidden')
+    
+    with container('xl:w-4/5 w-full justify-between flex-row'):
+        # Event List
+        with ui.column(wrap=False, align_items='center').classes('grow m-0 gap-0 px-2'):
+            event_list = ui.list().classes('w-full')
         events_ui_list = []
+        
+        # Filter
+        with ui.column(wrap=False, align_items='start').classes('m-0 gap-1 max-w-1/4 pt-5 px-3 shrink text-sm max-lg:hidden'):
+            timespan_filter()
+            await category_filters()
+            location_filter()
+        
+        # Populate Event List using filter
         def use_filter():
             
             # Get filtered Events
             events = filterUI.events_using_filter()
             
             # Clear list view before filter was applied
-            with ui_list_element:
+            with event_list:
                 for event_ui in events_ui_list:
                     event_ui.delete()
                 events_ui_list.clear()
@@ -47,11 +61,11 @@ async def list_view():
                     month = event.start.month
                     
                     # Create a row for each event
-                    with ui.row().classes('flex flex-row gap-0 max-sm:mb-2 text-sm sm:text-base') as event_item:
+                    with ui.row().classes('flex flex-row w-full gap-1 p-0.5 max-sm:mb-2 text-sm') as event_item:
                         
                         # Create the time
-                        with mini_card('p-1 order-first'):
-                            ui.label(f"{event.start:%d (%a)}").classes('w-[60px]')
+                        with mini_card('p-1 gap-1 order-first'):
+                            ui.label(f"{event.start:%d (%a)}").classes('nowrap')
                             ui.label(f"{event.start:%H:%M}:") if event.start.time() != datetime.min.time() else None
                         ui.space().classes('grow sm:hidden')
                         
@@ -69,7 +83,7 @@ async def list_view():
                                 text=event.summary,
                                 color=opacity(60, event.category.color),
                                 auto_close=True
-                        ).classes('font-normal text-sm sm:text-base capitalize hover:font-medium max-sm:w-full max-sm:order-3 grow items-start'):
+                        ).classes('font-normal text-sm capitalize hover:font-medium max-sm:w-full max-sm:order-3 grow items-start'):
                             
                             
                             # Create the dropdown content
@@ -82,22 +96,22 @@ async def list_view():
                                     with mini_card('space-x-2'):
                                         ui.icon('map', size='20px')
                                         ui.link(event.link, event.link, new_tab=True)
-
-
+                                
+                                
                                 # Create donwload button
-                                # In order to download we first fetch the isc contents and then serve them to the client. 
+                                # In order to download we first fetch the isc contents and then serve them to the client.
                                 # We need to to it this way because else nice gui passes some headers that mess with next cloud authentication
-
+                                
                                 # TODO: event.ics_url is useless as it requires authentication. We should perhaps just catch the id we split out of ics_url here instead
-
+                                
                                 ui.button(text='Add to Calendar (.ics)', icon='file_download',
                                           on_click=lambda: ui.download(str.encode(f"https://{NC_DOMAIN}/remote.php/dav/public-calendars/{event.category.public_id}/{event.ics_url.split('/')[-1]}?export"),
-                                          f"{slugify(event.summary)}.isc")
+                                                                       f"{slugify(event.summary)}.isc")
                                           ).props('flat color=white').classes('font-normal hover:font-medium normal-case')
-                                
-                      
                     
-
+                    
+                    
+                    
                     events_ui_list.append(event_item)
         
         
