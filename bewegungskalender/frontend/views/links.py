@@ -13,7 +13,8 @@ from bewegungskalender.frontend.navigation.router import ROUTER
 
 # Create Links Page
 @ROUTER.add(f"/{slugify(str(MENU['links']['label'].lower()))}")
-def links_view():
+async def links_view():
+    await ui.context.client.connected()
     loading(MENU['links']['label'], 0.2)
     with container('flex-row flex-wrap'):
         path = f"{STATIC_DIR}{MENU['links']['source']}"
