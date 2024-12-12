@@ -8,7 +8,8 @@ from bewegungskalender.frontend.functions import container
 from bewegungskalender.frontend.navigation.router import ROUTER
 
 @ROUTER.add(f"/{slugify(str(MENU['about']['label'].lower()))}")
-def about_view():
+async def about_view():
+    await ui.context.client.connected()
     LOGGER.debug(f"Creating About Panel with the content of {MENU['about']['source']}...")
     with container('md:w-2/3'):
         with open(f"{STATIC_DIR}{MENU['about']['source']}", 'r') as f:  # open file

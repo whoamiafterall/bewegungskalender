@@ -8,7 +8,8 @@ from bewegungskalender.frontend.navigation.router import ROUTER
 
 # Create Calendar Page
 @ROUTER.add('/')
-def calendar_view():
+async def calendar_view():
+    await ui.context.client.connected()
     LOGGER.debug(f"Creating the Calendar View using {NC_YEARLY_EMBED}")
     loading(MENU['calendar']['label'])
     render_iframe(height='100%', width='100%', source=NC_YEARLY_EMBED)
