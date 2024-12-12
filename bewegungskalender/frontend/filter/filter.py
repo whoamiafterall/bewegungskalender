@@ -82,9 +82,6 @@ class Eventfilter:
 		async def show():
 			result = await dialog
 			apply_filter()
-		
-		with ui.page_sticky(x_offset=18, y_offset=18):
-			ui.button(icon="filter_alt",on_click=show).props('fab color=accent')
 	
 	#todo: implement other filters
 	def events_using_filter(self) -> list[Event]:

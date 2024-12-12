@@ -1,20 +1,19 @@
-from contextlib import contextmanager
 from typing import Callable, Any
 
 from nicegui import ui
 from nicegui.elements.button import Button
-from nicegui.elements.button_group import ButtonGroup
 from nicegui.page_layout import LeftDrawer, RightDrawer
 
+from bewegungskalender.backend.formatting.nextcloud_urls import NC_MONTH_VIEW, NC_YEAR_VIEW
 from bewegungskalender.backend.io.config import MENU
 from bewegungskalender.frontend.navigation.router import ROUTER
 from bewegungskalender.frontend.views.FAQ import faq_view
 from bewegungskalender.frontend.views.about import about_view
-from bewegungskalender.frontend.views.calendar import calendar_view
 from bewegungskalender.frontend.views.form import form_view
 from bewegungskalender.frontend.views.links import links_view
 from bewegungskalender.frontend.views.list import list_view
 from bewegungskalender.frontend.views.map import map_view
+
 
 class MenuButton(Button):
     def __init__(self, item:dict, view:Callable, drawer:LeftDrawer|RightDrawer = None) -> None:
@@ -28,13 +27,21 @@ class MenuButton(Button):
         ROUTER.open(self.view)
         if self.drawer:
             self.drawer.hide()
-            
+
+
+class NavigateButton(Button):
+    def __init__(self, icon: str, text: str, link: str) -> None:
+        super().__init__(text=text, icon=icon, on_click=lambda: ui.navigate.to(link, new_tab=True))
+
+
 def main_menu(left_drawer:LeftDrawer, classes:str=None, props:str=None):
     ui.button(on_click=lambda: left_drawer.toggle(), icon='menu').classes(classes).props(props).tailwind('lg:hidden')
     MenuButton(MENU['list'], list_view).classes(classes).props(props)
-    MenuButton(MENU['calendar'], calendar_view).classes(classes).props(props)
-#    MenuButton(MENU['calendar'], custom_calendar_view).props(props)
+    NavigateButton('calendar_month', 'Monat', NC_MONTH_VIEW).classes(classes).props(props)
+    NavigateButton('grid_on', 'Jahr', NC_YEAR_VIEW).classes(classes).props(props)
     MenuButton(MENU['map'], map_view).classes(classes).props(props)
+  #  MenuButton(MENU['calendar'], calendar_view).classes(classes).props(props)
+#    MenuButton(MENU['calendar'], custom_calendar_view).props(props)
   #  MenuButton(MENU['table'], table_view).props(props)
 
 def secondary_menu(left_drawer:LeftDrawer, classes:str=None, props:str=None):

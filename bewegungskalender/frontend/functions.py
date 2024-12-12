@@ -3,6 +3,7 @@ from contextlib import contextmanager
 from nicegui import ui
 from nicegui.elements.button import Button
 from nicegui.elements.mixins.validation_element import ValidationElement
+from nicegui.page_layout import RightDrawer
 
 from bewegungskalender.backend.formatting.nextcloud_urls import NC_LIST_VIEW, NC_MONTH_VIEW, NC_YEAR_VIEW
 
@@ -24,26 +25,19 @@ def tab_panel(tab:str):
 def container(classes:str=None):
     with ui.card().tight().classes(
             'container mx-auto min-h-full overflow-auto px-10 py-5 ' # Layout - Trailing White Space is important!
-            'bg-primary text-base font-light max-[430px]:mb-[50px] text-secondary') as card: # Text
+            'bg-primary text-base font-light max-sm:mb-[50px] text-secondary') as card: # Text
         card.classes(classes) # Add Custom Classes
         yield card
+
+def page_sticky(right_drawer: RightDrawer):
+    with ui.page_sticky(x_offset=18, y_offset=18):
+        ui.button(icon="filter_alt", on_click=lambda:right_drawer.toggle()).props('fab color=accent').classes('sm:hidden')
         
 @contextmanager
 def mini_card(classes:str=None):
     with ui.card().tight().classes('m-0 p-2 flex-row bg-primary shadow-none items-center ') as card:
         card.classes(classes)
         yield card
-        
-class NavigateButton(Button):
-    def __init__(self, icon: str, text: str, link: str) -> None:
-        super().__init__(text=text, icon=icon, on_click=lambda: ui.navigate.to(link, new_tab=True))
-        self.classes('font-normal grow text-sm bg-accent hover:font-medium normal-case')
-
-def view_buttons(classes:str='None'):
-    NavigateButton('calendar_view_day', 'Listenansicht', NC_LIST_VIEW).classes(classes)
-    NavigateButton('calendar_month', 'Monatsansicht', NC_MONTH_VIEW).classes(classes)
-    NavigateButton('grid_on', 'Jahresansicht', NC_YEAR_VIEW).classes(classes)
-    ui.separator().classes(classes)
     
 def new_tab_icon():
     ui.icon('launch', size='15px').classes('p-[2px]')

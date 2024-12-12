@@ -4,7 +4,6 @@ from nicegui.page_layout import RightDrawer, LeftDrawer
 from bewegungskalender.frontend.filter.category_filter import category_filters
 from bewegungskalender.frontend.filter.location_filter import location_filter
 from bewegungskalender.frontend.filter.time_filter import timespan_filter
-from bewegungskalender.frontend.functions import view_buttons
 from bewegungskalender.frontend.main.menu import secondary_menu
 
 
@@ -13,8 +12,6 @@ def left_drawer() -> LeftDrawer:
 			'width=auto') as ld:
 		with ui.column(wrap=False, align_items='stretch').classes('w-full p-5'):
 			secondary_menu(ld, 'bg-accent text-sm font-normal normal-case')
-			ui.separator()
-			view_buttons('sm:hidden')
 			ui.button(icon='close', on_click=lambda: ld.hide()).props('flat color=white align=center').classes(
 				'h-24px')
 	return ld

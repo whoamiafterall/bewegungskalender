@@ -5,7 +5,6 @@ from bewegungskalender.backend.calendar.category import Category
 from bewegungskalender.backend.io import db
 from bewegungskalender.frontend.functions import mini_card, opacity
 
-
 async def category_filters():
 	await ui.context.client.connected()
 	categories = db.exe(select(Category)).all()
@@ -18,15 +17,15 @@ async def category_filters():
 	for category in categories:
 		with mini_card('w-full py-0 px-0 m-0'):
 			# Check Box
-			with ui.checkbox(value=True):
+			with ui.checkbox(value=True).classes('px-0'):
 				ui.tooltip(category.description).classes(
 					'text-balance text-sm font-medium text-center sm:w-[300px]').style(
-					f"background-color:{category.color}")
+					f"background-color:{category.color}").props('delay=150 hide-delay=200')
 			
 			# Dropdown Button
 			with ui.dropdown_button(
 					text=category.name,
-					color=opacity(50, category.color),
+					color=opacity(70, category.color),
 					auto_close=True,
 			).classes('font-normal text-sm capitalize hover:font-medium grow items-start'):
 				# Create the dropdown content

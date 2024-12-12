@@ -10,23 +10,23 @@ from bewegungskalender.frontend.filter.category_filter import category_filters
 from bewegungskalender.frontend.filter.filter import Eventfilter
 from bewegungskalender.frontend.filter.location_filter import location_filter
 from bewegungskalender.frontend.filter.time_filter import timespan_filter
-from bewegungskalender.frontend.functions import loading, container, opacity #view_buttons
+from bewegungskalender.frontend.functions import loading, container, opacity
 from bewegungskalender.frontend.functions import mini_card
 from bewegungskalender.frontend.navigation.router import ROUTER
+
 
 def heading(month:datetime=today()):
     with ui.row().classes('justify-center'):
         ui.markdown(f"#### {month:%B}").classes('text-center')
 
 # Create List Page
-@ROUTER.add(f"/{slugify(str(MENU['list']['label'].lower()))}")
+@ROUTER.add("/")
 async def list_view():
     loading(MENU['list']['label'])
     await ui.context.client.connected()
     
     # Create Buttons linking to Nextcloud views
-  #  with ui.row().classes('m-0  gap-0 text-sm sm:text-base max-sm:hidden'):
-   #     view_buttons('max-sm:hidden')
+  
     
     with container('xl:w-4/5 w-full justify-between flex-row'):
         # Event List
@@ -35,7 +35,7 @@ async def list_view():
         events_ui_list = []
         
         # Filter
-        with ui.column(wrap=False, align_items='start').classes('m-0 gap-1 max-w-1/4 pt-5 px-3 shrink text-sm max-lg:hidden'):
+        with ui.column(wrap=False, align_items='start').classes('m-0 gap-1 pl-5 max-w-1/4 pt-5 pr-0 shrink text-sm max-lg:hidden'):
             timespan_filter()
             await category_filters()
             location_filter()
@@ -61,16 +61,16 @@ async def list_view():
                     month = event.start.month
                     
                     # Create a row for each event
-                    with ui.row().classes('flex flex-row w-full gap-1 p-0.5 max-sm:mb-2 text-sm') as event_item:
+                    with ui.row().classes('flex flex-row w-full gap-0 sm:gap-1 sm:p-0.5 max-sm:mb-1 text-sm') as event_item:
                         
                         # Create the time
-                        with mini_card('p-1 gap-1 order-first'):
+                        with mini_card('px-1 gap-x-1 gap-y-0 order-first'):
                             ui.label(f"{event.start:%d (%a)}").classes('nowrap')
                             ui.label(f"{event.start:%H:%M}:") if event.start.time() != datetime.min.time() else None
                         ui.space().classes('grow sm:hidden')
                         
                         # Create the city/country
-                        with mini_card('max-sm:order-2 sm:align-right order-last'):
+                        with mini_card('max-sm:order-2 px-1 gap-x-1 gap-y-0 sm:align-right order-last'):
                             if event.location.country_code in ('de','at','ch'):
                                 ui.label(f"{event.location.city}").classes('grow text-right')
                             elif not event.location.country_code:
@@ -81,10 +81,9 @@ async def list_view():
                         # Create the summary dropdown button
                         with ui.dropdown_button(
                                 text=event.summary,
-                                color=opacity(60, event.category.color),
+                                color=opacity(70, event.category.color),
                                 auto_close=True
                         ).classes('font-normal text-sm capitalize hover:font-medium max-sm:w-full max-sm:order-3 grow items-start'):
-                            
                             
                             # Create the dropdown content
                             with mini_card('flex-col text-sm w-full'):
@@ -99,14 +98,14 @@ async def list_view():
                                 
                                 
                                 # Create donwload button
-                                # In order to download we first fetch the isc contents and then serve them to the client.
-                                # We need to to it this way because else nice gui passes some headers that mess with next cloud authentication
+                                # In order to download we first fetch the ics contents and then serve them to the client.
+                                # We need to do it this way because else nice gui passes some headers that mess with next cloud authentication
                                 
                                 # TODO: event.ics_url is useless as it requires authentication. We should perhaps just catch the id we split out of ics_url here instead
                                 
                                 ui.button(text='Add to Calendar (.ics)', icon='file_download',
                                           on_click=lambda: ui.download(str.encode(f"https://{NC_DOMAIN}/remote.php/dav/public-calendars/{event.category.public_id}/{event.ics_url.split('/')[-1]}?export"),
-                                                                       f"{slugify(event.summary)}.isc")
+                                                                       f"{slugify(event.summary)}.isc", media_type='.ics')
                                           ).props('flat color=white').classes('font-normal hover:font-medium normal-case')
                     
                     
