@@ -1,7 +1,10 @@
 from datetime import datetime
 
+import requests
 from dateutil.utils import today
+from docutils.utils.math.latex2mathml import functions
 from nicegui import ui
+from nicegui.functions.download import download
 from slugify import slugify
 
 from bewegungskalender.backend.io.config import MENU
@@ -39,7 +42,9 @@ async def list_view():
             timespan_filter()
             await category_filters()
             location_filter()
-        
+
+        def download_isc(url,name):
+            ui.download(str.encode(requests.get(url).text),name)
         # Populate Event List using filter
         def use_filter():
             
@@ -105,11 +110,10 @@ async def list_view():
                                 # TODO: event.ics_url is useless as it requires authentication. We should perhaps just catch the id we split out of ics_url here instead
                                 
                                 ui.button(text='Add to Calendar (.ics)', icon='file_download',
-                                          on_click=lambda: ui.download(str.encode(f"https://{NC_DOMAIN}/remote.php/dav/public-calendars/{event.category.public_id}/{event.ics_url.split('/')[-1]}?export"),
-                                                                       f"{slugify(event.summary)}.isc")
+                                          on_click=lambda: download_isc(f"https://{NC_DOMAIN}/remote.php/dav/public-calendars/{event.category.public_id}/{event.ics_url.split('/')[-1]}?export",f"{slugify(event.summary)}.isc")
                                           ).props('flat color=white').classes('font-normal hover:font-medium normal-case')
                     
-                    
+
                     
                     
                     events_ui_list.append(event_item)
