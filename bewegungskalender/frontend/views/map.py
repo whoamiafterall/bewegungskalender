@@ -10,7 +10,7 @@ from bewegungskalender.backend.io import db
 from bewegungskalender.backend.io.config import MENU, MAP_CENTER_LAT, MAP_CENTER_LON, MAP_ZOOM
 from bewegungskalender.frontend.filter.category_filter import category_filters
 from bewegungskalender.frontend.filter.location_filter import location_filter
-from bewegungskalender.frontend.filter.time_filter import timespan_filter
+from bewegungskalender.frontend.filter.time_filter import timespan_filter, duration_filter
 from bewegungskalender.frontend.functions import loading
 from bewegungskalender.frontend.navigation.router import ROUTER
 from bewegungskalender.frontend.templates.templater import render_map_template
@@ -30,9 +30,10 @@ async def map_view():
         # Filter
         with ui.column(wrap=False, align_items='start').classes(
                 'm-0 gap-1 px-5 max-w-1/4 pt-5 shrink text-sm max-lg:hidden'):
+            duration_filter()
+            location_filter()
             timespan_filter()
             await category_filters()
-            location_filter()
         with leaflet:
             with ui.page_sticky(x_offset=18, y_offset=18).classes(
                     'sm:hidden z-5000'):  # FixMe (it's not shown for whatever reason)

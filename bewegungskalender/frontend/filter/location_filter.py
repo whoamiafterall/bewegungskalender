@@ -6,7 +6,7 @@ from bewegungskalender.libs.nominatim import search_city
 
 def location_filter():
 	ui.input(label="Ort", placeholder="Stadt").on('update:model-value', handler=lambda e: update_location_card(e.args),
-	                                              throttle=2.0).props('clearable').classes('w-full pl-3')
+	                                              throttle=2.0).props('clearable filled').classes('w-full my-1 pl-3')
 	
 	location_card = ui.card().classes("ml-3 gap-0.5 border max-w-[260px] no-shadow")
 	
