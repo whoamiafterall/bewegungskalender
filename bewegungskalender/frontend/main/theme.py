@@ -1,4 +1,4 @@
-from nicegui import app, context
+from nicegui import app
 from nicegui import ui
 
 from bewegungskalender.backend.io.config import CONFIG, ICONS_DIR
