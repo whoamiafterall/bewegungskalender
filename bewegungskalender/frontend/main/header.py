@@ -4,6 +4,8 @@ from nicegui import ui
 from nicegui.page_layout import LeftDrawer, RightDrawer
 
 from bewegungskalender.frontend.main.menu import main_menu, secondary_menu
+from bewegungskalender.frontend.navigation.router import Router, ROUTER
+
 
 @contextmanager
 def header(ld:LeftDrawer, rd:RightDrawer=None):
@@ -15,5 +17,6 @@ def header(ld:LeftDrawer, rd:RightDrawer=None):
             with ui.button_group().props('outline rounded'):
                 secondary_menu(ld)
         ui.space().classes('max-sm:hidden lg:hidden')
+
         ui.button("Filter", icon='filter_alt', on_click=lambda: rd.toggle()).props(
-            'flat color=white').classes('max-sm:hidden lg:hidden')
+            'flat color=white').classes('max-sm:hidden lg:hidden').bind_visibility_from(ROUTER,"show_filter")

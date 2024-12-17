@@ -21,7 +21,7 @@ def heading(month:datetime=today()):
         ui.markdown(f"#### {month:%B}").classes('text-center')
 
 # Create List Page
-@ROUTER.add('/')
+@ROUTER.add('/',True)
 async def list_view():
     loading(MENU['list']['label'])
     await ui.context.client.connected()
