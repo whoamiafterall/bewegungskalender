@@ -7,10 +7,10 @@ from slugify import slugify
 
 from bewegungskalender.backend.io.config import MENU
 from bewegungskalender.backend.io.credentials import NC_DOMAIN
-from bewegungskalender.frontend.filter.category_filter import category_filters
-from bewegungskalender.frontend.filter.filter import Eventfilter
-from bewegungskalender.frontend.filter.location_filter import location_filter
-from bewegungskalender.frontend.filter.time_filter import timespan_filter, duration_filter
+from bewegungskalender.frontend.filter.ui.category_filter import category_filters
+from bewegungskalender.frontend.filter.filter_controller import FILTER
+from bewegungskalender.frontend.filter.ui.location_filter import location_filter
+from bewegungskalender.frontend.filter.ui.time_filter import duration_filter
 from bewegungskalender.frontend.functions import loading, container, opacity
 from bewegungskalender.frontend.functions import mini_card
 from bewegungskalender.frontend.navigation.router import ROUTER
@@ -40,7 +40,7 @@ async def list_view():
         with ui.column(wrap=False, align_items='start').classes('m-0 gap-1 max-w-1/4 pt-5 px-3 shrink text-sm max-lg:hidden'):
             duration_filter()
             location_filter()
-            timespan_filter()
+
             await category_filters()
         
         def download_ics(url, name):
@@ -50,8 +50,8 @@ async def list_view():
         def use_filter():
             
             # Get filtered Events
-            events = filterUI.events_using_filter()
-            
+            events = FILTER.events_using_filter()
+
             # Clear list view before filter was applied
             with event_list:
                 for event_ui in events_ui_list:
@@ -122,8 +122,6 @@ async def list_view():
                     
                     events_ui_list.append(event_item)
         
-        
-        filterUI = Eventfilter(use_filter)
-        use_filter()
+
     
         
