@@ -4,7 +4,7 @@ from sqlmodel import select
 
 from bewegungskalender.backend.calendar.category import Category
 from bewegungskalender.backend.io import db
-from bewegungskalender.frontend.filter.filter_controller import FILTER
+from bewegungskalender.frontend.filter.filter_controller import FILTER, call_refresh_filter_event
 from bewegungskalender.frontend.functions import mini_card, opacity
 
 async def category_filters():
@@ -19,7 +19,7 @@ async def category_filters():
 	for category in categories:
 		with mini_card('w-full py-0 px-0 m-0'):
 			# Check Box
-			with ui.checkbox(value=True).classes('px-0').bind_value(FILTER.categories[f"{slugify(str(category.name))}"]):
+			with ui.checkbox(value=True).classes('px-0').on_value_change(call_refresh_filter_event).bind_value(FILTER.categories[f"{slugify(str(category.name))}"]):
 				ui.tooltip(category.description).classes(
 					'text-balance text-sm font-medium text-center sm:w-[300px]').style(
 					f"background-color:{category.color}").props('delay=150 hide-delay=200')

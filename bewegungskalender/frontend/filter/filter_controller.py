@@ -5,7 +5,8 @@ import time
 from datetime import timedelta, datetime
 
 from dateutil.utils import today
-from nicegui import ui,binding
+from docutils.utils.math.tex2mathml_extern import latexml
+from nicegui import ui,binding,observables
 from sqlmodel import select
 from slugify import slugify
 from starlette.config import undefined
@@ -17,6 +18,9 @@ from bewegungskalender.backend.io import db
 from bewegungskalender.libs.nominatim import search_city
 
 
+def call_refresh_filter_event():
+	ui.run_javascript("emitEvent('refresh_filter');")
+
 class LocationFilter:
 
 	def __init__(self):
@@ -24,6 +28,8 @@ class LocationFilter:
 		self.search_query = ""
 		self.search_result = None
 		self.scheduler = sched.scheduler(time.time, time.sleep)
+
+
 
 	@property
 	def query(self):
@@ -68,12 +74,14 @@ class FilterController:
 	def __init__(self):
 		categories = db.exe(select(Category)).all()
 		self.categories = {}
+
+
 		self.location_type = binding.BindableProperty()
 		self.location_specific_location = LocationFilter()
-
-		self.location_specific_location_result = binding.BindableProperty()
 		self.location_specific_distance = binding.BindableProperty()
 		self.duration = binding.BindableProperty()
+
+
 		for category in categories:
 			self.categories[f"{slugify(str(category.name))}"] = binding.BindableProperty()
 
@@ -87,34 +95,55 @@ class FilterController:
 			except:
 				self.location_specific_location_result = None
 
-	#todo: implement other filters
 	def events_using_filter(self) -> list[Event]:
-		until = datetime.now().__add__(timedelta(days=100))
-		if 1 == 2:
-			distance = float(round(self.location_distance_slider.value * self.location_distance_slider.value * 10))
-			coords = self.location_card_coords
-			
-			maxlat = coords[0] + distance / 110.574
-			minlat = coords[0] - distance / 110.574
-			
-			maxlon = coords[1] + distance / 111.320*math.cos(maxlat * math.pi / 180)
-			minlon = coords[1] - distance / 111.320*math.cos(minlat * math.pi / 180)
-			
-			
-			
-			result = db.exe(select(Event,Location).where(
-				Event.start > today(),
-				Event.start < until,
-				Location.lat > float(minlat),
-				Location.lat < float(maxlat),
-				Location.lon > float(minlon),
-				Location.lon < float(maxlon),
-				).join(Location).order_by(Event.start)).all()
-			
-			return [n.Event for n in result]
+
+
+		statement = select(Event,Location,Category).where(Event.start > today()) #,Event.start < until
+
+		#until = datetime.now().__add__(timedelta(days=100))
+		#statement = statement.select(Event.start < until)
+
+		categories = db.exe(select(Category)).all()
+		for category in categories:
+			if self.categories[f"{slugify(str(category.name))}"].value is False:
+				statement = statement.where(
+					Category.name != category.name
+				)
+
+		#TODO: Filter Duration
+
+		if self.location_type is "Online":
+			statement = statement.where(
+				Location.lat == 'None'
+			)
 		else:
-			events:list[Event] = db.exe(select(Event).where(Event.start > today(), Event.start < until).order_by(Event.start)).all()
-			return events
+			if self.location_type is "Offline":
+				statement = statement.where(
+					Location.lat != 'None'
+				)
+			#TODO: ALLOW online events somehow!
+			if self.location_specific_location.result is not None:
+				distance = self.location_specific_distance.value
+
+				lat = float(self.location_specific_location.result["lat"])
+				lon = float(self.location_specific_location.result["lon"])
+
+				maxlat = lat + distance / 110.574
+				minlat = lat - distance / 110.574
+
+				maxlon = lon + distance / 111.320*math.cos(maxlat * math.pi / 180)
+				minlon = lon - distance / 111.320*math.cos(minlat * math.pi / 180)
+
+				statement = statement.where(
+					Location.lat > float(minlat),
+					Location.lat < float(maxlat),
+					Location.lon > float(minlon),
+					Location.lon < float(maxlon),
+					)
+
+			statement = statement.join(Location).join(Category).order_by(Event.start).order_by(Event.start)
+			result = db.exe(statement).all()
+			return [n.Event for n in result]
 
 
 
