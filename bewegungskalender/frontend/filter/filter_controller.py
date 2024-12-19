@@ -1,10 +1,14 @@
+import asyncio
 import math
+import sched
+import time
 from datetime import timedelta, datetime
 
 from dateutil.utils import today
 from nicegui import ui,binding
 from sqlmodel import select
 from slugify import slugify
+from starlette.config import undefined
 
 from bewegungskalender.backend.calendar.category import Category
 from bewegungskalender.backend.calendar.event import Event
@@ -13,6 +17,51 @@ from bewegungskalender.backend.io import db
 from bewegungskalender.libs.nominatim import search_city
 
 
+class LocationFilter:
+
+	def __init__(self):
+		self.event = None
+		self.search_query = ""
+		self.search_result = None
+		self.scheduler = sched.scheduler(time.time, time.sleep)
+
+	@property
+	def query(self):
+		return self.search_query
+
+	@query.setter
+	def query(self, new_value):
+		self.search_query = new_value
+
+		# Implemented as suggested here https://github.com/zauberzeug/nicegui/issues/1086 in order to prevent a UI event issue
+		# Find event loop
+		loop = asyncio.get_event_loop()
+		# run in executor
+		loop.run_in_executor(None,self.change_executer)
+
+	# cancle old event, enqueue new and run
+	def change_executer(self):
+		if self.scheduler.queue.__contains__(self.event):
+			self.scheduler.cancel(self.event)
+			self.event = None
+		if self.event is None or len(self.scheduler.queue) == 0:
+			self.event = self.scheduler.enter(1, 1, self.search)
+		self.scheduler.run()
+
+
+
+
+
+	@property
+	def result(self):
+		return self.search_result
+
+	def search(self):
+		try:
+			self.search_result = search_city(self.search_query)[0]
+		except:
+			self.search_result = None
+
 
 class FilterController:
 
@@ -20,12 +69,23 @@ class FilterController:
 		categories = db.exe(select(Category)).all()
 		self.categories = {}
 		self.location_type = binding.BindableProperty()
-		self.location_specific = binding.BindableProperty()
+		self.location_specific_location = LocationFilter()
+
+		self.location_specific_location_result = binding.BindableProperty()
 		self.location_specific_distance = binding.BindableProperty()
 		self.duration = binding.BindableProperty()
 		for category in categories:
 			self.categories[f"{slugify(str(category.name))}"] = binding.BindableProperty()
 
+	def update_location_specific_location_result(self):
+		query = self.location_specific_location_query
+		if len(query) <= 1:
+			self.location_specific_location_result = None
+		else:
+			try:
+				self.location_specific_location_result = search_city(query)[0]
+			except:
+				self.location_specific_location_result = None
 
 	#todo: implement other filters
 	def events_using_filter(self) -> list[Event]:

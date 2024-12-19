@@ -1,6 +1,7 @@
 import math
 
 from nicegui import ui
+from starlette.config import undefined
 
 from bewegungskalender.frontend.filter.filter_controller import FILTER
 from bewegungskalender.libs.exceptions import NoResultError
@@ -11,10 +12,13 @@ def location_filter():
 
 	(ui.select(["Überall", "Online", "Offline"], label="Ort", value="Überall").bind_value(FILTER.location_type).classes("pl-3 w-full my-1")).props("filled color=secondary")
 
-	ui.input(label="Bestimmter Ort", placeholder="Stadt").bind_value(FILTER.location_specific).props('clearable filled').classes('w-full my-1 pl-3').bind_visibility_from(FILTER.location_type, 'value', lambda v: v != "Offline")
+	ui.input(label="Bestimmter Ort", placeholder="Stadt").bind_value(FILTER.location_specific_location,"query").props('clearable filled').classes('w-full my-1 pl-3').bind_visibility_from(FILTER.location_type, 'value', lambda v: v != "Offline")
 	
 
-	with ui.card().classes("ml-3 gap-0.5 border w-full max-w-[260px] no-shadow").bind_visibility_from(FILTER.location_specific, 'value', lambda v: len(v) > 0):
+	with ui.card().classes("ml-3 gap-0.5 border w-full max-w-[260px] no-shadow").bind_visibility_from(FILTER.location_specific_location, 'result', lambda v: v is not None):
+
+		ui.label("").bind_text_from(FILTER.location_specific_location, 'result', backward = lambda a: "" if a is None else a["display_name"])
+
 
 		ui.label("").bind_text_from(FILTER.location_specific_distance, 'value', backward = lambda a: f"Radius: {a}km")
 
