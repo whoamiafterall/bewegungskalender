@@ -3,6 +3,7 @@ from nicegui import ui
 
 from bewegungskalender.backend.io.config import CONFIG, ICONS_DIR
 from bewegungskalender.backend.io.config import UI_TITLE, UI_FAVICON, UI_PORT
+from bewegungskalender.frontend.filter.filter_controller import FILTER
 from bewegungskalender.frontend.functions import page_sticky
 from bewegungskalender.frontend.main.drawer import left_drawer, right_drawer
 from bewegungskalender.frontend.main.header import header
@@ -25,6 +26,10 @@ async def main_page():
     rd = await right_drawer()
     header(ld, rd)
     page_sticky(rd)
+
+    #important to be here for location filtering to properly work
+    ui.on("update_location_search", lambda: FILTER.location_specific_location.run_search(), throttle=1, leading_events=False)
+
     with ui.footer(elevated=True).classes('sm:hidden h-50px flex flex-nowrap items-center fixed p-0 gap-0'):
         main_menu(ld, props='label="" outline', classes='flex-auto bg-accent m-0 p-4')
     
@@ -33,6 +38,8 @@ def start_ui():
     LOGGER.debug('Finished. Starting UI...')
     ui.run(title=UI_TITLE, favicon=UI_FAVICON, port=UI_PORT)  #storage_secret=storage_secret)
     LOGGER.debug('Successfully started UI.')
+
+
 
 # Run as Module or Standalone program
 if __name__ in {"__main__", "__mp_main__"}:
