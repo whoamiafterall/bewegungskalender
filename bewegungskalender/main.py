@@ -4,11 +4,14 @@ import locale
 import sys
 from locale import setlocale
 
+from sqlalchemy.event import Events
 # external imports
 from sqlmodel import select
 
 # internal imports
 from bewegungskalender.backend.calendar.category import Category
+from bewegungskalender.backend.calendar.event import Event
+from bewegungskalender.backend.calendar.location import Location
 from bewegungskalender.backend.formatting.message import MultiFormatMessage, create_message
 from bewegungskalender.backend.io import db
 from bewegungskalender.backend.io.cli import FORMAT, ARGS
@@ -60,12 +63,10 @@ async def main_async():
 		[Category.sync(category) for category in  db.exe(select(Category)).all()]
 
 	# For Debugging
-	data = db.exe(select(Category)).all()
-	for category in data:
-		print(category.name)
-		if category.events:
-			pass
-			print(category.events)
+	data = db.exe(select(Event,Location,Category).join(Location).join(Category)).all()
+	for event in [n.Event for n in data]:
+		print(event.summary)
+
 	
 	# Output Section
 	## UMap Output
