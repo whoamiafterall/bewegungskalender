@@ -1,13 +1,13 @@
+import math
+
 from nicegui import ui
 from nicegui.elements.leaflet import Leaflet
 from nicegui.elements.leaflet_layers import Marker
 from slugify import slugify
-from sqlmodel import select
 
-from bewegungskalender.backend.calendar.location import Location
 from bewegungskalender.backend.formatting.format import event_time
-from bewegungskalender.backend.io import db
-from bewegungskalender.backend.io.config import MENU, MAP_CENTER_LAT, MAP_CENTER_LON, MAP_ZOOM
+from bewegungskalender.backend.io.config import MENU, MAP_CENTER_LAT, MAP_CENTER_LON, MAP_ZOOM, ASSETS_URL_PATH
+from bewegungskalender.frontend.filter.filter_controller import FILTER
 from bewegungskalender.frontend.filter.ui.category_filter import category_filters
 from bewegungskalender.frontend.filter.ui.location_filter import location_filter
 from bewegungskalender.frontend.filter.ui.time_filter import duration_filter
@@ -25,56 +25,80 @@ async def map_view():
     LOGGER.debug('Creating the Map to show events...')
     # new leaflet with center set to center of germany
     with ui.card().tight().classes('container mx-auto flex-row w-full sm:mt-55 max-sm:mb-[55px] p-0 m-0'):
-        leaflet = ui.leaflet(center=(MAP_CENTER_LAT, MAP_CENTER_LON), zoom=MAP_ZOOM).classes('w-full h-[calc(100vh-55px)] p-0 m-0')
-        
+
+        # force filter to use offline mode
+        FILTER.location_type.force_offline = True
+
+
+        @ui.refreshable
+        async def create_map_ui():
+
+            zoom = MAP_ZOOM
+            center = (MAP_CENTER_LAT, MAP_CENTER_LON)
+            if FILTER.location_specific_location.result is not None:
+                search_result = FILTER.location_specific_location.result
+                center = (search_result["lat"], search_result["lon"])
+                area = math.pow(FILTER.location_specific_distance.value*2.5,2)
+                zoom = math.floor(math.fabs(math.pow(area,1/8.5) - 12))
+
+            leaflet = ui.leaflet(center=center, zoom=zoom).classes(
+                'w-full h-[calc(100vh-55px)] p-0 m-0')
+
+            with leaflet:
+                with ui.page_sticky(x_offset=18, y_offset=18).classes(
+                        'sm:hidden z-5000'):  # FixMe (it's not shown for whatever reason)
+                    ui.button(icon='filter_alt', #on_click=lambda: right_drawer.toggle()
+                              ).props('fab color=accent')
+                leaflet.clear_layers()
+
+                # add frontend on bottom right for copyright and set leaflet template(the style) + zoom
+                leaflet.tile_layer(
+
+                    url_template=r'https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png',
+                    options={
+                        'minZoom': 3,
+                        'maxZoom': 16,
+                        'attribution':
+                            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="https://viewfinderpanoramas.org/">SRTM</a> | '
+                            '&copy; <a href="https://carto.com">Carto</a>'
+                    },
+                )
+
+                # get cached data
+                events = FILTER.events_using_filter()
+
+                LOGGER.info(f"Got {events.__len__()} locations to display...")
+
+                # wait for leaflet to be initialized
+                LOGGER.debug("Waiting for Leaflet to be initialized...")
+                await leaflet.initialized()
+
+                # loop trough Locations
+                for event in events:
+                    location = event.location
+                    marker = leaflet.marker(latlng=(location.lat, location.lon))
+                    LOGGER.debug(f"Created marker for {event.summary}.")
+
+                    icon = (ASSETS_URL_PATH + '/icons/' + event.category.map_marker)
+
+                    # set icon (don't run with await, that causes issues for some reason ...)
+                    marker.run_method(':setIcon', f"L.icon({{iconUrl: '{icon}',iconSize: [40,40],iconAnchor:[20, 40],popupAnchor:[0,-40]}})")
+
+                    # use template html file and replace variables TODO: use a proper templating language like Jinja? (Didn't want to setup a templating environment just for one file though)
+                    # it might also a be an option to be generate all the html popups and store them as properties themselves also.
+                    context = {"summary": event.summary, "event_time": event_time(event.start, event.end), "location": location.name, "link": event.link}
+                    bind_popup(leaflet, marker, context)
+
+        await create_map_ui()
+
         # Filter
         with ui.column(wrap=False, align_items='start').classes(
                 'm-0 gap-1 px-5 max-w-1/4 pt-5 shrink text-sm max-lg:hidden'):
             duration_filter()
             location_filter()
-
             await category_filters()
-        with leaflet:
-            with ui.page_sticky(x_offset=18, y_offset=18).classes(
-                    'sm:hidden z-5000'):  # FixMe (it's not shown for whatever reason)
-                ui.button(icon='filter_alt', #on_click=lambda: right_drawer.toggle()
-                          ).props('fab color=accent')
-            leaflet.clear_layers()
-            
-            # add frontend on bottom right for copyright and set leaflet template(the style) + zoom
-            leaflet.tile_layer(
-                
-                url_template=r'https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png',
-                options={
-                    'minZoom': 3,
-                    'maxZoom': 16,
-                    'attribution':
-                        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="https://viewfinderpanoramas.org/">SRTM</a> | '
-                        '&copy; <a href="https://carto.com">Carto</a>'
-                },
-            )
-            
-            # get cached data
-            locations:list[Location] = db.exe(select(Location).where(Location.lat != 'None')).all()
-            
-            LOGGER.info(f"Got {locations.__len__()} locations to display...")
-            
-            # wait for leaflet to be initialized
-            LOGGER.debug("Waiting for Leaflet to be initialized...")
-            await leaflet.initialized()
-            
-            # loop trough Locations
-            for location in locations:
-                marker = leaflet.marker(latlng=(location.lat, location.lon))
-                LOGGER.debug(f"Created marker for {location.event.summary}.")
-                
-                # set icon
-                await marker.run_method(':setIcon', f"L.icon({{iconUrl: '{location.event.category.map_marker}',iconSize: [60,60],iconAnchor:[30, 60],popupAnchor:[0,-60]}})")
-                
-                # use template html file and replace variables TODO: use a proper templating language like Jinja? (Didn't want to setup a templating environment just for one file though)
-                # it might also a be an option to be generate all the html popups and store them as properties themselves also.
-                context = {"summary": location.event.summary, "event_time": event_time(location.event.start, location.event.end), "location": location.name, "link": location.event.link}
-                bind_popup(leaflet, marker, context)
+
+        ui.on('refresh_filter', lambda: create_map_ui.refresh(), throttle=0.1, trailing_events=False)
 
 def bind_popup(leaflet:Leaflet, marker:Marker, context:dict[str, str | None]):
     leaflet.run_layer_method(marker.id, 'bindPopup', render_map_template(context), timeout=5.0)

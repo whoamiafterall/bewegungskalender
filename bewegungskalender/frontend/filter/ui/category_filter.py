@@ -24,8 +24,6 @@ async def category_filters():
 					'text-balance text-sm font-medium text-center sm:w-[300px]').style(
 					f"background-color:{category.color}").props('delay=150 hide-delay=200')
 
-
-
 			# Dropdown Button
 			with ui.dropdown_button(
 					text=category.name,

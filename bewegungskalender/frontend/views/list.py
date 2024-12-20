@@ -32,6 +32,8 @@ async def list_view():
     
     with container('xl:w-4/5 w-full justify-between flex-row'):
 
+        # allow filter to use other than offline mode
+        FILTER.location_type.force_offline = False
 
         def download_ics(url, name):
             ui.download(str.encode(requests.get(url).text), name)

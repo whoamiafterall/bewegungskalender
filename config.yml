@@ -14,7 +14,7 @@ datadir: "bewegungskalender/data"
 database: "db.sqlite"
 static_dir: "bewegungskalender/frontend/static/"
 templating_dir: "bewegungskalender/frontend/templates"
-icons_dir: "bewegungskalender/frontend/assets/icons"
+
 
 calendars: # list of calendars to use from your caldav server (URL)
   - calendar: {emoji: '🔴', internal: 'als-info-gegenveranstaltung', public: 'zJsbBZJSQLCfkSsQ', map_marker: 'System-Events_&_Termine.svg',
@@ -51,7 +51,8 @@ frontend:
   title: Bewegungskalender
   favicon: bewegungskalender/assets/icons/favicon.jpeg
 assets:
-  url_path: "/local/assets"
+  dir: "bewegungskalender/frontend/assets"
+  url_path: "/assets"
 menu:
   calendar: {label: 'Monat', icon: 'calendar_month'}
   list: {label: 'Liste', icon: 'event_note'}

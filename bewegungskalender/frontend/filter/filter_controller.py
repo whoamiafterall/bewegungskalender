@@ -17,6 +17,18 @@ from bewegungskalender.backend.io import db
 from bewegungskalender.libs.nominatim import search_city
 
 
+class LocationTypeFilter:
+
+	def __init__(self):
+		self.state = "Überall"
+		self.force_offline = False
+
+	@property
+	def usable_state(self):
+		return "Offline" if self.force_offline else self.state
+
+
+
 def call_refresh_filter_event():
 	ui.run_javascript("emitEvent('refresh_filter');")
 
@@ -28,8 +40,6 @@ class LocationFilter:
 		self.search_result = None
 		self.scheduler = sched.scheduler(time.time, time.sleep)
 
-
-
 	@property
 	def query(self):
 		return self.search_query
@@ -37,10 +47,7 @@ class LocationFilter:
 	@query.setter
 	def query(self, new_value):
 		self.search_query = new_value
-
 		ui.run_javascript("emitEvent('update_location_search');")
-
-
 
 	@property
 	def result(self):
@@ -61,7 +68,8 @@ class FilterController:
 		self.categories = {}
 
 
-		self.location_type = binding.BindableProperty()
+		self.location_type = LocationTypeFilter()
+
 		self.location_specific_location = LocationFilter()
 		self.location_specific_distance = binding.BindableProperty()
 		self.duration = binding.BindableProperty()
@@ -78,7 +86,7 @@ class FilterController:
 		statement = select(Event,Location,Category)
 
 		# time filtering
-		statement = statement.where(Event.start > today())
+		#statement = statement.where(Event.start > today())
 
 		#until = datetime.now().__add__(timedelta(days=100))
 		#statement = statement.select(Event.start < until)
@@ -109,12 +117,12 @@ class FilterController:
 			statement = statement.where(or_(*duration_args))
 
 		# location filtering
-		if self.location_type.value == "Online":
+		if self.location_type.usable_state == "Online":
 			statement = statement.where(
 				Location.lat == 'None'
 			)
 		else:
-			if self.location_type.value == "Online":
+			if self.location_type.usable_state == "Online":
 				statement = statement.where(
 					Location.lat == 'None'
 				)
@@ -139,12 +147,12 @@ class FilterController:
 							Location.lon < float(maxlon),
 						)
 
-					if self.location_type.value == "Offline":
+					if self.location_type.usable_state == "Offline":
 						statement = statement.where(or_(Location.lat != 'None',operation))
 					else:
 						statement = statement.where(operation)
 
-				elif self.location_type.value == "Offline":
+				elif self.location_type.usable_state == "Offline":
 						statement = statement.where(
 							Location.lat != 'None'
 						)
