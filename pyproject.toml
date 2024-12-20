@@ -21,6 +21,7 @@ python-telegram-bot = "^21.6"
 validators = "^0.34.0"
 sqlmodel = "^0.0.22"
 geopy = "^2.4.1"
+django-scheduler = "^0.10.1"
 
 [build-system]
 requires = ["poetry-core"]
