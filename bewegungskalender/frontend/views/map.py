@@ -38,15 +38,19 @@ async def map_view():
             if FILTER.location_specific_location.result is not None:
                 search_result = FILTER.location_specific_location.result
                 center = (search_result["lat"], search_result["lon"])
-                area = math.pow(FILTER.location_specific_distance.value*2.5,2)
+
+                # TODO: Find a more accurate way to figure out zoom level
+                area = math.pow(FILTER.location_specific_distance.value*3,2)
+
                 zoom = math.floor(math.fabs(math.pow(area,1/8.5) - 12))
+
 
             leaflet = ui.leaflet(center=center, zoom=zoom).classes(
                 'w-full h-[calc(100vh-55px)] p-0 m-0')
 
             with leaflet:
                 with ui.page_sticky(x_offset=18, y_offset=18).classes(
-                        'sm:hidden z-5000'):  # FixMe (it's not shown for whatever reason)
+                        'sm:hidden z-5000'):  # FixMe (it's not shown for whatever reason) Question: Is this still needed?
                     ui.button(icon='filter_alt', #on_click=lambda: right_drawer.toggle()
                               ).props('fab color=accent')
                 leaflet.clear_layers()
@@ -63,6 +67,8 @@ async def map_view():
                             '&copy; <a href="https://carto.com">Carto</a>'
                     },
                 )
+                if FILTER.location_specific_location.result is not None:
+                    leaflet.generic_layer(name='circle', args=[center, {'color': 'grey','opacity': 0.02, 'radius': FILTER.location_specific_distance.value*1000}])
 
                 # get cached data
                 events = FILTER.events_using_filter()
@@ -98,7 +104,7 @@ async def map_view():
             location_filter()
             await category_filters()
 
-        ui.on('refresh_filter', lambda: create_map_ui.refresh(), throttle=0.1, trailing_events=False)
+        ui.on('refresh_filter', lambda: create_map_ui.refresh(), throttle=0.5, leading_events=False)
 
 def bind_popup(leaflet:Leaflet, marker:Marker, context:dict[str, str | None]):
     leaflet.run_layer_method(marker.id, 'bindPopup', render_map_template(context), timeout=5.0)

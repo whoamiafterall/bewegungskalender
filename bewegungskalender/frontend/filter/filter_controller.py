@@ -116,6 +116,7 @@ class FilterController:
 		elif len(duration_args) > 1:
 			statement = statement.where(or_(*duration_args))
 
+
 		# location filtering
 		if self.location_type.usable_state == "Online":
 			statement = statement.where(
@@ -146,11 +147,10 @@ class FilterController:
 							Location.lon > float(minlon),
 							Location.lon < float(maxlon),
 						)
-
 					if self.location_type.usable_state == "Offline":
-						statement = statement.where(or_(Location.lat != 'None',operation))
-					else:
 						statement = statement.where(operation)
+					else:
+						statement = statement.where(or_(Location.lat == 'None',operation))
 
 				elif self.location_type.usable_state == "Offline":
 						statement = statement.where(

@@ -119,4 +119,4 @@ async def list_view():
             await category_filters()
 
 
-        ui.on('refresh_filter', lambda: create_list_ui.refresh(),throttle=0.1,trailing_events=False)
+        ui.on('refresh_filter', lambda: create_list_ui.refresh(),throttle=0.1,leading_events=False)
