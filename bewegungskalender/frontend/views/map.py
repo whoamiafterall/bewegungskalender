@@ -49,10 +49,7 @@ async def map_view():
                 'w-full h-[calc(100vh-55px)] p-0 m-0')
 
             with leaflet:
-                with ui.page_sticky(x_offset=18, y_offset=18).classes(
-                        'sm:hidden z-5000'):  # FixMe (it's not shown for whatever reason) Question: Is this still needed?
-                    ui.button(icon='filter_alt', #on_click=lambda: right_drawer.toggle()
-                              ).props('fab color=accent')
+
                 leaflet.clear_layers()
 
                 # add frontend on bottom right for copyright and set leaflet template(the style) + zoom
@@ -96,6 +93,7 @@ async def map_view():
                     bind_popup(leaflet, marker, context)
 
         await create_map_ui()
+
 
         # Filter
         with ui.column(wrap=False, align_items='start').classes(
