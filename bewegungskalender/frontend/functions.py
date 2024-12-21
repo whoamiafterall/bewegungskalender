@@ -6,6 +6,7 @@ from nicegui.elements.mixins.validation_element import ValidationElement
 from nicegui.page_layout import RightDrawer
 
 from bewegungskalender.backend.formatting.nextcloud_urls import NC_LIST_VIEW, NC_MONTH_VIEW, NC_YEAR_VIEW
+from bewegungskalender.frontend.navigation.router import ROUTER
 
 
 class ErrorChecker:
@@ -30,7 +31,7 @@ def container(classes:str=None):
         yield card
 
 def page_sticky(right_drawer: RightDrawer):
-    with ui.page_sticky(x_offset=18, y_offset=18):
+    with ui.page_sticky(x_offset=18, y_offset=18).style("z-index: 1000;").bind_visibility_from(ROUTER,"show_filter"):
         ui.button(icon="filter_alt", on_click=lambda:right_drawer.toggle()).props('fab color=accent').classes('sm:hidden')
         
 @contextmanager

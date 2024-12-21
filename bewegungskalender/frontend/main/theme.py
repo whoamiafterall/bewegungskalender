@@ -26,13 +26,15 @@ async def main_page():
     
     rd = await right_drawer()
     header(ld, rd)
-    page_sticky(rd)
+
 
     #important to be here for location filtering to properly work
     ui.on("update_location_search", lambda: FILTER.location_specific_location.run_search(), throttle=1, leading_events=False)
 
     with ui.footer(elevated=True).classes('sm:hidden h-50px flex flex-nowrap items-center fixed p-0 gap-0'):
         main_menu(ld, props='label="" outline', classes='flex-auto bg-accent m-0 p-4')
+
+    page_sticky(rd)
     
 def start_ui():
     # storage_secret = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits) for _ in range(32))
