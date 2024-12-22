@@ -7,7 +7,7 @@ from geopy.geocoders.nominatim import Nominatim
 from retry import retry
 from sqlmodel import SQLModel, Field, Relationship
 
-from bewegungskalender.backend.calendar.helper import get_link, try_get_link
+from bewegungskalender.backend.calendar.helper import get_link
 from bewegungskalender.backend.io.config import LOCALE
 from bewegungskalender.libs.exceptions import NoResultError
 from bewegungskalender.libs.logger import LOGGER
@@ -71,25 +71,28 @@ def _catch_key_error(result, key) -> str|None:
     except KeyError:
         return None
 
+def osm_link(location:str) -> Location:
+    # Try to find osm link
+    try:
+        result = lookup_entity(location)
+        return Location.parse_offline(result, location)
+    except NoResultError:
+        LOGGER.warning(NoResultError(location))
+        return Location()
+
 def get_location_data(location:str) -> Location:
 
-    if location is None:  # Filter events without location
+    if location is None:
         return Location()
     elif OSM_LINK_PATTERN.match(location):
-        # Try to find osm link
-        try:
-            result = lookup_entity(location)
-            return Location.parse_offline(result, location)
-        except NoResultError:
-            LOGGER.warning(NoResultError(location))
-            return Location()
+        return osm_link(location)
     else:
         # Try to find online link
         location_get_link_result = get_link(location)
         if location_get_link_result is not None:
             return Location.parse_online(location_get_link_result)
         else:
-            # Fallback geocode code
+            # Fallback to geocode
             return geocode(location)
 
 
