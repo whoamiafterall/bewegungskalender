@@ -1,8 +1,11 @@
+import math
 import sys
+import time
 
 import icalendar
 from caldav import SynchronizableCalendarObjectCollection
 from caldav.objects import CalendarObjectResource
+from sqlalchemy.sql.functions import count
 from sqlmodel import SQLModel, Relationship, Field, select
 from starlette.config import undefined
 
@@ -31,7 +34,7 @@ class Category(SQLModel, table=True):
 	                                   cascade_delete=True)
 	
 	@classmethod
-	def create(cls, full_db:bool, configline:dict):
+	def create(cls, full_db:bool, configline:dict,ref_status):
 		cal = get_calendar_by_url(configline['calendar']['internal'])
 		category = Category(
 			name = get_calendar_name(cal),
@@ -44,10 +47,11 @@ class Category(SQLModel, table=True):
 			map_marker = configline['calendar']['map_marker'],
 			description = configline['calendar']['description'],
 		)
+
 		if full_db is False:
-			category._update_events(get_upcoming_events(cal))
+			category._update_events(get_upcoming_events(cal),ref_status)
 		else:
-			category._update_events(get_all_events(cal))
+			category._update_events(get_all_events(cal),ref_status)
 		LOGGER.info(f"Found {len(category.events)} events in {category.name}!\nSaving to database...")
 		with db.session() as sess:
 			sess.add(category)
@@ -107,9 +111,17 @@ class Category(SQLModel, table=True):
 			sess.commit()
 			sess.refresh(category)
 
-	def _update_events(self, cal_data: list[CalendarObjectResource]|SynchronizableCalendarObjectCollection) -> list[Event]:
+	def _update_events(self, cal_data: list[CalendarObjectResource]|SynchronizableCalendarObjectCollection, ref_status) -> list[Event]:
 		LOGGER.info("Parsing events...")
+		counter = 0
 		for ics in cal_data:
+			counter += 1
+			exact_percent = 100 / ref_status['complete'] * ((ref_status['current']-1)+1 / len(cal_data) * counter)
+			etm = "..." if exact_percent == 0 else round((time.time() - ref_status['start_time']) / exact_percent * 100)
+
+			LOGGER.info(f"Category [{ref_status['current']}/{ref_status['complete']}] Event [{counter}/{len(cal_data)}] - {math.floor(exact_percent*10)*0.1}% ETM: {etm}s")
+
+
 			try:
 				LOGGER.debug(f"Parsing {ics.icalendar_instance.subcomponents[0]['SUMMARY']}")
 			except KeyError:

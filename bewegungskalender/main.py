@@ -2,6 +2,7 @@
 import asyncio
 import locale
 import sys
+import time
 from locale import setlocale
 
 from sqlalchemy.event import Events
@@ -55,7 +56,11 @@ async def main_async():
 		## Create Tables
 		db.create_tables()
 		## Fetch All Events using urls from Config and add them to db
-		[Category.create(configline=line,full_db=ARGS.full_db) for line in CALENDARS]
+		counter = 0
+		for line in CALENDARS:
+			counter += 1
+			Category.create(configline=line, full_db=ARGS.full_db,ref_status={'start_time':time.time(),'current':counter,'complete':len(CALENDARS)})
+
 
 	# Sync Events in Database
 	elif ARGS.sync_db:
