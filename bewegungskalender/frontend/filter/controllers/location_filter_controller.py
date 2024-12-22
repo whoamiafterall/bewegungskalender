@@ -30,21 +30,19 @@ class LocationFilterController:
             lat = float(self.location.result["lat"])
             lon = float(self.location.result["lon"])
 
-            max_lat = lat + (distance / 110.574)
-            min_lat = lat - (distance / 110.574)
-            max_lon = lon + (distance / (111.320 * math.cos(lat * math.pi / 180)))
-            min_lon = lon - (distance / (111.320 * math.cos(lat * math.pi / 180)))
+            distance_sq = (distance*distance)
 
-            operation = and_(
-                Location.lat > float(min_lat),
-                Location.lat < float(max_lat),
-                Location.lon > float(min_lon),
-                Location.lon < float(max_lon),
-            )
+            mod_lat_sq = float(math.pow(110.574,2))
+            mod_lon_sq = float(math.pow(111.320 * math.cos(lat * math.pi / 180),2))
+
+            distance_operation = (((Location.lat - float(lat)) * (Location.lat - float(lat)) * mod_lat_sq)
+                             + ((Location.lon - float(lon)) * (Location.lon - float(lon)) * mod_lon_sq)
+                             < distance_sq)
+
             if self.usable_state == "Offline":
-                statement = statement.where(operation)
+                statement = statement.where(distance_operation)
             else:
-                statement = statement.where(or_(Location.type != EventLocationType.offline, operation))
+                statement = statement.where(or_(Location.type != EventLocationType.offline, distance_operation))
 
         elif self.usable_state == "Offline":
             statement = statement.where(Location.type == EventLocationType.offline)
