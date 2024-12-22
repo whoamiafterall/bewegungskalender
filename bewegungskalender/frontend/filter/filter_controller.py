@@ -15,6 +15,7 @@ from bewegungskalender.backend.calendar.event import Event
 from bewegungskalender.backend.calendar.location import Location, EventLocationType
 from bewegungskalender.backend.io import db
 from bewegungskalender.backend.io.config import CALENDARS
+from bewegungskalender.libs.exceptions import NoResultError
 from bewegungskalender.libs.nominatim import search_city
 
 
@@ -54,11 +55,11 @@ class LocationFilter:
 	def result(self):
 		return self.search_result
 
-	##this has to be linked to an event listener in main theme.py!
+	# this has to be linked to an event listener in main theme.py!
 	def run_search(self):
 		try:
 			self.search_result = search_city(self.search_query)[0]
-		except:
+		except NoResultError:
 			self.search_result = None
 
 
