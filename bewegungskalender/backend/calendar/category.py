@@ -14,6 +14,7 @@ from bewegungskalender.backend.calendar.client import get_calendar_by_url, get_c
 from bewegungskalender.backend.calendar.event import Event
 from bewegungskalender.backend.formatting.nextcloud_urls import get_ics_url
 from bewegungskalender.backend.io import db
+from bewegungskalender.backend.io.cli import DB_MODE
 from bewegungskalender.libs.logger import LOGGER
 
 
@@ -34,7 +35,7 @@ class Category(SQLModel, table=True):
 	                                   cascade_delete=True)
 	
 	@classmethod
-	def create(cls, full_db:bool, configline:dict,ref_status):
+	def create(cls, configline:dict, ref_status):
 		cal = get_calendar_by_url(configline['calendar']['internal'])
 		category = Category(
 			name = get_calendar_name(cal),
@@ -46,11 +47,13 @@ class Category(SQLModel, table=True):
 			map_marker = configline['calendar']['map_marker'],
 			description = configline['calendar']['description'],
 		)
-
-		if full_db is False:
+		if DB_MODE == 'search':
 			category._update_events(get_upcoming_events(cal),ref_status)
-		else:
+		elif DB_MODE == 'full':
+			
 			category._update_events(get_all_events(cal),ref_status)
+		else:
+			LOGGER.critical("The wrong function was called while syncing the database.")
 		LOGGER.info(f"Found {len(category.events)} events in {category.name}!\nSaving to database...")
 		with db.session() as sess:
 			sess.add(category)

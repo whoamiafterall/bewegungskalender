@@ -11,10 +11,10 @@ ncform:
 
 # Data Section
 datadir: "bewegungskalender/data"
-database: "db.sqlite"
+sync_database: "sync_db.sqlite"
+search_database: "search_db.sqlite"
 static_dir: "bewegungskalender/frontend/static/"
 templating_dir: "bewegungskalender/frontend/templates"
-
 
 calendars: # list of calendars to use from your caldav server (URL)
   - calendar: {emoji: '🔴', internal: 'als-info-gegenveranstaltung', public: 'zJsbBZJSQLCfkSsQ', map_marker: 'System-Events_&_Termine.svg',

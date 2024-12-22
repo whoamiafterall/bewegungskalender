@@ -23,7 +23,8 @@ MAIL_RECEIVER: Final[list] = CONFIG['mail']['receiver']
 
 # Data-Section
 DATADIR: Final[str] = CONFIG['datadir']
-DB_FILE: Final[FilePath] = CONFIG['database']
+SYNC_DB_FILE: Final[FilePath] = CONFIG['sync_database']
+SEARCH_DB_FILE: Final[FilePath] = CONFIG['search_database']
 TEMPLATING_DIR: Final[str] = CONFIG['templating_dir']
 STATIC_DIR: Final[str] = CONFIG['static_dir']
 ASSETS_DIR: Final[str] = CONFIG['assets']["dir"]

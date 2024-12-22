@@ -19,13 +19,10 @@ def get_args() -> Namespace:
     cli.add_argument("-c", "--config", dest='config_file', type=str, help='specify path to config file, defaults to config.yml', action='store', nargs='?')
 
     cli.add_argument("-cr", "--credentials", dest='credentials_file', type=str, help='specify path to credentials file, defaults to credentials.yml', action='store', nargs='?')
-    cli.add_argument("-db", "--database", dest='create_db', help='(Re-)create the database and sync all events from the server', action='store_true')
-    cli.add_argument("-fd", "--full-db", dest='full_db', help='Download full database', action='store_true')
-    cli.add_argument("-sb", "--sync-db", dest='sync_db', help='Sync Database after full db download', action='store_true')
-
+    cli.add_argument("-db", "--database", dest='db_mode', help='(Re-)create the database and sync all events from the server', action='store', choices=['full', 'sync', 'search'])
     cli.add_argument("-g", "--get-telegram-updates", dest='get_telegram_updates', help='get telegram id of channel', action='store_true')
     cli.add_argument("-l", "--loglevel", dest='loglevel', type=str, help='set the log level, defaults to info', choices=['debug', 'error'], action='store', nargs='?')
-    cli.add_argument("-m", "--leaflet", dest='update_map', help='create MapData in geojson from loaction entries of events', action='store_true')
+   # cli.add_argument("-m", "--leaflet", dest='update_map', help='create MapData in geojson from loaction entries of events', action='store_true')
     cli.add_argument("-n", "--newsletter", dest='send_mail', help='send email-to recipients specified or from config', action='store_true')
     cli.add_argument("-to", dest='mail_to', required='send_mail' in sys.argv, type=str, action='store',
                       help='override mail receiver from config - only accepts one string as mail address')
@@ -43,7 +40,7 @@ def get_args() -> Namespace:
     cli.add_argument("--edit", dest='telegram_edit', required='--telegram' in sys.argv, help='edit last telegram message instead of sending a new one', action='store_true')
     cli.add_argument("-toot", "--mastodon", dest='send_mastodon', help='send toot to mastodon', action='store_true')
     cli.add_argument("-ui", "--user-interface", dest='user_interface', help='start the user interface', action='store_true')
-    cli.set_defaults(config_file="config.yml", credentials_file="credentials.yml" ,loglevel='info', format='txt', last_update=1, query_start=1, query_end=14)
+    cli.set_defaults(config_file="config.yml", credentials_file="credentials.yml", dbmode=None ,loglevel='info', format='txt', last_update=1, query_start=1, query_end=14)
     # Show help if no argument specified
     if len(sys.argv) <= 1:
         sys.argv.append('--help')
@@ -53,6 +50,7 @@ def get_args() -> Namespace:
 ARGS: Final[Namespace] = get_args()
 CONFIG_FILE: Final[str] = ARGS.config_file
 CREDENTIALS_FILE: Final[str] = ARGS.credentials_file
+DB_MODE: Final[str] = ARGS.db_mode
 START: Final[datetime] = datetime.now() + timedelta(ARGS.query_start)
 END: Final[datetime] = START + timedelta(ARGS.query_end)
 LOGLEVEL: Final[str] = ARGS.loglevel
