@@ -48,7 +48,7 @@ class Event(SQLModel, table=True):
         self.link=get_link(vevent.get('description'))
 
         # Todo: prevent this from redoing nominations
-        self.location=get_location_data(vevent.get('location'),vevent.get('description'),self.link)
+        self.location=get_location_data(vevent.get('location'))
 
         self.start=temp_start
         self.end=temp_end
@@ -78,7 +78,7 @@ class Event(SQLModel, table=True):
             summary=vevent.get('summary'),
             description=vevent.get('description'),
             link = link,
-            location=get_location_data(vevent.get('location'),vevent.get('description'),link),
+            location=get_location_data(vevent.get('location')),
             start=start,
             end=end,
             duration=end-start,
