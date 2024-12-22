@@ -1,11 +1,9 @@
 from contextlib import contextmanager
 
 from nicegui import ui
-from nicegui.elements.button import Button
 from nicegui.elements.mixins.validation_element import ValidationElement
 from nicegui.page_layout import RightDrawer
 
-from bewegungskalender.backend.formatting.nextcloud_urls import NC_LIST_VIEW, NC_MONTH_VIEW, NC_YEAR_VIEW
 from bewegungskalender.frontend.navigation.router import ROUTER
 
 

@@ -4,17 +4,11 @@ from nicegui import ui
 
 from bewegungskalender.frontend.filter.controllers.location_filter_controller import LOCATION_FILTER
 from bewegungskalender.frontend.filter.filter import call_refresh_filter_event
-from bewegungskalender.libs.exceptions import NoResultError
-from bewegungskalender.libs.nominatim import search_city
-
 
 def location_filter_ui():
-
-	(ui.select(["Überall", "Online", "Offline"], label="Ort", value="Überall").on_value_change(call_refresh_filter_event).bind_value(LOCATION_FILTER,"state").classes("pl-3 w-full my-1")).props("filled color=secondary").bind_visibility_from(LOCATION_FILTER,"force_offline",backward=lambda v: v == False)
-
 	with ui.list().classes("w-full").bind_visibility_from(LOCATION_FILTER, 'usable_state', lambda v: v != "Online"):
 
-		ui.input(label="Ort suchen", placeholder="Stadt").bind_value(LOCATION_FILTER.location,"query").props('clearable filled').classes('w-full my-1 pl-3')
+		ui.input(label="🔎 Ort suchen", placeholder="Stadt").bind_value(LOCATION_FILTER.location,"query").props('clearable filled').classes('w-full my-1 pl-3')
 
 		with ui.card().classes("ml-3 gap-0.5 border w-full max-w-[260px] no-shadow").bind_visibility_from(LOCATION_FILTER.location, 'result', lambda v: v is not None):
 

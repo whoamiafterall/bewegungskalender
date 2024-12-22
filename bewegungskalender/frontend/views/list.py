@@ -2,18 +2,19 @@ from datetime import datetime
 
 import requests
 from dateutil.utils import today
-from nicegui import ui,observables,binding
+from nicegui import ui
 from slugify import slugify
-from sqlalchemy.testing import only_if
 
+from bewegungskalender.backend.calendar.event import Event
 from bewegungskalender.backend.calendar.location import EventLocationType
 from bewegungskalender.backend.io.config import MENU
 from bewegungskalender.backend.io.credentials import NC_DOMAIN
-from bewegungskalender.frontend.filter.ui.category_filter import category_filters
-from bewegungskalender.frontend.filter.filter_controller import FILTER, call_refresh_filter_event
-from bewegungskalender.frontend.filter.ui.location_filter import location_filter
-from bewegungskalender.frontend.filter.ui.time_filter import duration_filter
-from bewegungskalender.frontend.functions import loading, container, opacity
+from bewegungskalender.frontend.filter.filter import events_using_filter
+from bewegungskalender.frontend.filter.ui.category_filter import category_filters_ui
+from bewegungskalender.frontend.filter.ui.location_filter import location_filter_ui
+from bewegungskalender.frontend.filter.ui.online_filter import online_filter_ui
+from bewegungskalender.frontend.filter.ui.time_filter import duration_filter_ui
+from bewegungskalender.frontend.functions import loading, container, dropdown_button, icon_link
 from bewegungskalender.frontend.functions import mini_card
 from bewegungskalender.frontend.navigation.router import ROUTER
 
@@ -25,54 +26,48 @@ async def list_view():
     await ui.context.client.connected()
     
     with container('xl:w-4/5 w-full justify-between flex-row'):
-        # Populate Event List using filter
-        @ui.refreshable
-        async def create_list_ui():
-            
-            # Get filtered Events
-            events = events_using_filter()
-
-            # Clear list view before filter was applied
-            with ui.column(wrap=False, align_items='center').classes('grow m-0 gap-0 px-2'):
-                
-                with ui.list().classes('w-full'):
-                    month = today().month
-                    for event in events:
-                        if event.start.month != month:
-                            month_heading(event.start)
-                        month = event.start.month
-                        
-                        # Create a row for each event
-                        with ui.row().classes('flex flex-row w-full gap-1 p-0.5 max-sm:mb-2 text-sm'):
-                            show_time(event)
-                            
-                            # Create the summary dropdown button
-                            with dropdown_button(event.summary, event.category.color, "max-sm:w-full max-sm:order-3"):
-                                # Create the dropdown content
-                                with mini_card('flex-col text-sm w-full'):
-                                    if event.location.type == EventLocationType.online:
-                                        icon_link('Computer', event.location.name, event.location.online_link)
-                                    if event.location.type == EventLocationType.offline:
-                                        icon_link('map', event.location.name, event.location.osm_link)
-                                    if event.link:
-                                        icon_link('link', event.link, event.link)
-                                    download(event)
-                            show_location(event)
-        
         await create_list_ui()
         
         # Filter
         with ui.column(wrap=False, align_items='start').classes(
                 'm-0 gap-1 max-w-1/4 pt-5 px-3 shrink text-sm max-lg:hidden'):
             duration_filter_ui()
-            location_filter_ui()
-            
             online_filter_ui()
+            location_filter_ui()
             await category_filters_ui()
         
         ui.on('refresh_filter', lambda: create_list_ui.refresh(), throttle=0.1, leading_events=False)
-  
-  
+
+# -----------------
+# Show Events applying current filters
+
+@ui.refreshable
+async def create_list_ui():
+    # Get filtered Events
+    events = events_using_filter()
+    with ui.column(wrap=False, align_items='center').classes('grow m-0 gap-0 px-2'):
+        with ui.list().classes('w-full'):
+            month = today().month
+            for event in events:
+                if event.start.month != month:
+                    month_heading(event.start)
+                month = event.start.month
+                # Create a row for each event
+                with ui.row().classes('flex flex-row w-full gap-1 p-0.5 max-sm:mb-2 text-sm'):
+                    show_time(event) # Show Event_Time
+                    # Create the dropdown button
+                    with dropdown_button(event.summary, event.category.color, "max-sm:w-full max-sm:order-3"):
+                        # Create the dropdown content
+                        with mini_card('flex-col text-sm w-full'):
+                            if event.location.type == EventLocationType.online:
+                                icon_link('Computer', event.location.name, event.location.online_link)
+                            if event.location.type == EventLocationType.offline:
+                                icon_link('map', event.location.name, event.location.osm_link)
+                            if event.link:
+                                icon_link('link', event.link, event.link)
+                            download_button(event)
+                    show_location(event) # Show Event_Location
+
 # -----------------
 # Helper Functions
 
@@ -104,7 +99,7 @@ def show_location(event:Event):
 def download_ics(url, name):
         ui.download(str.encode(requests.get(url).text), name)
 
-def download(event:Event):
+def download_button(event:Event):
     """ Create download button for the event
     In order to download we first fetch the ics contents and then serve them to the client.
     We need to do it this way because else nice gui passes some headers that mess with next cloud authentication
@@ -115,12 +110,3 @@ def download(event:Event):
               f"{slugify(event.summary)}.ics")
           ).props('flat color=white'
     ).classes('font-normal hover:font-medium normal-case')
-
-
-        # Filter
-        with ui.column(wrap=False, align_items='start').classes(
-                'm-0 gap-1 max-w-1/4 pt-5 px-3 shrink text-sm max-lg:hidden'):
-          
-
-
-        ui.on('refresh_filter', lambda: create_list_ui.refresh(),throttle=0.1,leading_events=False)
