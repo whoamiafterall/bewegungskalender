@@ -8,14 +8,14 @@ from bewegungskalender.frontend.filter.controllers.category_filter_controller im
 from bewegungskalender.frontend.filter.filter import call_refresh_filter_event
 from bewegungskalender.frontend.functions import mini_card, opacity
 
-async def category_filters():
+async def category_filters_ui():
 	await ui.context.client.connected()
 	categories = db.exe(select(Category)).all()
 	
 	# Heading
-#	with ui.row().classes('flex align-center'):
-#		ui.label('Kategorien').classes('text-base font-medium')
-		
+	#	with ui.row().classes('flex align-center'):
+	#		ui.label('Kategorien').classes('text-base font-medium')
+
 	# Create Buttons with useful Information and Links for each Category
 	for category in categories:
 		with mini_card('w-full py-0 px-0 m-0'):

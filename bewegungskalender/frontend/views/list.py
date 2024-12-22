@@ -11,9 +11,9 @@ from bewegungskalender.backend.io.config import MENU
 from bewegungskalender.backend.io.credentials import NC_DOMAIN
 from bewegungskalender.frontend.filter.controllers.location_filter_controller import LOCATION_FILTER
 from bewegungskalender.frontend.filter.filter import events_using_filter
-from bewegungskalender.frontend.filter.ui.category_filter import category_filters
-from bewegungskalender.frontend.filter.ui.location_filter import location_filter
-from bewegungskalender.frontend.filter.ui.time_filter import duration_filter
+from bewegungskalender.frontend.filter.ui.category_filter import category_filters_ui
+from bewegungskalender.frontend.filter.ui.location_filter import location_filter_ui
+from bewegungskalender.frontend.filter.ui.time_filter import duration_filter_ui
 from bewegungskalender.frontend.functions import loading, container, opacity
 from bewegungskalender.frontend.functions import mini_card
 from bewegungskalender.frontend.navigation.router import ROUTER
@@ -127,10 +127,10 @@ async def list_view():
         # Filter
         with ui.column(wrap=False, align_items='start').classes(
                 'm-0 gap-1 max-w-1/4 pt-5 px-3 shrink text-sm max-lg:hidden'):
-            duration_filter()
-            location_filter()
+            duration_filter_ui()
+            location_filter_ui()
 
-            await category_filters()
+            await category_filters_ui()
 
 
         ui.on('refresh_filter', lambda: create_list_ui.refresh(),throttle=0.1,leading_events=False)
