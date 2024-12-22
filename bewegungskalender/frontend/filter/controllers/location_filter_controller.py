@@ -30,10 +30,10 @@ class LocationFilterController:
             lat = float(self.location.result["lat"])
             lon = float(self.location.result["lon"])
 
-            max_lat = lat + distance / 110.574
-            min_lat = lat - distance / 110.574
-            max_lon = lon + distance / 111.320 * math.cos(max_lat * math.pi / 180)
-            min_lon = lon - distance / 111.320 * math.cos(min_lat * math.pi / 180)
+            max_lat = lat + (distance / 110.574)
+            min_lat = lat - (distance / 110.574)
+            max_lon = lon + (distance / (111.320 * math.cos(lat * math.pi / 180)))
+            min_lon = lon - (distance / (111.320 * math.cos(lat * math.pi / 180)))
 
             operation = and_(
                 Location.lat > float(min_lat),
