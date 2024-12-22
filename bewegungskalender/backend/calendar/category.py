@@ -5,6 +5,7 @@ import time
 import icalendar
 from caldav import SynchronizableCalendarObjectCollection
 from caldav.objects import CalendarObjectResource
+from sqlalchemy.exc import NoResultFound
 from sqlalchemy.sql.functions import count
 from sqlmodel import SQLModel, Relationship, Field, select
 from starlette.config import undefined
@@ -92,7 +93,7 @@ class Category(SQLModel, table=True):
 							sess.commit()
 							sess.refresh(event)
 						print(f"| changed 1 Event")
-					except:
+					except NoResultFound:
 						with db.session() as sess:
 							category = sess.exec(select(Category).where(Category.id == self.id)).one()
 							category.events.append(Event.from_icalendar(comp, str(comp['UID']), ics.url))
