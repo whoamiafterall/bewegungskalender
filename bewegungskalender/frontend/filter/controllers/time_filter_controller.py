@@ -13,7 +13,7 @@ class TimeFilterController:
 
     def apply_filter_to_statement(self,statement: Select):
 
-        # time filtering
+        # time filtering ----------------- (Comment this out to test with data from the past)
         statement = statement.where(Event.start > today())
 
         # until = datetime.now().__add__(timedelta(days=100))
@@ -25,9 +25,9 @@ class TimeFilterController:
 
         if "Mehrtägig" in duration_series:
             duration_args.append(Event.duration > timedelta(hours=24))
-        if "1 Tag" in duration_series:
+        if "Ganztags" in duration_series:
             duration_args.append(and_(Event.duration > timedelta(hours=6), Event.duration < timedelta(hours=36)))
-        if "Stunden" in duration_series:
+        if "Kurz" in duration_series:
             duration_args.append(Event.duration <= timedelta(hours=6))
 
         if len(duration_args) == 1:
