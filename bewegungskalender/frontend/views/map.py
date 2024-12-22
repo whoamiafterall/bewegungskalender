@@ -36,7 +36,7 @@ async def map_view():
 
             zoom = MAP_ZOOM
             center = (MAP_CENTER_LAT, MAP_CENTER_LON)
-            if LOCATION_FILTER.location_specific_location.result is not None:
+            if LOCATION_FILTER.location.result is not None:
                 search_result = LOCATION_FILTER.location.result
                 center = (search_result["lat"], search_result["lon"])
 
