@@ -3,7 +3,6 @@ from nicegui import ui
 
 from bewegungskalender.backend.io.config import CONFIG, ASSETS_DIR
 from bewegungskalender.backend.io.config import UI_TITLE, UI_FAVICON, UI_PORT, ASSETS_URL_PATH
-from bewegungskalender.frontend.filter.filter_controller import FILTER
 from bewegungskalender.frontend.functions import page_sticky
 from bewegungskalender.frontend.main.drawer import left_drawer, right_drawer
 from bewegungskalender.frontend.main.header import header
@@ -26,10 +25,6 @@ async def main_page():
     
     rd = await right_drawer()
     header(ld, rd)
-
-
-    #important to be here for location filtering to properly work
-    ui.on("update_location_search", lambda: FILTER.location_specific_location.run_search(), throttle=1, leading_events=False)
 
     with ui.footer(elevated=True).classes('sm:hidden h-50px flex flex-nowrap items-center fixed p-0 gap-0'):
         main_menu(ld, props='label="" outline', classes='flex-auto bg-accent m-0 p-4')
