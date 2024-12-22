@@ -9,8 +9,9 @@ from sqlalchemy.testing import only_if
 from bewegungskalender.backend.calendar.location import EventLocationType
 from bewegungskalender.backend.io.config import MENU
 from bewegungskalender.backend.io.credentials import NC_DOMAIN
+from bewegungskalender.frontend.filter.controllers.location_filter_controller import LOCATION_FILTER
+from bewegungskalender.frontend.filter.filter import events_using_filter
 from bewegungskalender.frontend.filter.ui.category_filter import category_filters
-from bewegungskalender.frontend.filter.filter_controller import FILTER, call_refresh_filter_event
 from bewegungskalender.frontend.filter.ui.location_filter import location_filter
 from bewegungskalender.frontend.filter.ui.time_filter import duration_filter
 from bewegungskalender.frontend.functions import loading, container, opacity
@@ -35,7 +36,7 @@ async def list_view():
     with container('xl:w-4/5 w-full justify-between flex-row'):
 
         # allow filter to use other than offline mode
-        FILTER.location_type.force_offline = False
+        LOCATION_FILTER.force_offline = False
 
         def download_ics(url, name):
             ui.download(str.encode(requests.get(url).text), name)
@@ -46,7 +47,7 @@ async def list_view():
         def create_list_ui():
             
             # Get filtered Events
-            events = FILTER.events_using_filter()
+            events = events_using_filter()
 
             # Clear list view before filter was applied
             with ui.column(wrap=False, align_items='center').classes('grow m-0 gap-0 px-2'):
