@@ -1,22 +1,17 @@
 # builtin imports
 import asyncio
-import locale
 import sys
 import time
-from locale import setlocale
 
-from sqlalchemy.event import Events
 # external imports
 from sqlmodel import select
 
 # internal imports
 from bewegungskalender.backend.calendar.category import Category
-from bewegungskalender.backend.calendar.event import Event
-from bewegungskalender.backend.calendar.location import Location
 from bewegungskalender.backend.formatting.message import MultiFormatMessage, create_message
 from bewegungskalender.backend.io import db
-from bewegungskalender.backend.io.cli import FORMAT, ARGS
-from bewegungskalender.backend.io.config import LOCALE, CALENDARS
+from bewegungskalender.backend.io.cli import FORMAT, ARGS, DB_MODE
+from bewegungskalender.backend.io.config import CALENDARS
 from bewegungskalender.backend.io.nextcloud_forms import update_ncform
 from bewegungskalender.backend.output.mail import send_mail
 from bewegungskalender.backend.output.telegram_bot import get_telegram_updates, send_or_edit_telegram
@@ -51,35 +46,46 @@ async def main_async():
 	if ARGS.update_ncform:
 		update_ncform()
 
-	# Create Database
-	if ARGS.create_db:
-		## Create Tables
-		db.create_tables()
-		## Fetch All Events using urls from Config and add them to db
-		counter = 0
-		start_time = time.time()
-		for line in CALENDARS:
-			counter += 1
-			Category.create(configline=line, full_db=ARGS.full_db,ref_status={'start_time':start_time,'current':counter,'complete':len(CALENDARS)})
-
-
-	# Sync Events in Database
-	elif ARGS.sync_db:
-		## Sync Events using sync token stored in database
-		[Category.sync(category) for category in  db.exe(select(Category)).all()]
-
-	# For Debugging
-	data = db.exe(select(Event,Location,Category).join(Location).join(Category)).all()
-	for event in [n.Event for n in data]:
-		print(event.summary)
+	# Update or Create Database
+	if DB_MODE is not None:
+		match DB_MODE:
+			case 'full':
+				db.create_tables()
+				## Fetch All Events using urls from Config and add them to db
+				counter = 0
+				start_time = time.time()
+				for line in CALENDARS:
+					counter += 1
+					Category.create(configline=line, ref_status={'start_time': start_time, 'current': counter,
+					                            'complete': len(CALENDARS)})
+			case 'sync':
+				## Sync Events using sync token stored in database
+				[Category.sync(category) for category in db.exe(select(Category)).all()]
+			case 'search':
+				## Fetch only upcoming events in the given Timeframe
+				db.recreate_tables()
+				counter = 0
+				start_time = time.time()
+				for line in CALENDARS:
+					counter += 1
+					Category.create(configline=line, ref_status={'start_time': start_time, 'current': counter,
+					                                             'complete': len(CALENDARS)})
+	
+	# Uncomment For Debugging
+#	data = db.exe(select(Event,Location,Category).join(Location).join(Category)).all()
+#	for event in [n.Event for n in data]:
+#		print(event.summary)
 
 	
 	# Output Section
+	
+	## Deprecated if we keep using leaflet
 	## UMap Output
-	if ARGS.update_map:
-		LOGGER.name = __name__
-		LOGGER.info(f"Creating GeoJSON Data for the map...")
-		[create_mapdata(category.events) for category in data]
+#	if ARGS.update_map:
+#		LOGGER.name = __name__
+#		LOGGER.info(f"Creating GeoJSON Data for the map...")
+#		[create_mapdata(category.events) for category in data]
+	
 	## Print Output
 	if ARGS.print:
 		## Create a Message in TXT, MD & HTML
@@ -110,5 +116,3 @@ async def main_async():
 # Run as Module or Standalone program
 if __name__ in {"__main__", "__mp_main__"}:
 	main()
-
-    
