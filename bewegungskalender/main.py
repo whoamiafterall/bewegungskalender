@@ -1,7 +1,9 @@
 # builtin imports
 import asyncio
+import locale
 import sys
 import time
+from locale import setlocale
 
 # external imports
 from sqlmodel import select
@@ -11,7 +13,7 @@ from bewegungskalender.backend.calendar.category import Category
 from bewegungskalender.backend.formatting.message import MultiFormatMessage, create_message
 from bewegungskalender.backend.io import db
 from bewegungskalender.backend.io.cli import FORMAT, ARGS, DB_MODE
-from bewegungskalender.backend.io.config import CALENDARS
+from bewegungskalender.backend.io.config import CALENDARS, LOCALE
 from bewegungskalender.backend.io.nextcloud_forms import update_ncform
 from bewegungskalender.backend.output.mail import send_mail
 from bewegungskalender.backend.output.telegram_bot import get_telegram_updates, send_or_edit_telegram
@@ -23,7 +25,7 @@ from bewegungskalender.libs.logger import LOGGER
 # Set locale
 LOGGER.debug(f"Args: {ARGS}")
 LOGGER.debug('Setting locale...')
-#setlocale(locale.LC_ALL, LOCALE)
+setlocale(locale.LC_ALL, LOCALE)
 
 # Main Function if run as standalone program
 def main():

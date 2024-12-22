@@ -5,7 +5,8 @@ from sqlmodel import select
 from bewegungskalender.backend.calendar.category import Category
 from bewegungskalender.backend.io import db
 from bewegungskalender.frontend.filter.filter_controller import FILTER, call_refresh_filter_event
-from bewegungskalender.frontend.functions import mini_card, opacity
+from bewegungskalender.frontend.functions import mini_card, dropdown_button
+
 
 async def category_filters():
 	await ui.context.client.connected()
@@ -25,11 +26,7 @@ async def category_filters():
 					f"background-color:{category.color}").props('delay=150 hide-delay=200')
 
 			# Dropdown Button
-			with ui.dropdown_button(
-					text=category.name,
-					color=opacity(70, category.color),
-					auto_close=True,
-			).classes('font-normal text-sm capitalize hover:font-medium grow items-start'):
+			with dropdown_button(category.name, category.color):
 				# Create the dropdown content
 				with mini_card('space-x-2'):
 					ui.button(text='Copy subscribe link', icon='content_copy',
