@@ -48,7 +48,7 @@ class Event(SQLModel, table=True):
         self.link=get_link(vevent.get('description'))
 
         # Todo: prevent this from redoing nominations
-        self.location=get_location_data(vevent.get('location'),vevent.get('description'))
+        self.location=get_location_data(vevent.get('location'),vevent.get('description'),self.link)
 
         self.start=temp_start
         self.end=temp_end
@@ -70,14 +70,15 @@ class Event(SQLModel, table=True):
         if start.date() != end.date() and end.time() == time.min:
             end = end - timedelta(seconds=1)
 
+        link = get_link(vevent.get('description'))
         # Create object
         event = Event(
             cloud_id=uid,
             ics_url=str(ics_url),
             summary=vevent.get('summary'),
             description=vevent.get('description'),
-            link = get_link(vevent.get('description')),
-            location=get_location_data(vevent.get('location'),vevent.get('description')),
+            link = link,
+            location=get_location_data(vevent.get('location'),vevent.get('description'),link),
             start=start,
             end=end,
             duration=end-start,
