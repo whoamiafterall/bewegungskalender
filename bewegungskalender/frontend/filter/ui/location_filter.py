@@ -1,20 +1,14 @@
 import math
 
 from nicegui import ui
-from starlette.config import undefined
 
 from bewegungskalender.frontend.filter.filter_controller import FILTER, call_refresh_filter_event
-from bewegungskalender.libs.exceptions import NoResultError
-from bewegungskalender.libs.nominatim import search_city
 
 
 def location_filter():
-
-	(ui.select(["Überall", "Online", "Offline"], label="Ort", value="Überall").on_value_change(call_refresh_filter_event).bind_value(FILTER.location_type,"state").classes("pl-3 w-full my-1")).props("filled color=secondary").bind_visibility_from(FILTER.location_type,"force_offline",backward=lambda v: v == False)
-
 	with ui.list().classes("w-full").bind_visibility_from(FILTER.location_type, 'usable_state', lambda v: v != "Online"):
 
-		ui.input(label="Bestimmter Ort", placeholder="Stadt").bind_value(FILTER.location_specific_location,"query").props('clearable filled').classes('w-full my-1 pl-3')
+		ui.input(label="Ort suchen", placeholder="Stadt").bind_value(FILTER.location_specific_location,"query").props('clearable filled').classes('w-full my-1 pl-3')
 
 
 		with ui.card().classes("ml-3 gap-0.5 border w-full max-w-[260px] no-shadow").bind_visibility_from(FILTER.location_specific_location, 'result', lambda v: v is not None):

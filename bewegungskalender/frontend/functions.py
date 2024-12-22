@@ -18,6 +18,11 @@ class ErrorChecker:
         return all(validation(element.value) for element in self.elements for validation in element.validation.values())
 
 @contextmanager
+def heading(md_string:str):
+    with ui.row().classes('justify-center'):
+        ui.markdown(md_string).classes('text-center')
+
+@contextmanager
 def tab_panel(tab:str):
     with ui.tab_panel(tab).classes('p-0 m-0') as panel:
         yield panel
@@ -39,7 +44,22 @@ def mini_card(classes:str=None):
     with ui.card().tight().classes('m-0 p-2 flex-row bg-primary shadow-none items-center ') as card:
         card.classes(classes)
         yield card
-    
+
+@contextmanager
+def dropdown_button(name:str, color:str, classes:str=None):
+    with ui.dropdown_button(
+            text=name,
+            color=opacity(70, color),
+            auto_close=True,
+    ).classes('font-normal text-sm capitalize grow items-start') as btn:
+        btn.classes(classes)
+        yield btn
+
+def icon_link(icon: str, name: str, url: str):
+    with mini_card('space-x-2'):
+        ui.icon(icon, size='20px')
+        ui.link(name, url, new_tab=True)
+
 def new_tab_icon():
     ui.icon('launch', size='15px').classes('p-[2px]')
 

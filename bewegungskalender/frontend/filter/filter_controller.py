@@ -1,14 +1,11 @@
-import asyncio
 import math
 import sched
 import time
-from datetime import timedelta, datetime
+from datetime import timedelta
 
-from dateutil.utils import today
-from nicegui import ui,binding,observables
-from sqlmodel import select,or_,and_
+from nicegui import ui, binding
 from slugify import slugify
-from starlette.config import undefined
+from sqlmodel import select, or_, and_
 
 from bewegungskalender.backend.calendar.category import Category
 from bewegungskalender.backend.calendar.event import Event
@@ -107,9 +104,9 @@ class FilterController:
 
 		if "Mehrtägig" in duration_series:
 			duration_args.append(Event.duration > timedelta(hours=24))
-		if "1 Tag" in duration_series:
+		if "Ganztags" in duration_series:
 			duration_args.append(and_(Event.duration > timedelta(hours=6),Event.duration < timedelta(hours=36)))
-		if "Stunden" in duration_series:
+		if "Kurz" in duration_series:
 			duration_args.append(Event.duration <= timedelta(hours=6))
 
 		if len(duration_args) == 1:
@@ -130,17 +127,17 @@ class FilterController:
 				lat = float(self.location_specific_location.result["lat"])
 				lon = float(self.location_specific_location.result["lon"])
 
-				maxlat = lat + distance / 110.574
-				minlat = lat - distance / 110.574
+				max_lat = lat + distance / 110.574
+				min_lat = lat - distance / 110.574
 
-				maxlon = lon + distance / 111.320 * math.cos(maxlat * math.pi / 180)
-				minlon = lon - distance / 111.320 * math.cos(minlat * math.pi / 180)
+				max_lon = lon + distance / 111.320 * math.cos(max_lat * math.pi / 180)
+				min_lon = lon - distance / 111.320 * math.cos(min_lat * math.pi / 180)
 
 				operation = and_(
-					Location.lat > float(minlat),
-					Location.lat < float(maxlat),
-					Location.lon > float(minlon),
-					Location.lon < float(maxlon),
+					Location.lat > float(min_lat),
+					Location.lat < float(max_lat),
+					Location.lon > float(min_lon),
+					Location.lon < float(max_lon),
 				)
 				if self.location_type.usable_state == "Offline":
 					statement = statement.where(operation)
