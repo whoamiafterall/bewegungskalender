@@ -12,8 +12,9 @@ from starlette.config import undefined
 
 from bewegungskalender.backend.calendar.category import Category
 from bewegungskalender.backend.calendar.event import Event
-from bewegungskalender.backend.calendar.location import Location
+from bewegungskalender.backend.calendar.location import Location, EventLocationType
 from bewegungskalender.backend.io import db
+from bewegungskalender.backend.io.config import CALENDARS
 from bewegungskalender.libs.nominatim import search_city
 
 
@@ -64,7 +65,6 @@ class LocationFilter:
 class FilterController:
 
 	def __init__(self):
-		categories = db.exe(select(Category)).all()
 		self.categories = {}
 
 
@@ -75,8 +75,8 @@ class FilterController:
 		self.duration = binding.BindableProperty()
 
 
-		for category in categories:
-			self.categories[f"{slugify(str(category.name))}"] = binding.BindableProperty()
+		for calendar in CALENDARS:
+			self.categories[f"{slugify(str(calendar['calendar']['internal']))}"] = binding.BindableProperty()
 
 
 
@@ -95,7 +95,7 @@ class FilterController:
 
 		categories = db.exe(select(Category)).all()
 		for category in categories:
-			if self.categories[f"{slugify(str(category.name))}"].value is False:
+			if self.categories[f"{slugify(str(category.internal))}"].value is False:
 				statement = statement.where(
 					Category.name != category.name
 				)
@@ -120,42 +120,37 @@ class FilterController:
 		# location filtering
 		if self.location_type.usable_state == "Online":
 			statement = statement.where(
-				Location.lat == 'None'
-			)
+                Location.type == EventLocationType.online
+            )
 		else:
-			if self.location_type.usable_state == "Online":
-				statement = statement.where(
-					Location.lat == 'None'
+			if self.location_specific_location.result is not None:
+				distance = self.location_specific_distance.value
+
+				lat = float(self.location_specific_location.result["lat"])
+				lon = float(self.location_specific_location.result["lon"])
+
+				maxlat = lat + distance / 110.574
+				minlat = lat - distance / 110.574
+
+				maxlon = lon + distance / 111.320 * math.cos(maxlat * math.pi / 180)
+				minlon = lon - distance / 111.320 * math.cos(minlat * math.pi / 180)
+
+				operation = and_(
+					Location.lat > float(minlat),
+					Location.lat < float(maxlat),
+					Location.lon > float(minlon),
+					Location.lon < float(maxlon),
 				)
-			else:
+				if self.location_type.usable_state == "Offline":
+					statement = statement.where(operation)
+				else:
+					statement = statement.where(or_(Location.type != EventLocationType.offline, operation))
 
-				if self.location_specific_location.result is not None:
-					distance = self.location_specific_distance.value
+			elif self.location_type.usable_state == "Offline":
+				statement = statement.where(
+					Location.type == EventLocationType.offline
+				)
 
-					lat = float(self.location_specific_location.result["lat"])
-					lon = float(self.location_specific_location.result["lon"])
-
-					maxlat = lat + distance / 110.574
-					minlat = lat - distance / 110.574
-
-					maxlon = lon + distance / 111.320*math.cos(maxlat * math.pi / 180)
-					minlon = lon - distance / 111.320*math.cos(minlat * math.pi / 180)
-
-					operation = and_(
-							Location.lat > float(minlat),
-							Location.lat < float(maxlat),
-							Location.lon > float(minlon),
-							Location.lon < float(maxlon),
-						)
-					if self.location_type.usable_state == "Offline":
-						statement = statement.where(operation)
-					else:
-						statement = statement.where(or_(Location.lat == 'None',operation))
-
-				elif self.location_type.usable_state == "Offline":
-						statement = statement.where(
-							Location.lat != 'None'
-						)
 
 		# run statement
 

@@ -1,4 +1,3 @@
-import re
 from datetime import datetime, timedelta, time, date
 from typing import TYPE_CHECKING
 
@@ -7,6 +6,7 @@ from caldav.objects import URL
 from icalendar.cal import Component
 from sqlmodel import SQLModel, Field, Relationship
 
+from bewegungskalender.backend.calendar.helper import get_link
 from bewegungskalender.backend.calendar.location import Location, get_location_data
 from bewegungskalender.backend.io.config import TIMEZONE
 
@@ -48,7 +48,7 @@ class Event(SQLModel, table=True):
         self.link=get_link(vevent.get('description'))
 
         # Todo: prevent this from redoing nominations
-        self.location=get_location_data(vevent.get('location'))
+        self.location=get_location_data(vevent.get('location'),vevent.get('description'))
 
         self.start=temp_start
         self.end=temp_end
@@ -77,7 +77,7 @@ class Event(SQLModel, table=True):
             summary=vevent.get('summary'),
             description=vevent.get('description'),
             link = get_link(vevent.get('description')),
-            location=get_location_data(vevent.get('location')),
+            location=get_location_data(vevent.get('location'),vevent.get('description')),
             start=start,
             end=end,
             duration=end-start,
@@ -136,8 +136,3 @@ class Event(SQLModel, table=True):
         event.add('recurrence', self.recurrence)
         return event
 
-def get_link(string: str):
-    try:
-        return re.search("(?P<url>https?://\S+)", string).group('url')
-    except (TypeError, AttributeError):
-        return None

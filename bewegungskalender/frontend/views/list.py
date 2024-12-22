@@ -4,7 +4,9 @@ import requests
 from dateutil.utils import today
 from nicegui import ui,observables,binding
 from slugify import slugify
+from sqlalchemy.testing import only_if
 
+from bewegungskalender.backend.calendar.location import EventLocationType
 from bewegungskalender.backend.io.config import MENU
 from bewegungskalender.backend.io.credentials import NC_DOMAIN
 from bewegungskalender.frontend.filter.ui.category_filter import category_filters
@@ -67,12 +69,18 @@ async def list_view():
 
                             # Create the city/country
                             with mini_card('max-sm:order-2 sm:align-right order-last'):
-                                if event.location.country_code in ('de','at','ch'):
-                                    ui.label(f"{event.location.city}").classes('grow text-right')
-                                elif not event.location.country_code:
-                                    ui.space()
-                                else:
-                                    ui.label(f"{event.location.country}").classes('grow text-right')
+                                match event.location.type:
+                                    case EventLocationType.online:
+                                        ui.label(f"Online").classes('grow text-right')
+                                    case EventLocationType.undefined:
+                                        ui.space()
+                                    case EventLocationType.offline:
+                                        if event.location.country_code in ('de','at','ch'):
+                                            ui.label(f"{event.location.city}").classes('grow text-right')
+                                        elif not event.location.country_code:
+                                            ui.space()
+                                        else:
+                                            ui.label(f"{event.location.country}").classes('grow text-right')
 
                             # Create the summary dropdown button
                             with ui.dropdown_button(
@@ -84,13 +92,18 @@ async def list_view():
 
                                 # Create the dropdown content
                                 with mini_card('flex-col text-sm w-full'):
-                                    if event.location.name != "nicht bekannt":
-                                        with mini_card('space-x-2'):
-                                            ui.icon('link', size='20px')
-                                            ui.link(event.location.name, event.location.osm_link, new_tab=True)
-                                    if event.link:
+
+                                    if event.location.type == EventLocationType.offline:
                                         with mini_card('space-x-2'):
                                             ui.icon('map', size='20px')
+                                            ui.link(event.location.name, event.location.osm_link, new_tab=True)
+                                    if event.location.type == EventLocationType.online:
+                                        with mini_card('space-x-2'):
+                                            ui.icon('computer', size='20px')
+                                            ui.link(event.location.name, event.location.online_link, new_tab=True)
+                                    if event.link:
+                                        with mini_card('space-x-2'):
+                                            ui.icon('link', size='20px')
                                             ui.link(event.link, event.link, new_tab=True)
 
 
