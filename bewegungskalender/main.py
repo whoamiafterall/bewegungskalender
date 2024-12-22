@@ -57,9 +57,10 @@ async def main_async():
 		db.create_tables()
 		## Fetch All Events using urls from Config and add them to db
 		counter = 0
+		start_time = time.time()
 		for line in CALENDARS:
 			counter += 1
-			Category.create(configline=line, full_db=ARGS.full_db,ref_status={'start_time':time.time(),'current':counter,'complete':len(CALENDARS)})
+			Category.create(configline=line, full_db=ARGS.full_db,ref_status={'start_time':start_time,'current':counter,'complete':len(CALENDARS)})
 
 
 	# Sync Events in Database
