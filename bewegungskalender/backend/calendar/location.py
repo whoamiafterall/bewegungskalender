@@ -1,15 +1,15 @@
 import enum
 import re
-from time import sleep
-from typing import Optional, Tuple, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 from geopy.exc import GeocoderUnavailable
 from geopy.geocoders.nominatim import Nominatim
+from retry import retry
 from sqlmodel import SQLModel, Field, Relationship
 
 from bewegungskalender.backend.calendar.helper import get_link, try_get_link
 from bewegungskalender.backend.io.config import LOCALE
-from bewegungskalender.libs.exceptions import NoResultError, NetworkConnectionError
+from bewegungskalender.libs.exceptions import NoResultError
 from bewegungskalender.libs.logger import LOGGER
 from bewegungskalender.libs.nominatim import lookup_entity
 
@@ -54,29 +54,18 @@ class Location(SQLModel, table=True):
         return Location(type=EventLocationType.online,
                         name=result,
                         online_link=result)
+
+@retry(exceptions=GeocoderUnavailable, delay=2, max_delay=8, backoff=2)
+def geocode(location:str) -> Location:
+    try:
+        # Find offline events
+        result = Nominatim(user_agent=__name__).geocode(location, addressdetails=True, language=LOCALE).raw
+        return Location.parse_offline(result, location)
+    except AttributeError:  # No offline events found
+        LOGGER.warning(NoResultError(location))
+        return Location(name=location)
     
-def geocode(location:str, retries:int = 3, seconds_to_wait:int = 30) -> Location:
-    for attempt in range(retries):
-        try:
-            # Find offline events
-            result = Nominatim(user_agent=__name__).geocode(location, addressdetails=True, language=LOCALE).raw
-            return Location.parse_offline(result, location)
-        except AttributeError:  # No offline events found
-            LOGGER.warning(NoResultError(location))
-            return Location(name=location)
-        except GeocoderUnavailable:
-            LOGGER.info(
-                f"\n\nCouldn't connect to {Nominatim.__name__} to look up {location}. "
-                f"\nPlease check your network Connection and wait for the script to retry! "
-                f"\nAttempts left: {retries - attempt - 1} ")
-            for seconds_waited in range(seconds_to_wait):
-                print(f"Retrying in {seconds_to_wait - seconds_waited} seconds...")
-                sleep(1)
-            continue
-    else:
-        raise NetworkConnectionError(Nominatim.__name__)
-    
-def _catch_key_error(result, key):
+def _catch_key_error(result, key) -> str|None:
     try:
         return str(result['address'][key])
     except KeyError:
