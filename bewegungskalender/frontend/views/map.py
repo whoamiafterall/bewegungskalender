@@ -7,10 +7,11 @@ from slugify import slugify
 
 from bewegungskalender.backend.formatting.format import event_time
 from bewegungskalender.backend.io.config import MENU, MAP_CENTER_LAT, MAP_CENTER_LON, MAP_ZOOM, ASSETS_URL_PATH
-from bewegungskalender.frontend.filter.filter_controller import FILTER
-from bewegungskalender.frontend.filter.ui.category_filter import category_filters
-from bewegungskalender.frontend.filter.ui.location_filter import location_filter
-from bewegungskalender.frontend.filter.ui.time_filter import duration_filter
+from bewegungskalender.frontend.filter.controllers.location_filter_controller import LOCATION_FILTER
+from bewegungskalender.frontend.filter.filter import events_using_filter
+from bewegungskalender.frontend.filter.ui.category_filter import category_filters_ui
+from bewegungskalender.frontend.filter.ui.location_filter import location_filter_ui
+from bewegungskalender.frontend.filter.ui.time_filter import duration_filter_ui
 from bewegungskalender.frontend.functions import loading
 from bewegungskalender.frontend.navigation.router import ROUTER
 from bewegungskalender.frontend.templates.templater import render_map_template
@@ -30,12 +31,12 @@ async def map_view():
 
             zoom = MAP_ZOOM
             center = (MAP_CENTER_LAT, MAP_CENTER_LON)
-            if FILTER.location_specific_location.result is not None:
-                search_result = FILTER.location_specific_location.result
+            if LOCATION_FILTER.location.result is not None:
+                search_result = LOCATION_FILTER.location.result
                 center = (search_result["lat"], search_result["lon"])
 
                 # TODO: Find a more accurate way to figure out zoom level
-                area = math.pow(FILTER.location_specific_distance.value*3,2)
+                area = math.pow(LOCATION_FILTER.distance.value*3,2)
 
                 zoom = math.floor(math.fabs(math.pow(area,1/8.5) - 12))
 
@@ -59,11 +60,11 @@ async def map_view():
                             '&copy; <a href="https://carto.com">Carto</a>'
                     },
                 )
-                if FILTER.location_specific_location.result is not None:
-                    leaflet.generic_layer(name='circle', args=[center, {'color': 'grey','opacity': 0.02, 'radius': FILTER.location_specific_distance.value*1000}])
+                if LOCATION_FILTER.location.result is not None:
+                    leaflet.generic_layer(name='circle', args=[center, {'color': 'grey','opacity': 0.02, 'radius': LOCATION_FILTER.distance.value*1000}])
 
                 # get cached data
-                events = FILTER.events_using_filter()
+                events = events_using_filter()
 
                 LOGGER.info(f"Got {events.__len__()} locations to display...")
 
@@ -93,9 +94,9 @@ async def map_view():
         # Filter
         with ui.column(wrap=False, align_items='start').classes(
                 'm-0 gap-1 px-5 max-w-1/4 pt-5 shrink text-sm max-lg:hidden'):
-            duration_filter()
-            location_filter()
-            await category_filters()
+            duration_filter_ui()
+            location_filter_ui()
+            await category_filters_ui()
 
         ui.on('refresh_filter', lambda: create_map_ui.refresh(), throttle=0.5, leading_events=False)
 

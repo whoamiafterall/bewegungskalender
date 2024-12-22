@@ -2,19 +2,18 @@ from datetime import datetime
 
 import requests
 from dateutil.utils import today
-from nicegui import ui
+from nicegui import ui,observables,binding
 from slugify import slugify
+from sqlalchemy.testing import only_if
 
-from bewegungskalender.backend.calendar.event import Event
 from bewegungskalender.backend.calendar.location import EventLocationType
 from bewegungskalender.backend.io.config import MENU
 from bewegungskalender.backend.io.credentials import NC_DOMAIN
-from bewegungskalender.frontend.filter.filter_controller import FILTER
 from bewegungskalender.frontend.filter.ui.category_filter import category_filters
+from bewegungskalender.frontend.filter.filter_controller import FILTER, call_refresh_filter_event
 from bewegungskalender.frontend.filter.ui.location_filter import location_filter
-from bewegungskalender.frontend.filter.ui.online_filter import online_filter
 from bewegungskalender.frontend.filter.ui.time_filter import duration_filter
-from bewegungskalender.frontend.functions import loading, container, icon_link, dropdown_button
+from bewegungskalender.frontend.functions import loading, container, opacity
 from bewegungskalender.frontend.functions import mini_card
 from bewegungskalender.frontend.navigation.router import ROUTER
 
@@ -31,8 +30,8 @@ async def list_view():
         async def create_list_ui():
             
             # Get filtered Events
-            events = FILTER.events_using_filter()
-            
+            events = events_using_filter()
+
             # Clear list view before filter was applied
             with ui.column(wrap=False, align_items='center').classes('grow m-0 gap-0 px-2'):
                 
@@ -65,10 +64,11 @@ async def list_view():
         # Filter
         with ui.column(wrap=False, align_items='start').classes(
                 'm-0 gap-1 max-w-1/4 pt-5 px-3 shrink text-sm max-lg:hidden'):
-            duration_filter()
-            online_filter()
-            location_filter()
-            await category_filters()
+            duration_filter_ui()
+            location_filter_ui()
+            
+            online_filter_ui()
+            await category_filters_ui()
         
         ui.on('refresh_filter', lambda: create_list_ui.refresh(), throttle=0.1, leading_events=False)
   
@@ -116,3 +116,11 @@ def download(event:Event):
           ).props('flat color=white'
     ).classes('font-normal hover:font-medium normal-case')
 
+
+        # Filter
+        with ui.column(wrap=False, align_items='start').classes(
+                'm-0 gap-1 max-w-1/4 pt-5 px-3 shrink text-sm max-lg:hidden'):
+          
+
+
+        ui.on('refresh_filter', lambda: create_list_ui.refresh(),throttle=0.1,leading_events=False)
