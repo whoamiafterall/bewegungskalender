@@ -9,7 +9,7 @@ from bewegungskalender.libs.exceptions import NoResultError
 from bewegungskalender.libs.nominatim import search_city
 
 
-def location_filter():
+def location_filter_ui():
 
 	(ui.select(["Überall", "Online", "Offline"], label="Ort", value="Überall").on_value_change(call_refresh_filter_event).bind_value(LOCATION_FILTER,"state").classes("pl-3 w-full my-1")).props("filled color=secondary").bind_visibility_from(LOCATION_FILTER,"force_offline",backward=lambda v: v == False)
 
