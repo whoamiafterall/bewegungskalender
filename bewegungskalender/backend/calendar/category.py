@@ -119,7 +119,7 @@ class Category(SQLModel, table=True):
 			exact_percent = 100 / ref_status['complete'] * ((ref_status['current']-1)+1 / len(cal_data) * counter)
 			etm = "..." if exact_percent == 0 else round((time.time() - ref_status['start_time']) / exact_percent * 100)
 
-			LOGGER.info(f"Category [{ref_status['current']}/{ref_status['complete']}] Event [{counter}/{len(cal_data)}] - {math.floor(exact_percent*10)*0.1}% ETM: {etm}s")
+			LOGGER.info(f"Category [{ref_status['current']}/{ref_status['complete']}] Event [{counter}/{len(cal_data)}] - {round(exact_percent,1)}% ETM: {etm}s")
 
 
 			try:
