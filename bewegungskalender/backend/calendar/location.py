@@ -82,11 +82,12 @@ def _catch_key_error(result, key):
     except KeyError:
         return None
 
-def get_location_data(location:str,description:str) -> Location:
+def get_location_data(location:str,description:str,existing_link_in_description:str) -> Location:
 
     if location is None:  # Filter events without location
         return Location()
     elif OSM_LINK_PATTERN.match(location):
+        # Try to find osm link
         try:
             result = lookup_entity(location)
             return Location.parse_offline(result, location)
@@ -94,19 +95,18 @@ def get_location_data(location:str,description:str) -> Location:
             LOGGER.warning(NoResultError(location))
             return Location()
     else:
-        try:
-            online_result = try_get_link(location)
-            return Location.parse_online(online_result)
-        except (TypeError, AttributeError):
-            if "Online" in location or "online" in location or (description is not None and ("Online" in description or "online" in description)):  # Filter events with online/Online as location
-                online_result = try_get_link(description)
-
-                if online_result is not None:
-                    return Location.parse_online(online_result)
-                else:
-                    return Location()
+        # Try to find online link
+        location_get_link_result = get_link(location)
+        if location_get_link_result is not None:
+            return Location.parse_online(location_get_link_result)
+        elif "Online" in location or "online" in location or (description is not None and ("Online" in description or "online" in description)):  # Filter events with online/Online as location
+            if existing_link_in_description is not None:
+                return Location.parse_online(existing_link_in_description)
             else:
-                return geocode(location)
+                return Location()
+        else:
+            # Fallback geocode code
+            return geocode(location)
 
 
    
