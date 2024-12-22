@@ -71,7 +71,7 @@ def _catch_key_error(result, key) -> str|None:
     except KeyError:
         return None
 
-def get_location_data(location:str,description:str,existing_link_in_description:str) -> Location:
+def get_location_data(location:str) -> Location:
 
     if location is None:  # Filter events without location
         return Location()
@@ -88,11 +88,6 @@ def get_location_data(location:str,description:str,existing_link_in_description:
         location_get_link_result = get_link(location)
         if location_get_link_result is not None:
             return Location.parse_online(location_get_link_result)
-        elif "Online" in location or "online" in location or (description is not None and ("Online" in description or "online" in description)):  # Filter events with online/Online as location
-            if existing_link_in_description is not None:
-                return Location.parse_online(existing_link_in_description)
-            else:
-                return Location()
         else:
             # Fallback geocode code
             return geocode(location)
