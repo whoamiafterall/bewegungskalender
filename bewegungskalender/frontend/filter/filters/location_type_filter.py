@@ -1,4 +1,4 @@
-from nicegui import ui
+from nicegui import ui,binding
 from nicegui.element import Element
 from sqlalchemy import Select
 
@@ -6,24 +6,32 @@ from bewegungskalender.backend.calendar.location import Location, EventLocationT
 from bewegungskalender.frontend.filter.filter import call_refresh_filter_event
 
 def location_type_filter_ui() -> Element:
-	return (ui.select(["Überall", "Online", "Offline"], label="Ort", value="Überall")
-    .on_value_change(call_refresh_filter_event).bind_value(LOCATION_TYPE_FILTER, "state")
-    .classes("pl-3 w-full my-1")).props("filled color=secondary")
 
+	return (ui.select(
+        {EventLocationType.online: 'Online'
+            , EventLocationType.offline: 'Offline'
+            , EventLocationType.undefined: 'Anderes'}
+        , label="Ort", value=[
+            EventLocationType.online,
+            EventLocationType.offline,
+            EventLocationType.undefined
+        ],multiple=True, clearable=True)
+    .on_value_change(call_refresh_filter_event).bind_value(LOCATION_TYPE_FILTER.state)
+    .classes("pl-3 w-full my-1")).props("filled color=secondary")
 
 class LocationTypeFilterController:
 
     def __init__(self):
-        self.state = "Überall"
+        self.state = binding.BindableProperty()
 
     def apply_filter_to_statement(self,statement: Select):
 
-        if "Online" in self.state:
-            return statement.where(Location.type == EventLocationType.online)
-        elif "Offline" in self.state:
-            return statement.where(Location.type == EventLocationType.offline)
-        else:
-            return statement
+        if len(self.state.value) > 0:
+            for event_type in [e.value for e in EventLocationType]:
+                if event_type not in self.state.value:
+                    statement = statement.where(Location.type != event_type)
+
+        return statement
 
 
 LOCATION_TYPE_FILTER = LocationTypeFilterController()

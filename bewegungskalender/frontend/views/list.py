@@ -35,7 +35,7 @@ async def list_view():
                 'm-0 gap-1 max-w-1/4 pt-5 px-3 shrink text-sm max-lg:hidden'):
             duration_filter_ui()
             location_type_filter_ui()
-            location_proximity_filter_ui().bind_visibility_from(LOCATION_TYPE_FILTER, 'usable_state', lambda v: v != "Online")
+            location_proximity_filter_ui().bind_visibility_from(LOCATION_TYPE_FILTER.state,target_name="value",backward=lambda v: (EventLocationType.offline in v))
             await categories_filters_ui()
         
         ui.on('refresh_filter', lambda: create_list_ui.refresh(), throttle=0.1, leading_events=False)
