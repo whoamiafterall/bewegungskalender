@@ -9,10 +9,11 @@ from bewegungskalender.backend.calendar.event import Event
 from bewegungskalender.backend.calendar.location import EventLocationType
 from bewegungskalender.backend.io.config import MENU
 from bewegungskalender.backend.io.credentials import NC_DOMAIN
-from bewegungskalender.frontend.filter.controllers.location_filter_controller import LOCATION_FILTER
+from bewegungskalender.frontend.filter.controllers.location_proximity_filter_controller import LOCATION_PROXIMITY_FILTER
 from bewegungskalender.frontend.filter.filter import events_using_filter
 from bewegungskalender.frontend.filter.ui.category_filter import category_filters_ui
-from bewegungskalender.frontend.filter.ui.location_filter import location_filter_ui, online_filter_ui
+from bewegungskalender.frontend.filter.ui.location_proximitry_filter import location_proximity_filter_ui
+from bewegungskalender.frontend.filter.ui.location_type_filter import location_type_filter_ui
 from bewegungskalender.frontend.filter.ui.time_filter import duration_filter_ui
 from bewegungskalender.frontend.functions import loading, container, dropdown_button, icon_link
 from bewegungskalender.frontend.functions import mini_card
@@ -27,7 +28,7 @@ async def list_view():
     
     with container('xl:w-4/5 w-full justify-between flex-row'):
         # force filter to use offline mode
-        LOCATION_FILTER.force_offline = True
+        LOCATION_PROXIMITY_FILTER.force_offline = True
 
         
         await create_list_ui()
@@ -36,8 +37,8 @@ async def list_view():
         with ui.column(wrap=False, align_items='start').classes(
                 'm-0 gap-1 max-w-1/4 pt-5 px-3 shrink text-sm max-lg:hidden'):
             duration_filter_ui()
-            online_filter_ui()
-            location_filter_ui()
+            location_type_filter_ui()
+            location_proximity_filter_ui()
             await category_filters_ui()
         
         ui.on('refresh_filter', lambda: create_list_ui.refresh(), throttle=0.1, leading_events=False)
