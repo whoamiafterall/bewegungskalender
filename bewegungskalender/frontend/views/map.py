@@ -7,10 +7,11 @@ from slugify import slugify
 
 from bewegungskalender.backend.formatting.format import event_time
 from bewegungskalender.backend.io.config import MENU, MAP_CENTER_LAT, MAP_CENTER_LON, MAP_ZOOM, ASSETS_URL_PATH
-from bewegungskalender.frontend.filter.controllers.location_filter_controller import LOCATION_FILTER
+from bewegungskalender.frontend.filter.controllers.location_proximity_filter_controller import LOCATION_PROXIMITY_FILTER
 from bewegungskalender.frontend.filter.filter import events_using_filter
 from bewegungskalender.frontend.filter.ui.category_filter import category_filters_ui
-from bewegungskalender.frontend.filter.ui.location_filter import location_filter_ui
+from bewegungskalender.frontend.filter.ui.location_proximitry_filter import location_proximity_filter_ui
+from bewegungskalender.frontend.filter.ui.location_type_filter import location_type_filter_ui
 from bewegungskalender.frontend.filter.ui.time_filter import duration_filter_ui
 from bewegungskalender.frontend.functions import loading
 from bewegungskalender.frontend.navigation.router import ROUTER
@@ -27,18 +28,18 @@ async def map_view():
     # new leaflet with center set to center of germany
     with ui.card().tight().classes('container mx-auto flex-row w-full sm:mt-55 max-sm:mb-[55px] p-0 m-0'):
         # force filter to use offline mode
-        LOCATION_FILTER.location.force_offline = True
+        LOCATION_PROXIMITY_FILTER.location.force_offline = True
         @ui.refreshable
         async def create_map_ui():
 
             zoom = MAP_ZOOM
             center = (MAP_CENTER_LAT, MAP_CENTER_LON)
-            if LOCATION_FILTER.location.result is not None:
-                search_result = LOCATION_FILTER.location.result
+            if LOCATION_PROXIMITY_FILTER.location.result is not None:
+                search_result = LOCATION_PROXIMITY_FILTER.location.result
                 center = (search_result["lat"], search_result["lon"])
 
                 # TODO: Find a more accurate way to figure out zoom level
-                area = math.pow(LOCATION_FILTER.distance.value*3,2)
+                area = math.pow(LOCATION_PROXIMITY_FILTER.distance.value * 3, 2)
 
                 zoom = math.floor(math.fabs(math.pow(area,1/8.5) - 12))
 
@@ -62,8 +63,8 @@ async def map_view():
                             '&copy; <a href="https://carto.com">Carto</a>'
                     },
                 )
-                if LOCATION_FILTER.location.result is not None:
-                    leaflet.generic_layer(name='circle', args=[center, {'color': 'grey','opacity': 0.02, 'radius': LOCATION_FILTER.distance.value*1000}])
+                if LOCATION_PROXIMITY_FILTER.location.result is not None:
+                    leaflet.generic_layer(name='circle', args=[center, {'color': 'grey','opacity': 0.02, 'radius': LOCATION_PROXIMITY_FILTER.distance.value * 1000}])
 
                 # get cached data
                 events = events_using_filter()
@@ -97,7 +98,7 @@ async def map_view():
         with ui.column(wrap=False, align_items='start').classes(
                 'm-0 gap-1 px-5 max-w-1/4 pt-5 shrink text-sm max-lg:hidden'):
             duration_filter_ui()
-            location_filter_ui()
+            location_proximity_filter_ui()
             await category_filters_ui()
 
         ui.on('refresh_filter', lambda: create_map_ui.refresh(), throttle=0.5, leading_events=False)

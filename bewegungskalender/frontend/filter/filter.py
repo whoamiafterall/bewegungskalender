@@ -10,7 +10,8 @@ from bewegungskalender.backend.calendar.event import Event
 from bewegungskalender.backend.calendar.location import Location, EventLocationType
 from bewegungskalender.backend.io import db
 from bewegungskalender.frontend.filter.controllers.category_filter_controller import CATEGORY_FILTER
-from bewegungskalender.frontend.filter.controllers.location_filter_controller import LOCATION_FILTER
+from bewegungskalender.frontend.filter.controllers.location_proximity_filter_controller import LOCATION_PROXIMITY_FILTER
+from bewegungskalender.frontend.filter.controllers.location_type_filter_controller import LOCATION_TYPE_FILTER
 from bewegungskalender.frontend.filter.controllers.time_filter_controller import TIME_FILTER
 
 def call_refresh_filter_event():
@@ -22,7 +23,8 @@ def events_using_filter() -> list[Event]:
 	statement = select(Event,Location,Category)
 
 	statement = TIME_FILTER.apply_filter_to_statement(statement)
-	statement = LOCATION_FILTER.apply_filter_to_statement(statement)
+	statement = LOCATION_TYPE_FILTER.apply_filter_to_statement(statement)
+	statement = LOCATION_PROXIMITY_FILTER.apply_filter_to_statement(statement)
 	statement = CATEGORY_FILTER.apply_filter_to_statement(statement)
 
 	# run statement

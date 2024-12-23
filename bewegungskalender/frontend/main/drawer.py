@@ -2,7 +2,8 @@ from nicegui import ui
 from nicegui.page_layout import RightDrawer, LeftDrawer
 
 from bewegungskalender.frontend.filter.ui.category_filter import category_filters_ui
-from bewegungskalender.frontend.filter.ui.location_filter import location_filter_ui
+from bewegungskalender.frontend.filter.ui.location_proximitry_filter import location_proximity_filter_ui
+from bewegungskalender.frontend.filter.ui.location_type_filter import location_type_filter_ui
 from bewegungskalender.frontend.filter.ui.time_filter import duration_filter_ui
 from bewegungskalender.frontend.main.menu import secondary_menu
 
@@ -21,6 +22,7 @@ async def right_drawer() -> RightDrawer:
 			'width=auto') as rd:
 		with ui.column(wrap=False, align_items='start').classes('m-0 gap-1 max-w-1/4 pt-5 px-3 shrink text-sm lg:hidden'):
 			duration_filter_ui()
-			location_filter_ui()
+			location_type_filter_ui()
+			location_proximity_filter_ui()
 			await category_filters_ui()
 	return rd

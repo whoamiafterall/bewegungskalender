@@ -14,7 +14,7 @@ class TimeFilterController:
     def apply_filter_to_statement(self,statement: Select):
 
         # time filtering ----------------- (Comment this out to test with data from the past)
-        statement = statement.where(Event.start > today())
+        # statement = statement.where(Event.start > today())
 
         # until = datetime.now().__add__(timedelta(days=100))
         # statement = statement.select(Event.start < until)
