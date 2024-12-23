@@ -27,7 +27,7 @@ async def map_view():
     # new leaflet with center set to center of germany
     with ui.card().tight().classes('container mx-auto flex-row w-full sm:mt-55 max-sm:mb-[55px] p-0 m-0'):
         # force filter to use offline mode
-        LOCATION_FILTER.location_type.force_offline = True
+        LOCATION_FILTER.location.force_offline = True
         @ui.refreshable
         async def create_map_ui():
 

@@ -27,7 +27,7 @@ async def list_view():
     
     with container('xl:w-4/5 w-full justify-between flex-row'):
         # force filter to use offline mode
-        LOCATION_FILTER.location_type.force_offline = True
+        LOCATION_FILTER.force_offline = True
 
         
         await create_list_ui()
