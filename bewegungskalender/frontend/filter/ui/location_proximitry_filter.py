@@ -10,18 +10,17 @@ from bewegungskalender.frontend.filter.filter import call_refresh_filter_event
 def location_proximity_filter_ui() -> Element:
     holder = ui.list().classes("w-full")
     with holder:
-        ui.input(label="🔎 Ort suchen", placeholder="Stadt").bind_value(LOCATION_PROXIMITY_FILTER.location,
-                                                                       "query").props('clearable filled').classes(
-            'w-full my-1 pl-3')
+        ui.input(label="🔎 Ort suchen", placeholder="Stadt").on('update:model-value', lambda: (
+        LOCATION_PROXIMITY_FILTER.location.update_search_result(), call_refresh_filter_event()),
+                                                               throttle=1.0, leading_events=False).bind_value(
+            LOCATION_PROXIMITY_FILTER.location, "query").props('clearable filled').classes('w-full my-1 pl-3')
 
         with ui.card().classes("ml-3 gap-0.5 border w-full max-w-[260px] no-shadow").bind_visibility_from(
                 LOCATION_PROXIMITY_FILTER.location, 'result', lambda v: v is not None):
             ui.label("").bind_text_from(LOCATION_PROXIMITY_FILTER.location, 'result',
                                         backward=lambda a: "" if a is None else a["display_name"])
 
-            ui.input().on_value_change(call_refresh_filter_event).bind_value_from(LOCATION_PROXIMITY_FILTER.location,
-                                                                                  "result", backward=lambda
-                    a: "" if a is None else a["display_name"]).set_visibility(False)
+
 
             ui.label("").bind_text_from(LOCATION_PROXIMITY_FILTER.distance, 'value',
                                         backward=lambda a: f"Radius: {a}km")
