@@ -31,7 +31,7 @@ async def right_drawer() -> RightDrawer:
 			with ui.list().classes("w-full").bind_visibility_from(ROUTER, 'current_page',lambda e: e is not None and (e.path == "/karte")):
 				location_proximity_filter_ui()
 			with ui.list().classes("w-full").bind_visibility_from(ROUTER, 'current_page',lambda e: e is not None and (e.path == "/")):
-				location_proximity_filter_ui().bind_visibility_from(LOCATION_TYPE_FILTER.state,target_name="value",backward=lambda v: (EventLocationType.offline in v))
+				location_proximity_filter_ui().bind_visibility_from(LOCATION_TYPE_FILTER.state, target_name="value", backward=lambda v: (EventLocationType.offline in v))
 
 			await categories_filters_ui()
 	return rd
