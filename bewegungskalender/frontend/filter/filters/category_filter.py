@@ -1,11 +1,12 @@
-from nicegui import ui
+from nicegui import ui, binding
 from nicegui.element import Element
 from slugify import slugify
+from sqlalchemy import Select
 from sqlmodel import select
 
 from bewegungskalender.backend.calendar.category import Category
 from bewegungskalender.backend.io import db
-from bewegungskalender.frontend.filter.controllers.category_filter_controller import CATEGORY_FILTER
+from bewegungskalender.backend.io.config import CALENDARS
 from bewegungskalender.frontend.filter.filter import call_refresh_filter_event
 from bewegungskalender.frontend.functions import mini_card, dropdown_button
 
@@ -48,3 +49,22 @@ def single_category_filter_ui(category: Category):
 							  new_tab=True)
 						  ).props('flat color=white').classes(
 					'font-normal hover:font-medium normal-case')
+
+
+class CategoryFilterController:
+    def __init__(self):
+        self.categories = {}
+
+        for calendar in CALENDARS:
+            self.categories[f"{slugify(str(calendar['calendar']['internal']))}"] = binding.BindableProperty()
+
+    def apply_filter_to_statement(self,statement: Select):
+        for calendar in CALENDARS:
+            if self.categories[f"{slugify(str(calendar['calendar']['internal']))}"].value is False:
+                statement = statement.where(
+                    Category.internal != calendar['calendar']['internal']
+                )
+        return statement
+
+
+CATEGORY_FILTER = CategoryFilterController()

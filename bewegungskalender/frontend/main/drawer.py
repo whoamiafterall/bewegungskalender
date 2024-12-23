@@ -1,11 +1,10 @@
 from nicegui import ui
 from nicegui.page_layout import RightDrawer, LeftDrawer
 
-from bewegungskalender.frontend.filter.controllers.location_type_filter_controller import LOCATION_TYPE_FILTER
-from bewegungskalender.frontend.filter.ui.category_filter import categories_filters_ui
-from bewegungskalender.frontend.filter.ui.location_proximitry_filter import location_proximity_filter_ui
-from bewegungskalender.frontend.filter.ui.location_type_filter import location_type_filter_ui
-from bewegungskalender.frontend.filter.ui.time_filter import duration_filter_ui
+from bewegungskalender.frontend.filter.filters.category_filter import categories_filters_ui
+from bewegungskalender.frontend.filter.filters.location_proximitry_filter import location_proximity_filter_ui
+from bewegungskalender.frontend.filter.filters.location_type_filter import location_type_filter_ui, LOCATION_TYPE_FILTER
+from bewegungskalender.frontend.filter.filters.time_filter import duration_filter_ui
 from bewegungskalender.frontend.main.menu import secondary_menu
 from bewegungskalender.frontend.navigation.router import ROUTER
 

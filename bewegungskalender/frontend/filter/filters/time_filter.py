@@ -1,10 +1,16 @@
 from datetime import timedelta
 
-from dateutil.utils import today
-from nicegui import binding
+from nicegui import ui, binding
+from nicegui.element import Element
 from sqlalchemy import Select, and_, or_
 
 from bewegungskalender.backend.calendar.event import Event
+from bewegungskalender.frontend.filter.filter import call_refresh_filter_event
+
+	
+def duration_filter_ui() -> Element:
+	return (ui.select(["Mehrtägig", "Ganztags", "Kurz"], label="Dauer", value=["Mehrtägig", "Ganztags", "Kurz"],
+	           multiple=True, clearable=True).classes("pl-3 w-full my-1")).props("filled color=secondary").on_value_change(call_refresh_filter_event).bind_value(TIME_FILTER.duration)
 
 
 class TimeFilterController:
@@ -37,5 +43,6 @@ class TimeFilterController:
             statement = statement.where(or_(*duration_args))
 
         return statement
+
 
 TIME_FILTER = TimeFilterController()

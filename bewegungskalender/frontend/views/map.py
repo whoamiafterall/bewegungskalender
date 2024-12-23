@@ -7,15 +7,12 @@ from slugify import slugify
 
 from bewegungskalender.backend.formatting.format import event_time
 from bewegungskalender.backend.io.config import MENU, MAP_CENTER_LAT, MAP_CENTER_LON, MAP_ZOOM, ASSETS_URL_PATH
-from bewegungskalender.frontend.filter.controllers.category_filter_controller import CATEGORY_FILTER
-from bewegungskalender.frontend.filter.controllers.location_proximity_filter_controller import LOCATION_PROXIMITY_FILTER
-from bewegungskalender.frontend.filter.controllers.location_type_filter_controller import LOCATION_TYPE_FILTER
-from bewegungskalender.frontend.filter.controllers.time_filter_controller import TIME_FILTER
 from bewegungskalender.frontend.filter.filter import events_using_filters
-from bewegungskalender.frontend.filter.ui.category_filter import categories_filters_ui
-from bewegungskalender.frontend.filter.ui.location_proximitry_filter import location_proximity_filter_ui
-from bewegungskalender.frontend.filter.ui.location_type_filter import location_type_filter_ui
-from bewegungskalender.frontend.filter.ui.time_filter import duration_filter_ui
+from bewegungskalender.frontend.filter.filters.category_filter import categories_filters_ui, CATEGORY_FILTER
+from bewegungskalender.frontend.filter.filters.location_proximitry_filter import location_proximity_filter_ui, \
+    LOCATION_PROXIMITY_FILTER
+from bewegungskalender.frontend.filter.filters.location_type_filter import location_type_filter_ui, LOCATION_TYPE_FILTER
+from bewegungskalender.frontend.filter.filters.time_filter import duration_filter_ui, TIME_FILTER
 from bewegungskalender.frontend.functions import loading
 from bewegungskalender.frontend.navigation.router import ROUTER
 from bewegungskalender.frontend.templates.templater import render_map_template
