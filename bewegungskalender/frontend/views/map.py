@@ -7,9 +7,11 @@ from slugify import slugify
 
 from bewegungskalender.backend.formatting.format import event_time
 from bewegungskalender.backend.io.config import MENU, MAP_CENTER_LAT, MAP_CENTER_LON, MAP_ZOOM, ASSETS_URL_PATH
+from bewegungskalender.frontend.filter.controllers.category_filter_controller import CATEGORY_FILTER
 from bewegungskalender.frontend.filter.controllers.location_proximity_filter_controller import LOCATION_PROXIMITY_FILTER
 from bewegungskalender.frontend.filter.controllers.location_type_filter_controller import LOCATION_TYPE_FILTER
-from bewegungskalender.frontend.filter.filter import events_using_filter
+from bewegungskalender.frontend.filter.controllers.time_filter_controller import TIME_FILTER
+from bewegungskalender.frontend.filter.filter import events_using_filters
 from bewegungskalender.frontend.filter.ui.category_filter import categories_filters_ui
 from bewegungskalender.frontend.filter.ui.location_proximitry_filter import location_proximity_filter_ui
 from bewegungskalender.frontend.filter.ui.location_type_filter import location_type_filter_ui
@@ -28,8 +30,7 @@ async def map_view():
     LOGGER.debug('Creating the Map to show events...')
     # new leaflet with center set to center of germany
     with ui.card().tight().classes('container mx-auto flex-row w-full sm:mt-55 max-sm:mb-[55px] p-0 m-0'):
-        # force filter to use offline mode
-        LOCATION_TYPE_FILTER.force_offline = True
+
         @ui.refreshable
         async def create_map_ui():
 
@@ -68,7 +69,7 @@ async def map_view():
                     leaflet.generic_layer(name='circle', args=[center, {'color': 'grey','opacity': 0.02, 'radius': LOCATION_PROXIMITY_FILTER.distance.value * 1000}])
 
                 # get cached data
-                events = events_using_filter()
+                events = events_using_filters([CATEGORY_FILTER,LOCATION_PROXIMITY_FILTER,TIME_FILTER])
 
                 LOGGER.info(f"Got {events.__len__()} locations to display...")
 

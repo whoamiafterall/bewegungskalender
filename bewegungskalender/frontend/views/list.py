@@ -9,9 +9,11 @@ from bewegungskalender.backend.calendar.event import Event
 from bewegungskalender.backend.calendar.location import EventLocationType
 from bewegungskalender.backend.io.config import MENU
 from bewegungskalender.backend.io.credentials import NC_DOMAIN
+from bewegungskalender.frontend.filter.controllers.category_filter_controller import CATEGORY_FILTER
 from bewegungskalender.frontend.filter.controllers.location_proximity_filter_controller import LOCATION_PROXIMITY_FILTER
 from bewegungskalender.frontend.filter.controllers.location_type_filter_controller import LOCATION_TYPE_FILTER
-from bewegungskalender.frontend.filter.filter import events_using_filter
+from bewegungskalender.frontend.filter.controllers.time_filter_controller import TIME_FILTER
+from bewegungskalender.frontend.filter.filter import events_using_filters
 from bewegungskalender.frontend.filter.ui.category_filter import categories_filters_ui
 from bewegungskalender.frontend.filter.ui.location_proximitry_filter import location_proximity_filter_ui
 from bewegungskalender.frontend.filter.ui.location_type_filter import location_type_filter_ui
@@ -28,8 +30,6 @@ async def list_view():
     await ui.context.client.connected()
     
     with container('xl:w-4/5 w-full justify-between flex-row'):
-        # force filter to use offline mode
-        LOCATION_TYPE_FILTER.force_offline = False
 
         await create_list_ui()
         
@@ -49,29 +49,35 @@ async def list_view():
 @ui.refreshable
 async def create_list_ui():
     # Get filtered Events
-    events = events_using_filter()
+    events = events_using_filters([LOCATION_TYPE_FILTER,CATEGORY_FILTER,LOCATION_PROXIMITY_FILTER,TIME_FILTER])
     with ui.column(wrap=False, align_items='center').classes('grow m-0 gap-0 px-2'):
         with ui.list().classes('w-full'):
+
             month = today().month
             for event in events:
+
                 if event.start.month != month:
                     month_heading(event.start)
                 month = event.start.month
-                # Create a row for each event
-                with ui.row().classes('flex flex-row w-full gap-1 p-0.5 max-sm:mb-2 text-sm'):
-                    show_time(event) # Show Event_Time
-                    # Create the dropdown button
-                    with dropdown_button(event.summary, event.category.color, "max-sm:w-full max-sm:order-3"):
-                        # Create the dropdown content
-                        with mini_card('flex-col text-sm w-full'):
-                            if event.location.type == EventLocationType.online:
-                                icon_link('Computer', event.location.name, event.location.online_link)
-                            if event.location.type == EventLocationType.offline:
-                                icon_link('map', event.location.name, event.location.osm_link)
-                            if event.link:
-                                icon_link('link', event.link, event.link)
-                            download_button(event)
-                    show_location(event) # Show Event_Location
+                create_list_ui_single_event_item(event)
+
+def create_list_ui_single_event_item(event):
+
+    # Create a row for each event
+    with ui.row().classes('flex flex-row w-full gap-1 p-0.5 max-sm:mb-2 text-sm'):
+        show_time(event)  # Show Event_Time
+        # Create the dropdown button
+        with dropdown_button(event.summary, event.category.color, "max-sm:w-full max-sm:order-3"):
+            # Create the dropdown content
+            with mini_card('flex-col text-sm w-full'):
+                if event.location.type == EventLocationType.online:
+                    icon_link('Computer', event.location.name, event.location.online_link)
+                if event.location.type == EventLocationType.offline:
+                    icon_link('map', event.location.name, event.location.osm_link)
+                if event.link:
+                    icon_link('link', event.link, event.link)
+                download_button(event)
+        show_location(event)  # Show Event_Location
 
 # -----------------
 # Helper Functions

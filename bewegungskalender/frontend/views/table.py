@@ -20,7 +20,7 @@ def table_view():
                 {'name': 'color', 'label': 'Color', 'field': 'color', 'align': 'left'},
             ]
     def use_filter():
-        events = filterUI.events_using_filter()
+        events = filterUI.events_using_filters()
 
         table = ui.table(title="Termine",
          columns=columns,
