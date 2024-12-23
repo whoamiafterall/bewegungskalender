@@ -1,10 +1,15 @@
-import math
-
-from nicegui import binding
-from sqlalchemy import Select, and_, or_
+from nicegui import ui
+from nicegui.element import Element
+from sqlalchemy import Select
 
 from bewegungskalender.backend.calendar.location import Location, EventLocationType
-from bewegungskalender.frontend.helpers.controllers.location_search_controller import LocationSearchController
+from bewegungskalender.frontend.filter.filter import call_refresh_filter_event
+
+def location_type_filter_ui() -> Element:
+	return (ui.select(["Überall", "Online", "Offline"], label="Ort", value="Überall")
+    .on_value_change(call_refresh_filter_event).bind_value(LOCATION_TYPE_FILTER, "state")
+    .classes("pl-3 w-full my-1")).props("filled color=secondary")
+
 
 class LocationTypeFilterController:
 
@@ -19,5 +24,6 @@ class LocationTypeFilterController:
             return statement.where(Location.type == EventLocationType.offline)
         else:
             return statement
+
 
 LOCATION_TYPE_FILTER = LocationTypeFilterController()

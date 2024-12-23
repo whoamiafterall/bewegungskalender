@@ -7,12 +7,9 @@ from sqlmodel import select, or_, and_
 
 from bewegungskalender.backend.calendar.category import Category
 from bewegungskalender.backend.calendar.event import Event
-from bewegungskalender.backend.calendar.location import Location, EventLocationType
+from bewegungskalender.backend.calendar.location import Location
 from bewegungskalender.backend.io import db
-from bewegungskalender.frontend.filter.controllers.category_filter_controller import CATEGORY_FILTER
-from bewegungskalender.frontend.filter.controllers.location_proximity_filter_controller import LOCATION_PROXIMITY_FILTER
-from bewegungskalender.frontend.filter.controllers.location_type_filter_controller import LOCATION_TYPE_FILTER
-from bewegungskalender.frontend.filter.controllers.time_filter_controller import TIME_FILTER
+
 
 def call_refresh_filter_event():
 	ui.run_javascript("emitEvent('refresh_filter');")
