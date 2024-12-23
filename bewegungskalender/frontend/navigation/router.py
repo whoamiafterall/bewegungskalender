@@ -7,25 +7,23 @@ class RouterFrame(ui.element, component='router_frame.js'):
     pass
 
 class Page:
-    def __init__(self,func: Callable,uses_filter: bool) -> None:
+    def __init__(self,func: Callable,path: str) -> None:
         self.func: Callable = func
-        self.uses_filter: bool = uses_filter
+        self.path: str = path
 
 class Router:
 
-    show_filter = binding.BindableProperty()
-
     def __init__(self) -> None:
         self.routes: Dict[str, Page] = {}
-        self.show_filter = False
+        self.current_page: Page | None = None
 
-    def add(self, path: str,uses_filter: bool = False):
+    def add(self, path: str):
         # ensure that path starts with a "/" Note: It might also be an Option to modify the path variable by simple appending the "/" at the beginning in this case 
         if path.startswith("/") == False:
             raise Warning('When adding a path to the Router it must begin with a "/" for the router to work correctly')
        
         def decorator(func: Callable):
-            self.routes[path] = Page(func,uses_filter)
+            self.routes[path] = Page(func,path)
             return func
         return decorator
 
@@ -38,15 +36,13 @@ class Router:
                 target = "/"
             builder = self.routes[target].func
             path = target
-            self.show_filter = self.routes[path].uses_filter
+            self.current_page = self.routes[path]
 
 
         else:
             path = {v.func: k for k, v in self.routes.items()}[target]
             builder = self.routes[path].func
-            self.show_filter = self.routes[path].uses_filter
-
-        print(self.show_filter)
+            self.current_page = self.routes[path]
 
         async def build() -> None:
             with self.content:
