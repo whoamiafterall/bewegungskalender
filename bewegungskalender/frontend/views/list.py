@@ -20,7 +20,7 @@ from bewegungskalender.frontend.navigation.router import ROUTER
 
 
 # Create List Page
-@ROUTER.add('/', True)
+@ROUTER.add('/')
 async def list_view():
     loading(MENU['list']['label'])
     await ui.context.client.connected()
