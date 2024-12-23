@@ -19,4 +19,4 @@ def header(ld:LeftDrawer, rd:RightDrawer=None):
         ui.space().classes('max-sm:hidden lg:hidden')
 
         ui.button("Filter", icon='filter_alt', on_click=lambda: rd.toggle()).props(
-            'flat color=white').classes('max-sm:hidden lg:hidden').bind_visibility_from(ROUTER,"current_page",backward=lambda e: e is not None and (e.path == "/" or e.path == "/karte"))
+            "flat color=white").classes('max-sm:hidden lg:hidden').bind_visibility_from(ROUTER, "current_page", backward=lambda e: e is not None and (e.path == "/" or e.path == "/karte"))

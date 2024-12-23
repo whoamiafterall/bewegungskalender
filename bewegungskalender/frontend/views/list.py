@@ -10,8 +10,9 @@ from bewegungskalender.backend.calendar.location import EventLocationType
 from bewegungskalender.backend.io.config import MENU
 from bewegungskalender.backend.io.credentials import NC_DOMAIN
 from bewegungskalender.frontend.filter.controllers.location_proximity_filter_controller import LOCATION_PROXIMITY_FILTER
+from bewegungskalender.frontend.filter.controllers.location_type_filter_controller import LOCATION_TYPE_FILTER
 from bewegungskalender.frontend.filter.filter import events_using_filter
-from bewegungskalender.frontend.filter.ui.category_filter import category_filters_ui
+from bewegungskalender.frontend.filter.ui.category_filter import categories_filters_ui
 from bewegungskalender.frontend.filter.ui.location_proximitry_filter import location_proximity_filter_ui
 from bewegungskalender.frontend.filter.ui.location_type_filter import location_type_filter_ui
 from bewegungskalender.frontend.filter.ui.time_filter import duration_filter_ui
@@ -28,9 +29,8 @@ async def list_view():
     
     with container('xl:w-4/5 w-full justify-between flex-row'):
         # force filter to use offline mode
-        LOCATION_PROXIMITY_FILTER.force_offline = True
+        LOCATION_TYPE_FILTER.force_offline = True
 
-        
         await create_list_ui()
         
         # Filter
@@ -38,8 +38,8 @@ async def list_view():
                 'm-0 gap-1 max-w-1/4 pt-5 px-3 shrink text-sm max-lg:hidden'):
             duration_filter_ui()
             location_type_filter_ui()
-            location_proximity_filter_ui()
-            await category_filters_ui()
+            location_proximity_filter_ui().bind_visibility_from(LOCATION_TYPE_FILTER, 'usable_state', lambda v: v != "Online")
+            await categories_filters_ui()
         
         ui.on('refresh_filter', lambda: create_list_ui.refresh(), throttle=0.1, leading_events=False)
 

@@ -8,8 +8,9 @@ from slugify import slugify
 from bewegungskalender.backend.formatting.format import event_time
 from bewegungskalender.backend.io.config import MENU, MAP_CENTER_LAT, MAP_CENTER_LON, MAP_ZOOM, ASSETS_URL_PATH
 from bewegungskalender.frontend.filter.controllers.location_proximity_filter_controller import LOCATION_PROXIMITY_FILTER
+from bewegungskalender.frontend.filter.controllers.location_type_filter_controller import LOCATION_TYPE_FILTER
 from bewegungskalender.frontend.filter.filter import events_using_filter
-from bewegungskalender.frontend.filter.ui.category_filter import category_filters_ui
+from bewegungskalender.frontend.filter.ui.category_filter import categories_filters_ui
 from bewegungskalender.frontend.filter.ui.location_proximitry_filter import location_proximity_filter_ui
 from bewegungskalender.frontend.filter.ui.location_type_filter import location_type_filter_ui
 from bewegungskalender.frontend.filter.ui.time_filter import duration_filter_ui
@@ -28,7 +29,7 @@ async def map_view():
     # new leaflet with center set to center of germany
     with ui.card().tight().classes('container mx-auto flex-row w-full sm:mt-55 max-sm:mb-[55px] p-0 m-0'):
         # force filter to use offline mode
-        LOCATION_PROXIMITY_FILTER.location.force_offline = True
+        LOCATION_TYPE_FILTER.force_offline = True
         @ui.refreshable
         async def create_map_ui():
 
@@ -99,7 +100,7 @@ async def map_view():
                 'm-0 gap-1 px-5 max-w-1/4 pt-5 shrink text-sm max-lg:hidden'):
             duration_filter_ui()
             location_proximity_filter_ui()
-            await category_filters_ui()
+            await categories_filters_ui()
 
         ui.on('refresh_filter', lambda: create_map_ui.refresh(), throttle=0.5, leading_events=False)
 
