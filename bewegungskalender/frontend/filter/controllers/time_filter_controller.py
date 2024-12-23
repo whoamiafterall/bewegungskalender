@@ -10,6 +10,7 @@ from bewegungskalender.backend.calendar.event import Event
 class TimeFilterController:
     def __init__(self):
         self.duration = binding.BindableProperty()
+        self.duration.value = ["Mehrtägig","Ganztags","Kurz"]
 
     def apply_filter_to_statement(self,statement: Select):
 

@@ -10,17 +10,12 @@ class LocationTypeFilterController:
 
     def __init__(self):
         self.state = "Überall"
-        self.force_offline = False
-
-    @property
-    def usable_state(self):
-        return "Offline" if self.force_offline else self.state
 
     def apply_filter_to_statement(self,statement: Select):
 
-        if "Online" in self.usable_state:
+        if "Online" in self.state:
             return statement.where(Location.type == EventLocationType.online)
-        elif "Offline" in self.usable_state:
+        elif "Offline" in self.state:
             return statement.where(Location.type == EventLocationType.offline)
         else:
             return statement
