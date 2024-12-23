@@ -21,7 +21,7 @@ def location_filter_ui():
 			ui.slider(min=1, max=10, step=0.25, value=1).on_value_change(call_refresh_filter_event).bind_value(LOCATION_FILTER.distance,backward=lambda i: math.sqrt(i / 10),forward= lambda i: round(i * i * 10)).props('thumb-color=accent selection-color=accent')
 
 
-
-	
-	
-	
+def online_filter_ui():
+	(ui.select(["Überall", "Online", "Offline"], label="Ort", value="Überall")
+    .on_value_change(call_refresh_filter_event).bind_value(LOCATION_FILTER, "state")
+    .classes("pl-3 w-full my-1")).props("filled color=secondary")

@@ -9,10 +9,10 @@ from bewegungskalender.backend.calendar.event import Event
 from bewegungskalender.backend.calendar.location import EventLocationType
 from bewegungskalender.backend.io.config import MENU
 from bewegungskalender.backend.io.credentials import NC_DOMAIN
+from bewegungskalender.frontend.filter.controllers.location_filter_controller import LOCATION_FILTER
 from bewegungskalender.frontend.filter.filter import events_using_filter
 from bewegungskalender.frontend.filter.ui.category_filter import category_filters_ui
-from bewegungskalender.frontend.filter.ui.location_filter import location_filter_ui
-from bewegungskalender.frontend.filter.ui.online_filter import online_filter_ui
+from bewegungskalender.frontend.filter.ui.location_filter import location_filter_ui, online_filter_ui
 from bewegungskalender.frontend.filter.ui.time_filter import duration_filter_ui
 from bewegungskalender.frontend.functions import loading, container, dropdown_button, icon_link
 from bewegungskalender.frontend.functions import mini_card
@@ -26,6 +26,10 @@ async def list_view():
     await ui.context.client.connected()
     
     with container('xl:w-4/5 w-full justify-between flex-row'):
+        # force filter to use offline mode
+        LOCATION_FILTER.location_type.force_offline = True
+
+        
         await create_list_ui()
         
         # Filter
