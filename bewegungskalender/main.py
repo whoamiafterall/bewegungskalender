@@ -25,7 +25,7 @@ from bewegungskalender.libs.logger import LOGGER
 # Set locale
 LOGGER.debug(f"Args: {ARGS}")
 LOGGER.debug('Setting locale...')
-setlocale(locale.LC_ALL, LOCALE)
+#setlocale(locale.LC_ALL, LOCALE)
 
 # Main Function if run as standalone program
 def main():
