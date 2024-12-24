@@ -1,45 +1,21 @@
-from nicegui import app
 from nicegui import ui
-
-from bewegungskalender.backend.io.config import CONFIG, ASSETS_DIR
-from bewegungskalender.backend.io.config import UI_TITLE, UI_FAVICON, UI_PORT, ASSETS_URL_PATH
-from bewegungskalender.frontend.functions import page_sticky
-from bewegungskalender.frontend.main.drawer import left_drawer, right_drawer
-from bewegungskalender.frontend.main.header import header
-from bewegungskalender.frontend.navigation.router import ROUTER
-from bewegungskalender.libs.logger import LOGGER
-from bewegungskalender.frontend.main.menu import main_menu
-
-app.add_static_files(ASSETS_URL_PATH, ASSETS_DIR)
+from nicegui.elements.dark_mode import DarkMode
 
 
-@ui.page('/')
-@ui.page('/{_:path}')
-async def main_page():
-    await ui.context.client.connected()
-    ui.query('.nicegui-content').classes('p-0')  # remove default padding from site
-    ui.dark_mode(True)  # Set dark mode
-    ui.colors(primary='#1c2329', secondary='white', accent='#005a5a')
-    ROUTER.frame().classes('w-screen h-[calc(100vh-55px)]')
-    ld = left_drawer()
+class Theme:
+    dark_mode:bool = ui.dark_mode().value
+    icon:dict = {'icon':'dark_mode'} if dark_mode else {'icon':'light_mode'}
     
-    rd = await right_drawer()
-    header(ld, rd)
+    @classmethod
+    def toggle_dark(cls):
+        if not cls.dark_mode :
+            ui.dark_mode(True); cls.dark_mode = True
+            ui.query('.nicegui-content').style('background-color:#050505')
+            ui.colors(primary='#1c2329', secondary='light-grey', dark='black', accent='#613583')
+            cls.icon = {'icon':'dark_mode'}
+        else:
+            ui.dark_mode(False); cls.dark_mode = False
+            ui.query('.nicegui-content').style('background-color:#F5F5E5')
+            ui.colors(primary='#E8E8D8', secondary='black', DARK='white', accent='#613583')
+            cls.icon = {'icon':'light_mode'}
 
-    with ui.footer(elevated=True).classes('sm:hidden h-50px flex flex-nowrap items-center fixed p-0 gap-0'):
-        main_menu(ld, props='label="" outline', classes='flex-auto bg-accent m-0 p-4')
-
-    page_sticky(rd)
-    
-def start_ui():
-    # storage_secret = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits) for _ in range(32))
-
-    LOGGER.debug('Finished. Starting UI...')
-    ui.run(title=UI_TITLE, favicon=UI_FAVICON, port=UI_PORT)  #storage_secret=storage_secret)
-    LOGGER.debug('Successfully started UI.')
-
-
-
-# Run as Module or Standalone program
-if __name__ in {"__main__", "__mp_main__"}:
-    start_ui()

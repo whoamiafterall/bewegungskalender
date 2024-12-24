@@ -10,7 +10,7 @@ def location_type_filter_ui() -> Element:
 	return (ui.select(
         {EventLocationType.online: 'Online'
             , EventLocationType.offline: 'Offline'
-            , EventLocationType.undefined: 'Anderes'}
+            , EventLocationType.undefined: 'Unbekannt'}
         , label="Ort", value=[
             EventLocationType.online,
             EventLocationType.offline,

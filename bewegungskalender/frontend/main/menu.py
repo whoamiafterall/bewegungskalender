@@ -6,8 +6,8 @@ from nicegui.page_layout import LeftDrawer, RightDrawer
 
 from bewegungskalender.backend.formatting.nextcloud_urls import NC_MONTH_VIEW, NC_YEAR_VIEW
 from bewegungskalender.backend.io.config import MENU
+from bewegungskalender.frontend.main.theme import Theme
 from bewegungskalender.frontend.navigation.router import ROUTER
-from bewegungskalender.frontend.views.FAQ import faq_view
 from bewegungskalender.frontend.views.about import about_view
 from bewegungskalender.frontend.views.form import form_view
 from bewegungskalender.frontend.views.links import links_view
@@ -34,7 +34,7 @@ class NavigateButton(Button):
         super().__init__(text=text, icon=icon, on_click=lambda: ui.navigate.to(link, new_tab=True))
 
 
-def main_menu(left_drawer:LeftDrawer, classes:str=None, props:str=None):
+def main_menu(left_drawer:LeftDrawer, classes:str=None, props:str='color=accent text-color=white'):
     ui.button(on_click=lambda: left_drawer.toggle(), icon='menu').classes(classes).props(props).tailwind('lg:hidden')
     MenuButton(MENU['list'], list_view).classes(classes).props(props)
     NavigateButton('calendar_month', 'Monat', NC_MONTH_VIEW).classes(classes).props(props)
@@ -44,8 +44,9 @@ def main_menu(left_drawer:LeftDrawer, classes:str=None, props:str=None):
 #    MenuButton(MENU['calendar'], custom_calendar_view).props(props)
   #  MenuButton(MENU['table'], table_view).props(props)
 
-def secondary_menu(left_drawer:LeftDrawer, classes:str=None, props:str=None):
+def secondary_menu(left_drawer:LeftDrawer, classes:str=None, props:str='color=accent text-color=white'):
     MenuButton(MENU['form'], form_view, left_drawer).classes(classes).props(props)
     MenuButton(MENU['about'], about_view, left_drawer).classes(classes).props(props)
-    MenuButton(MENU['FAQ'], faq_view, left_drawer).classes(classes).props(props)
+    #MenuButton(MENU['FAQ'], faq_view, left_drawer).classes(classes).props(props)
     MenuButton(MENU['links'], links_view, left_drawer).classes(classes).props(props)
+    ui.button(on_click=lambda:Theme.toggle_dark(), icon=Theme.icon['icon']).classes(classes).props(props)#.bind_icon_from(Theme.icon, 'icon')

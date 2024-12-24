@@ -87,7 +87,7 @@ async def map_view():
 
                     # use template html file and replace variables TODO: use a proper templating language like Jinja? (Didn't want to setup a templating environment just for one file though)
                     # it might also a be an option to be generate all the html popups and store them as properties themselves also.
-                    context = {"summary": event.summary, "event_time": event_time(event.start, event.end), "location": location.name, "link": event.location.osm_link}
+                    context = {"summary": event.summary, "event_time": event_time(event.start, event.end), "location": location.name, "link": event.link}
                     bind_popup(leaflet, marker, context)
 
         await create_map_ui()
@@ -95,7 +95,7 @@ async def map_view():
 
         # Filter
         with ui.column(wrap=False, align_items='start').classes(
-                'm-0 gap-1 px-5 max-w-1/4 pt-5 shrink text-sm max-lg:hidden'):
+                'm-0 gap-1 px-5 max-w-1/4 pt-5 bg-primary h-[calc(100vh-55px)] grow text-sm max-lg:hidden'):
             duration_filter_ui()
             location_proximity_filter_ui()
             await categories_filters_ui()
