@@ -28,7 +28,7 @@ def tab_panel(tab:str):
 @contextmanager
 def container(classes:str=None):
     with ui.card().tight().classes(
-            'container mx-auto min-h-full overflow-auto px-10 py-5 ' # Layout - Trailing White Space is important!
+            'container mx-auto min-h-full overflow-auto px-4 sm:px-10 rounded-none py-5 ' # Layout - Trailing White Space is important!
             'bg-primary text-base font-light max-sm:mb-[50px] text-secondary') as card: # Text
         card.classes(classes) # Add Custom Classes
         yield card
@@ -39,7 +39,7 @@ def page_sticky(right_drawer: RightDrawer):
         
 @contextmanager
 def mini_card(classes:str=None):
-    with ui.card().tight().classes('m-0 p-2 flex-row bg-primary shadow-none items-center ') as card:
+    with ui.card().tight().classes('m-0 p-2 flex-row bg-primary text-secondary shadow-none items-center ') as card:
         card.classes(classes)
         yield card
 
@@ -49,7 +49,7 @@ def dropdown_button(name:str, color:str, classes:str=None):
             text=name,
             color=opacity(70, color),
             auto_close=True,
-    ).classes('font-normal text-sm capitalize grow items-start') as btn:
+    ).classes(f"font-normal text-secondary text-sm capitalize grow items-start") as btn:
         btn.classes(classes)
         yield btn
 
@@ -64,7 +64,7 @@ def new_tab_icon():
 def render_iframe(height:str, width:str, source:str):
     ui.html(f"<iframe src={source} width={width} height={height}></iframe>").classes('w-screen h-screen p-0 m-0')
 
-def loading(page_label:str, timeout:float = 0.7):
+def loading(page_label:str='', timeout:float = 0.7):
     ui.notification(f"Lade {page_label}...", position='center', type='ongoing', spinner=True, timeout=timeout)
 
 def opacity(percentage:int, color:str):
