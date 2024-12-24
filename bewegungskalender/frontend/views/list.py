@@ -32,7 +32,7 @@ async def list_view():
         
         # Filter
         with ui.column(wrap=False, align_items='start').classes(
-                'm-0 gap-1 max-w-1/4 pt-5 px-3 shrink text-sm max-lg:hidden'):
+                'm-0 gap-1 max-w-1/4 pt-5 px-3 text-sm max-lg:hidden'):
             duration_filter_ui()
             location_type_filter_ui()
             location_proximity_filter_ui().bind_visibility_from(LOCATION_TYPE_FILTER.state, target_name="value", backward=lambda v: (EventLocationType.offline in v))
@@ -47,7 +47,7 @@ async def list_view():
 async def create_list_ui():
     # Get filtered Events
     events = events_using_filters([LOCATION_TYPE_FILTER,CATEGORY_FILTER,LOCATION_PROXIMITY_FILTER,TIME_FILTER])
-    with ui.column(wrap=False, align_items='center').classes('grow m-0 gap-0 px-2'):
+    with ui.column(wrap=False, align_items='center').classes('grow m-0 gap-0 sm:px-2'):
         with ui.list().classes('w-full'):
 
             month = today().month
@@ -56,12 +56,12 @@ async def create_list_ui():
                 if event.start.month != month:
                     month_heading(event.start)
                 month = event.start.month
-                create_list_ui_single_event_item(event)
+                create_event_row(event)
 
-def create_list_ui_single_event_item(event):
+def create_event_row(event):
 
     # Create a row for each event
-    with ui.row().classes('flex flex-row w-full gap-1 p-0.5 max-sm:mb-2 text-sm'):
+    with ui.row().classes('flex flex-row w-full gap-0 sm:gap-x-3 p-0.5 max-sm:mb-2 items-center text-sm'):
         show_time(event)  # Show Event_Time
         # Create the dropdown button
         with dropdown_button(event.summary, event.category.color, "max-sm:w-full max-sm:order-3"):
@@ -84,7 +84,7 @@ def month_heading(month:datetime=today()):
         ui.markdown(f"#### {month:%B}").classes('text-center')
         
 def show_time(event:Event):
-    with mini_card('p-1 gap-1 order-first'):
+    with mini_card('sm:p-1 gap-1 order-first'):
         ui.label(f"{event.start:%d (%a)}").classes('nowrap')
         ui.label(f"{event.start:%H:%M}:") if event.start.time() != datetime.min.time() else None
     ui.space().classes('grow sm:hidden')
@@ -116,5 +116,5 @@ def download_button(event:Event):
               on_click=lambda: download_ics(
               f"https://{NC_DOMAIN}/remote.php/dav/public-calendars/{event.category.public_id}/{event.ics_url.split('/')[-1]}?export",
               f"{slugify(event.summary)}.ics")
-          ).props('flat color=white'
-    ).classes('font-normal hover:font-medium normal-case')
+          ).props('flat'
+    ).classes('font-normal text-secondary normal-case')
