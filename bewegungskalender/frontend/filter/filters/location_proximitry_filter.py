@@ -17,7 +17,7 @@ def location_proximity_filter_ui() -> Element:
                                                                throttle=1.0, leading_events=False).bind_value(
             LOCATION_PROXIMITY_FILTER.location, "query").props('clearable filled').classes('w-full my-1 pl-3')
 
-        with ui.card().classes("ml-3 gap-0.5 border w-full max-w-[260px] no-shadow").bind_visibility_from(
+        with ui.card().classes("ml-3 gap-0.5 bg-primary text-secondary w-full max-w-[260px] no-shadow").bind_visibility_from(
                 LOCATION_PROXIMITY_FILTER.location, 'result', lambda v: v is not None):
             ui.label("").bind_text_from(LOCATION_PROXIMITY_FILTER.location, 'result',
                                         backward=lambda a: "" if a is None else a["display_name"])
