@@ -24,6 +24,9 @@ MAIL_PORT: Final[int] = CREDENTIALS['mail']['smtp_port']
 MAIL_ACC: Final[str] = CREDENTIALS['mail']['account']
 MAIL_PW: Final[str] = CREDENTIALS['mail']['password']
 
+# UI Section
+UI_STORAGE_SECRET: Final[str] = CREDENTIALS['ui']['storage_secret']
+
 # Telegram-Section
 TELEGRAM_TOKEN: Final[str] = CREDENTIALS['telegram']['token']
 TELEGRAM_PRODUCTION: Final[str] = CREDENTIALS['telegram']['production_channel_id']

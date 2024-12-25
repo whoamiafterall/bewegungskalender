@@ -6,6 +6,7 @@ from nicegui import ui
 
 from bewegungskalender.backend.io.config import ASSETS_DIR
 from bewegungskalender.backend.io.config import UI_TITLE, UI_FAVICON, UI_PORT, ASSETS_URL_PATH
+from bewegungskalender.backend.io.credentials import CREDENTIALS, UI_STORAGE_SECRET
 from bewegungskalender.frontend.functions import page_sticky
 from bewegungskalender.frontend.main.drawer import left_drawer, right_drawer
 from bewegungskalender.frontend.main.header import header
@@ -35,11 +36,9 @@ async def main_page():
     page_sticky(rd)
     
 def start_ui():
-    #TODO: Get this from credentials.yml instead
-    storage_secret = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits) for _ in range(32))
 
     LOGGER.debug('Finished. Starting UI...')
-    ui.run(title=UI_TITLE, favicon=UI_FAVICON, port=UI_PORT, uvicorn_logging_level='info',storage_secret=storage_secret)
+    ui.run(title=UI_TITLE, favicon=UI_FAVICON, port=UI_PORT, uvicorn_logging_level='info',storage_secret=UI_STORAGE_SECRET)
 
     LOGGER.debug('Successfully started UI.')
 
