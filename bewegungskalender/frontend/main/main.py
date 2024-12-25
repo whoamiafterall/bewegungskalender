@@ -21,11 +21,15 @@ app.add_static_files(ASSETS_URL_PATH, ASSETS_DIR)
 @ui.page('/{_:path}')
 async def main_page():
     await ui.context.client.connected()
+
+    # Load the theme from browser storage
+    Theme.load_theme()
+    # Make sure theme is applied on newly opened pages
+    ui.on("router_open_page",lambda: Theme.apply())
+
     ui.query('.nicegui-content').classes('p-0 min-h-full overflow-auto') # remove default padding from site
     ROUTER.frame().classes('w-screen h-[calc(100vh-55px)]')
     ld = left_drawer()
-
-    Theme.load_theme()
     
     rd = await right_drawer()
     header(ld, rd)
@@ -41,6 +45,7 @@ def start_ui():
     ui.run(title=UI_TITLE, favicon=UI_FAVICON, port=UI_PORT, uvicorn_logging_level='info',storage_secret=UI_STORAGE_SECRET)
 
     LOGGER.debug('Successfully started UI.')
+
 
 # Run as Module or Standalone program
 if __name__ in {"__main__", "__mp_main__"}:
