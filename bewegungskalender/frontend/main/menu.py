@@ -49,4 +49,4 @@ def secondary_menu(left_drawer:LeftDrawer, classes:str=None, props:str='color=ac
     MenuButton(MENU['about'], about_view, left_drawer).classes(classes).props(props)
     #MenuButton(MENU['FAQ'], faq_view, left_drawer).classes(classes).props(props)
     MenuButton(MENU['links'], links_view, left_drawer).classes(classes).props(props)
-    ui.button(on_click=lambda:Theme.toggle_dark(), icon=Theme.icon['icon']).classes(classes).props(props)#.bind_icon_from(Theme.icon, 'icon')
+    ui.button(on_click=lambda:Theme.toggle_dark()).classes(classes).props(props).bind_icon_from(Theme,"dark_mode", lambda v: 'dark_mode' if v == False else 'light_mode')#.bind_text_from(Theme,"dark_mode", lambda v: 'Darkmode' if v == False else 'Lightmode')
