@@ -1,3 +1,6 @@
+import random
+import string
+
 from nicegui import app
 from nicegui import ui
 
@@ -18,9 +21,10 @@ app.add_static_files(ASSETS_URL_PATH, ASSETS_DIR)
 async def main_page():
     await ui.context.client.connected()
     ui.query('.nicegui-content').classes('p-0 min-h-full overflow-auto') # remove default padding from site
-    Theme.toggle_dark()
     ROUTER.frame().classes('w-screen h-[calc(100vh-55px)]')
     ld = left_drawer()
+
+    Theme.load_theme()
     
     rd = await right_drawer()
     header(ld, rd)
@@ -31,10 +35,12 @@ async def main_page():
     page_sticky(rd)
     
 def start_ui():
-    # storage_secret = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits) for _ in range(32))
+    #TODO: Get this from credentials.yml instead
+    storage_secret = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits) for _ in range(32))
 
     LOGGER.debug('Finished. Starting UI...')
-    ui.run(title=UI_TITLE, favicon=UI_FAVICON, port=UI_PORT, uvicorn_logging_level='info')  #storage_secret=storage_secret)
+    ui.run(title=UI_TITLE, favicon=UI_FAVICON, port=UI_PORT, uvicorn_logging_level='info',storage_secret=storage_secret)
+
     LOGGER.debug('Successfully started UI.')
 
 # Run as Module or Standalone program
