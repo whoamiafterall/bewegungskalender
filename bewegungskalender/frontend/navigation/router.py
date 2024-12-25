@@ -2,6 +2,8 @@ from typing import Callable, Dict, Union
 
 from nicegui import binding, background_tasks, helpers, ui
 
+from bewegungskalender.frontend.main.theme import Theme
+
 
 class RouterFrame(ui.element, component='router_frame.js'):
     pass
@@ -56,6 +58,8 @@ class Router:
                     await result
         self.content.clear()
         background_tasks.create(build())
+
+        ui.run_javascript("emitEvent('router_open_page');")
 
     def frame(self) -> ui.element:
         self.content = RouterFrame().on('open', lambda e: self.open(e.args))
