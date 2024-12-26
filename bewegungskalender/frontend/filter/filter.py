@@ -14,7 +14,7 @@ from bewegungskalender.backend.io import db
 def call_refresh_filter_event():
 	ui.run_javascript("emitEvent('refresh_filter');")
 
-def events_using_filters(filters: []) -> list[Event]:
+def events_using_filters(filters: [],offset: int = 0,limit: int = 25) -> list[Event]:
 
 	# init select
 	statement = select(Event,Location,Category)
@@ -23,7 +23,7 @@ def events_using_filters(filters: []) -> list[Event]:
 		statement = single_filter.apply_filter_to_statement(statement)
 
 	# run statement
-	statement = statement.join(Location).join(Category).order_by(Event.start).order_by(Event.start).limit(25)
+	statement = statement.join(Location).join(Category).order_by(Event.start).order_by(Event.start).offset(offset).limit(limit)
 	result = db.exe(statement).all()
 
 	# return as array of Events
