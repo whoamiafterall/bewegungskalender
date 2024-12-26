@@ -14,7 +14,8 @@ from bewegungskalender.frontend.filter.filters.category_filter import categories
 from bewegungskalender.frontend.filter.filters.location_proximitry_filter import location_proximity_filter_ui, \
     LOCATION_PROXIMITY_FILTER
 from bewegungskalender.frontend.filter.filters.location_type_filter import location_type_filter_ui, LOCATION_TYPE_FILTER
-from bewegungskalender.frontend.filter.filters.time_filter import duration_filter_ui, TIME_FILTER
+from bewegungskalender.frontend.filter.filters.duration_filter import duration_filter_ui, DURATION_FILTER
+from bewegungskalender.frontend.filter.filters.time_filter import TIME_FILTER
 from bewegungskalender.frontend.functions import loading, container, dropdown_button, icon_link
 from bewegungskalender.frontend.functions import mini_card
 from bewegungskalender.frontend.navigation.router import ROUTER
@@ -46,7 +47,7 @@ async def list_view():
 @ui.refreshable
 async def create_list_ui():
     # Get filtered Events
-    events = events_using_filters([LOCATION_TYPE_FILTER,CATEGORY_FILTER,LOCATION_PROXIMITY_FILTER,TIME_FILTER])
+    events = events_using_filters([LOCATION_TYPE_FILTER, CATEGORY_FILTER, LOCATION_PROXIMITY_FILTER, DURATION_FILTER])
     with ui.column(wrap=False, align_items='center').classes('grow m-0 gap-0 sm:px-2'):
         with ui.list().classes('w-full'):
 

@@ -5,7 +5,7 @@ from bewegungskalender.backend.calendar.location import EventLocationType
 from bewegungskalender.frontend.filter.filters.category_filter import categories_filters_ui
 from bewegungskalender.frontend.filter.filters.location_proximitry_filter import location_proximity_filter_ui
 from bewegungskalender.frontend.filter.filters.location_type_filter import location_type_filter_ui, LOCATION_TYPE_FILTER
-from bewegungskalender.frontend.filter.filters.time_filter import duration_filter_ui
+from bewegungskalender.frontend.filter.filters.duration_filter import duration_filter_ui
 from bewegungskalender.frontend.main.menu import secondary_menu
 from bewegungskalender.frontend.navigation.router import ROUTER
 

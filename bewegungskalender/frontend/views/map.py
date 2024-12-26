@@ -12,7 +12,7 @@ from bewegungskalender.frontend.filter.filters.category_filter import categories
 from bewegungskalender.frontend.filter.filters.location_proximitry_filter import location_proximity_filter_ui, \
     LOCATION_PROXIMITY_FILTER
 from bewegungskalender.frontend.filter.filters.location_type_filter import location_type_filter_ui, LOCATION_TYPE_FILTER
-from bewegungskalender.frontend.filter.filters.time_filter import duration_filter_ui, TIME_FILTER
+from bewegungskalender.frontend.filter.filters.duration_filter import duration_filter_ui, DURATION_FILTER
 from bewegungskalender.frontend.functions import loading
 from bewegungskalender.frontend.navigation.router import ROUTER
 from bewegungskalender.frontend.templates.templater import render_map_template
@@ -66,7 +66,7 @@ async def map_view():
                     leaflet.generic_layer(name='circle', args=[center, {'color': 'grey','opacity': 0.02, 'radius': LOCATION_PROXIMITY_FILTER.distance.value * 1000}])
 
                 # get cached data
-                events = events_using_filters([CATEGORY_FILTER,LOCATION_PROXIMITY_FILTER,TIME_FILTER])
+                events = events_using_filters([CATEGORY_FILTER, LOCATION_PROXIMITY_FILTER, DURATION_FILTER])
 
                 LOGGER.info(f"Got {events.__len__()} locations to display...")
 
