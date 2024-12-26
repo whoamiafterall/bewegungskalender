@@ -23,9 +23,7 @@ async def main_page():
     await ui.context.client.connected()
 
     # Load the theme from browser storage
-    Theme.load_theme()
-    # Make sure theme is applied on newly opened pages
-    ui.on("router_open_page",lambda: Theme.apply())
+    Theme.init_theme()
 
     ui.query('.nicegui-content').classes('p-0 min-h-full overflow-auto') # remove default padding from site
     ROUTER.frame().classes('w-screen h-[calc(100vh-55px)]')

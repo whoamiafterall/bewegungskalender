@@ -1,6 +1,6 @@
 from typing import Callable, Any
 
-from nicegui import ui
+from nicegui import ui, app
 from nicegui.elements.button import Button
 from nicegui.page_layout import LeftDrawer, RightDrawer
 
@@ -49,4 +49,4 @@ def secondary_menu(left_drawer:LeftDrawer, classes:str=None, props:str='color=ac
     MenuButton(MENU['about'], about_view, left_drawer).classes(classes).props(props)
     #MenuButton(MENU['FAQ'], faq_view, left_drawer).classes(classes).props(props)
     MenuButton(MENU['links'], links_view, left_drawer).classes(classes).props(props)
-    ui.button(on_click=lambda:Theme.toggle_dark()).classes(classes).props(props).bind_icon_from(Theme,"dark_mode", lambda v: 'dark_mode' if v == False else 'light_mode')#.bind_text_from(Theme,"dark_mode", lambda v: 'Darkmode' if v == False else 'Lightmode')
+    ui.button(on_click=lambda:Theme.toggle_dark()).classes(classes).props(props).bind_icon_from(app.storage.user,"dark_mode", lambda v: 'dark_mode' if v == False else 'light_mode')#.bind_text_from(Theme,"dark_mode", lambda v: 'Darkmode' if v == False else 'Lightmode')
