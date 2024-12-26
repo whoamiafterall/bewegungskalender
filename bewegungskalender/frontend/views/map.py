@@ -80,12 +80,22 @@ async def map_view():
                     marker = leaflet.marker(latlng=(location.lat, location.lon))
                     LOGGER.debug(f"Created marker for {event.summary}.")
 
-                    marker_html_styles = f"background-color: {event.category.color}; width: 1.6rem; height: 1.6rem; display: block; left: -0.8rem; top: -0.8rem; position: relative; border-radius: 1.6rem 1.6rem 0; transform: rotate(45deg);"
+                    marker_html_styles = f'''
+                        background-color: {event.category.color}; 
+                        width: 1.6rem; 
+                        height: 1.6rem; 
+                        display: block; 
+                        left: -0.8rem; 
+                        top: -0.8rem; 
+                        position: relative; 
+                        border-radius: 1.6rem 1.6rem 0; 
+                        transform: rotate(45deg);
+                    '''
 
                     marker_html = f'<span style="{marker_html_styles}"/>'
 
                     # set icon (don't run with await, that causes issues for some reason ...)
-                    marker.run_method(':setIcon', f"L.divIcon({{className: 'my-custom-pin',iconAnchor:[0, 24],labelAnchor:[-6, 0],popupAnchor:[0,-36],html: '{marker_html}'}})")
+                    marker.run_method(':setIcon', f"L.divIcon({{className: 'map-pin',iconAnchor:[0, 24],labelAnchor:[-6, 0],popupAnchor:[0,-36],html: '{marker_html}'}})")
 
                     # use template html file and replace variables TODO: use a proper templating language like Jinja? (Didn't want to setup a templating environment just for one file though)
                     # it might also a be an option to be generate all the html popups and store them as properties themselves also.
