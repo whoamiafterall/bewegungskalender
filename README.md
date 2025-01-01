@@ -16,10 +16,11 @@ This script does several things (most of them optional) interacting with Nextclo
 
 ### Roadmap
 
-- Add the Option to edit Telegram messages (in Progress)
-- Add the Option to send the message to Mastodon
-- Refactor to use more Object Oriented Programming
-- Rewrite the Argparser to act like a cli-program with subcommands
+- Form for submitting events to the Caldav backend
+- Moderation tool for the caldav backend
+- Api
+- Personalized newsletter
+- Search feature
 
 See TODO.md for more information.
 
