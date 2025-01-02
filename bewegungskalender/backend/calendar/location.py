@@ -91,6 +91,8 @@ def get_location_data(location:str) -> Location:
         location_get_link_result = get_link(location)
         if location_get_link_result is not None:
             return Location.parse_online(location_get_link_result)
+        elif "online" in str.lower(location):
+            return Location.parse_online(None)
         else:
             # Fallback to geocode
             return geocode(location)

@@ -68,8 +68,8 @@ def create_event_row(event):
         with dropdown_button(event.summary, event.category.color, "max-sm:w-full max-sm:order-3"):
             # Create the dropdown content
             with mini_card('flex-col text-sm w-full'):
-                if event.location.type == EventLocationType.online:
-                    icon_link('Computer', event.location.name, event.location.online_link)
+                if event.location.online_link is not None:
+                    icon_link('computer', event.location.name, event.location.online_link)
                 if event.location.type == EventLocationType.offline:
                     icon_link('map', event.location.name, event.location.osm_link)
                 if event.link:
