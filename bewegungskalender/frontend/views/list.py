@@ -26,13 +26,13 @@ async def list_view():
     loading(MENU['list']['label'])
     await ui.context.client.connected()
     
-    with container('xl:w-4/5 w-full justify-between flex-row'):
+    with container('xl:w-4/5 w-full h-[calc(100vh-55px)] pb-0 pt-0 mb-50px justify-between flex-row'):
 
         await create_list_ui()
         
         # Filter
         with ui.column(wrap=False, align_items='start').classes(
-                'm-0 gap-1 max-w-1/4 pt-5 px-3 text-sm max-lg:hidden'):
+                'm-0 gap-1 max-w-1/4 px-3 text-sm max-lg:hidden'):
             duration_filter_ui()
             location_type_filter_ui()
             location_proximity_filter_ui().bind_visibility_from(LOCATION_TYPE_FILTER.state, target_name="value", backward=lambda v: (EventLocationType.offline in v))
@@ -47,16 +47,17 @@ async def list_view():
 async def create_list_ui():
     # Get filtered Events
     events = events_using_filters([LOCATION_TYPE_FILTER, CATEGORY_FILTER, LOCATION_PROXIMITY_FILTER, DURATION_FILTER])
-    with ui.column(wrap=False, align_items='center').classes('grow m-0 gap-0 sm:px-2'):
-        with ui.list().classes('w-full'):
-
-            month = today().month
-            for event in events:
-
-                if event.start.month != month:
-                    month_heading(event.start)
-                month = event.start.month
-                create_event_row(event)
+    with ui.column(wrap=False, align_items='center').classes('h-full w-full m-0 gap-0 sm:px-2'):
+        with ui.scroll_area().classes('grow').props("visible=False"):
+            with ui.list().classes('w-full'):
+    
+                month = today().month
+                for event in events:
+    
+                    if event.start.month != month:
+                        month_heading(event.start)
+                    month = event.start.month
+                    create_event_row(event)
 
 def create_event_row(event):
 
