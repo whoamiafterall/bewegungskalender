@@ -41,7 +41,7 @@ def single_category_filter_ui(category: Category):
             with mini_card('space-x-2'):
                 ui.button(text='Copy subscribe link', icon='content_copy',
                           on_click=lambda: ui.clipboard.write(category.ics_url)
-                          ).props('flat color=white').classes(
+                          ).props('flat color=secondary').classes(
                     'font-normal hover:font-medium normal-case')
             with mini_card('space-x-2'):
                 ui.button(text='How to Subscribe', icon='lightbulb',
@@ -49,7 +49,7 @@ def single_category_filter_ui(category: Category):
                           on_click=lambda: ui.navigate.to(
                               'https://pad.kanthaus.online/Nextcloud?both=#Subscribe-to-Calendars',
                               new_tab=True)
-                          ).props('flat color=white').classes(
+                          ).props('flat color=secondary').classes(
                     'font-normal hover:font-medium normal-case')
 
 
