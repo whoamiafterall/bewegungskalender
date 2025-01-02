@@ -59,7 +59,7 @@ class Location(SQLModel, table=True):
 def geocode(location:str) -> Location:
     try:
         # Find offline events
-        result = Nominatim(user_agent=__name__).geocode(location, addressdetails=True, language=LOCALE).raw
+        result = Nominatim(user_agent=__name__).geocode(location, addressdetails=True, language='de').raw
         return Location.parse_offline(result, location)
     except AttributeError:  # No offline events found
         LOGGER.warning(NoResultError(location))

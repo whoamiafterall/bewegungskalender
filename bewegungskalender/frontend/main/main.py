@@ -1,19 +1,14 @@
-import random
-import string
+from nicegui import ui, app
 
-from nicegui import app
-from nicegui import ui
-
-from bewegungskalender.backend.io.config import ASSETS_DIR
-from bewegungskalender.backend.io.config import UI_TITLE, UI_FAVICON, UI_PORT, ASSETS_URL_PATH
-from bewegungskalender.backend.io.credentials import CREDENTIALS, UI_STORAGE_SECRET
+from bewegungskalender.backend.io.config import UI_TITLE, UI_FAVICON, UI_PORT, ASSETS_URL_PATH, ASSETS_DIR
+from bewegungskalender.backend.io.credentials import UI_STORAGE_SECRET
 from bewegungskalender.frontend.functions import page_sticky
 from bewegungskalender.frontend.main.drawer import left_drawer, right_drawer
 from bewegungskalender.frontend.main.header import header
+from bewegungskalender.frontend.main.menu import main_menu
 from bewegungskalender.frontend.main.theme import Theme
 from bewegungskalender.frontend.navigation.router import ROUTER
 from bewegungskalender.libs.logger import LOGGER
-from bewegungskalender.frontend.main.menu import main_menu
 
 app.add_static_files(ASSETS_URL_PATH, ASSETS_DIR)
 
@@ -40,7 +35,7 @@ async def main_page():
 def start_ui():
 
     LOGGER.debug('Finished. Starting UI...')
-    ui.run(title=UI_TITLE, favicon=UI_FAVICON, port=UI_PORT, uvicorn_logging_level='info',storage_secret=UI_STORAGE_SECRET)
+    ui.run(title=UI_TITLE, favicon=UI_FAVICON, language='de', port=UI_PORT, uvicorn_logging_level='info',storage_secret=UI_STORAGE_SECRET)
 
     LOGGER.debug('Successfully started UI.')
 
