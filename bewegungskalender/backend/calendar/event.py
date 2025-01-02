@@ -9,6 +9,7 @@ from sqlmodel import SQLModel, Field, Relationship
 from bewegungskalender.backend.calendar.helper import get_link
 from bewegungskalender.backend.calendar.location import Location, get_location_data
 from bewegungskalender.backend.io.config import TIMEZONE
+from bewegungskalender.libs.nominatim import LOGGER
 
 if TYPE_CHECKING: # Necessary for SQLModel Relationships across Files
     from bewegungskalender.backend.calendar.category import Category
@@ -27,7 +28,6 @@ class Event(SQLModel, table=True):
     location_id: int = Field(foreign_key="location.id")
     recurrence: bool = Field(default=False)
     cloud_id: str = Field(default=None)
-    ics_url: str = Field()
 
     def update_from_icalendar(self,vevent: Component):
         # Make sure all the values are datetime not date in case of all day events
@@ -57,7 +57,7 @@ class Event(SQLModel, table=True):
 
 
     @classmethod
-    def from_icalendar(cls, vevent: Component, uid:str, ics_url:URL):
+    def from_icalendar(cls, vevent: Component):
         # Make sure all the values are datetime not date in case of all day events
         def to_datetime(dt: date | datetime) -> datetime:
             if isinstance(dt, datetime):
@@ -69,15 +69,13 @@ class Event(SQLModel, table=True):
         # Fix Issue with multi-day events by changing 'ends' midnight to 23:59:59 the day before instead of 00:00:00
         if start.date() != end.date() and end.time() == time.min:
             end = end - timedelta(seconds=1)
-
-        link = get_link(vevent.get('description'))
+        
         # Create object
         event = Event(
-            cloud_id=uid,
-            ics_url=str(ics_url),
+            cloud_id=str(vevent.get('UID')),
             summary=vevent.get('summary'),
             description=vevent.get('description'),
-            link = link,
+            link = get_link(vevent.get('description')),
             location=get_location_data(vevent.get('location')),
             start=start,
             end=end,

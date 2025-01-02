@@ -11,11 +11,10 @@ from bewegungskalender.backend.io.config import MENU
 from bewegungskalender.backend.io.credentials import NC_DOMAIN
 from bewegungskalender.frontend.filter.filter import events_using_filters
 from bewegungskalender.frontend.filter.filters.category_filter import categories_filters_ui, CATEGORY_FILTER
+from bewegungskalender.frontend.filter.filters.duration_filter import duration_filter_ui, DURATION_FILTER
 from bewegungskalender.frontend.filter.filters.location_proximitry_filter import location_proximity_filter_ui, \
     LOCATION_PROXIMITY_FILTER
 from bewegungskalender.frontend.filter.filters.location_type_filter import location_type_filter_ui, LOCATION_TYPE_FILTER
-from bewegungskalender.frontend.filter.filters.duration_filter import duration_filter_ui, DURATION_FILTER
-from bewegungskalender.frontend.filter.filters.time_filter import TIME_FILTER
 from bewegungskalender.frontend.functions import loading, container, dropdown_button, icon_link
 from bewegungskalender.frontend.functions import mini_card
 from bewegungskalender.frontend.navigation.router import ROUTER
@@ -115,7 +114,7 @@ def download_button(event:Event):
     """
     ui.button(text='Add to Calendar (.ics)', icon='file_download',
               on_click=lambda: download_ics(
-              f"https://{NC_DOMAIN}/remote.php/dav/public-calendars/{event.category.public_id}/{event.ics_url.split('/')[-1]}?export",
+              f"https://{NC_DOMAIN}/remote.php/dav/public-calendars/{event.category.public_id}/{event.cloud_id}.ics?export",
               f"{slugify(event.summary)}.ics")
           ).props('flat'
     ).classes('font-normal text-secondary normal-case')
