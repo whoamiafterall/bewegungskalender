@@ -10,6 +10,8 @@ from sqlmodel import select
 
 # internal imports
 from bewegungskalender.backend.calendar.category import Category
+from bewegungskalender.backend.calendar.event import Event
+from bewegungskalender.backend.calendar.location import Location
 from bewegungskalender.backend.formatting.message import MultiFormatMessage, create_message
 from bewegungskalender.backend.io import db
 from bewegungskalender.backend.io.cli import FORMAT, ARGS, DB_MODE
@@ -50,33 +52,30 @@ async def main_async():
 
 	# Update or Create Database
 	if DB_MODE is not None:
+		counter = 0
+		start_time = time.time()
 		match DB_MODE:
 			case 'full':
 				db.create_tables()
 				## Fetch All Events using urls from Config and add them to db
-				counter = 0
-				start_time = time.time()
 				for line in CALENDARS:
 					counter += 1
 					Category.create(configline=line, ref_status={'start_time': start_time, 'current': counter,
-					                            'complete': len(CALENDARS)})
+					                                             'complete': len(CALENDARS)})
 			case 'sync':
 				## Sync Events using sync token stored in database
 				[Category.sync(category) for category in db.exe(select(Category)).all()]
 			case 'search':
 				## Fetch only upcoming events in the given Timeframe
 				db.recreate_tables()
-				counter = 0
-				start_time = time.time()
 				for line in CALENDARS:
 					counter += 1
 					Category.create(configline=line, ref_status={'start_time': start_time, 'current': counter,
-					                                             'complete': len(CALENDARS)})
-	
-	# Uncomment For Debugging
-#	data = db.exe(select(Event,Location,Category).join(Location).join(Category)).all()
-#	for event in [n.Event for n in data]:
-#		print(event.summary)
+				                                             'complete': len(CALENDARS)})
+			case 'dump':
+				data = db.exe(select(Event,Location,Category).join(Location).join(Category)).all()
+				for event in [n.Event for n in data]:
+					print(event.summary)
 
 	
 	# Output Section
@@ -107,7 +106,7 @@ async def main_async():
 		await send_or_edit_telegram(message)
 	
 	LOGGER.info('Finished all Tasks - Quitting.\n')
-	sys.exit(1)
+	sys.exit(0)
 
 # send mastodon newsletter #TODO Implement Mastodon
 # if ARGS.send_mastodon:
