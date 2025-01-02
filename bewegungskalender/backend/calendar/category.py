@@ -4,6 +4,7 @@ import time
 import icalendar
 from caldav import SynchronizableCalendarObjectCollection
 from caldav.objects import CalendarObjectResource
+from icalendar.cal import Component
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.sql.functions import count
 from sqlmodel import SQLModel, Relationship, Field, select
@@ -63,24 +64,25 @@ class Category(SQLModel, table=True):
 		cal = get_calendar_by_url(self.internal)
 		updated_events = sync_all_events(cal, self.sync_token)
 
-
-
-		print(f"Syncing {self.sync_token} to {str(updated_events.sync_token)}")
-		print("|")
+		LOGGER.info(f"Syncing {self.sync_token} to {str(updated_events.sync_token)}")
+		LOGGER.debug("|")
 		for ics in updated_events:
 			if ics.data is not None:
 				# optain last sequence
-				comp = undefined
+				comp = undefined #TODO is this necessary?
 				for temp_comp in icalendar.Event.from_ical(ics.data).walk(name='VEVENT'):
-					comp = temp_comp
+					comp = temp_comp #TODO is this necessary?
 
+				def compare_event(compo:Component):
+					return sess.exec(select(Event).where(Event.cloud_id == str(compo.get('UID')))).one()
+				
 				#check if event is being deleted
 				if "EXDATE" in comp:
 					with db.session() as sess:
-						event = sess.exec(select(Event).where(Event.ics_url == str(ics.url))).one()
+						event = compare_event(comp)
 						sess.delete(event)
 						sess.commit()
-					print(f"| deleted 1 Event")
+					LOGGER.info(f"| deleted 1 Event")
 
 				else:
 					#for comp in icalendar.Event.from_ical(ics.data).walk(name='VEVENT'):
@@ -88,23 +90,22 @@ class Category(SQLModel, table=True):
 					#db.session().exec()
 					try:
 						with db.session() as sess:
-							event = sess.exec(select(Event).where(Event.ics_url == str(ics.url))).one()
-							event.update_from_icalendar(comp)
+							event = compare_event(comp)
+							event.from_icalendar(comp)
 							sess.add(event)
 							sess.commit()
 							sess.refresh(event)
-						print(f"| changed 1 Event")
+						LOGGER.info(f"| changed 1 Event")
 					except NoResultFound:
 						with db.session() as sess:
 							category = sess.exec(select(Category).where(Category.id == self.id)).one()
-							category.events.append(Event.from_icalendar(comp, str(comp['UID']), ics.url))
+							category.events.append(Event().from_icalendar(comp))
 							sess.add(category)
 							sess.commit()
 							sess.refresh(category)
-						print(f"| added 1 Event")
+						LOGGER.info(f"| added 1 Event")
 
-
-		print("--------------------")
+		LOGGER.info("--------------------")
 
 		with db.session() as sess:
 			category = sess.exec(select(Category).where(Category.id == self.id)).one()
