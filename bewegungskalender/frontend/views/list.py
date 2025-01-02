@@ -98,7 +98,8 @@ def show_location(event:Event):
                 ui.space()
             case EventLocationType.offline:
                 if event.location.country_code in ('de', 'at', 'ch'):
-                    ui.label(f"{event.location.city}").classes('grow text-right')
+                    text = event.location.city if event.location.city is not None else event.location.name
+                    ui.label(f"{text}").classes('grow text-right')
                 elif not event.location.country_code:
                     ui.space()
                 else:
