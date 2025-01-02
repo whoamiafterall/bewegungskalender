@@ -11,11 +11,10 @@ from bewegungskalender.backend.io.config import MENU
 from bewegungskalender.backend.io.credentials import NC_DOMAIN
 from bewegungskalender.frontend.filter.filter import events_using_filters
 from bewegungskalender.frontend.filter.filters.category_filter import categories_filters_ui, CATEGORY_FILTER
+from bewegungskalender.frontend.filter.filters.duration_filter import duration_filter_ui, DURATION_FILTER
 from bewegungskalender.frontend.filter.filters.location_proximitry_filter import location_proximity_filter_ui, \
     LOCATION_PROXIMITY_FILTER
 from bewegungskalender.frontend.filter.filters.location_type_filter import location_type_filter_ui, LOCATION_TYPE_FILTER
-from bewegungskalender.frontend.filter.filters.duration_filter import duration_filter_ui, DURATION_FILTER
-from bewegungskalender.frontend.filter.filters.time_filter import TIME_FILTER
 from bewegungskalender.frontend.functions import loading, container, dropdown_button, icon_link
 from bewegungskalender.frontend.functions import mini_card
 from bewegungskalender.frontend.navigation.router import ROUTER
@@ -27,13 +26,13 @@ async def list_view():
     loading(MENU['list']['label'])
     await ui.context.client.connected()
     
-    with container('xl:w-4/5 w-full justify-between flex-row'):
+    with container('xl:w-4/5 w-full h-[calc(100vh-55px)] pb-0 pt-0 mb-50px justify-between flex-row'):
 
         await create_list_ui()
         
         # Filter
         with ui.column(wrap=False, align_items='start').classes(
-                'm-0 gap-1 max-w-1/4 pt-5 px-3 text-sm max-lg:hidden'):
+                'm-0 gap-1 max-w-1/4 px-3 text-sm max-lg:hidden'):
             duration_filter_ui()
             location_type_filter_ui()
             location_proximity_filter_ui().bind_visibility_from(LOCATION_TYPE_FILTER.state, target_name="value", backward=lambda v: (EventLocationType.offline in v))
@@ -48,16 +47,17 @@ async def list_view():
 async def create_list_ui():
     # Get filtered Events
     events = events_using_filters([LOCATION_TYPE_FILTER, CATEGORY_FILTER, LOCATION_PROXIMITY_FILTER, DURATION_FILTER])
-    with ui.column(wrap=False, align_items='center').classes('grow m-0 gap-0 sm:px-2'):
-        with ui.list().classes('w-full'):
-
-            month = today().month
-            for event in events:
-
-                if event.start.month != month:
-                    month_heading(event.start)
-                month = event.start.month
-                create_event_row(event)
+    with ui.column(wrap=False, align_items='center').classes('h-full w-full m-0 gap-0 sm:px-2'):
+        with ui.scroll_area().classes('grow').props("visible=False"):
+            with ui.list().classes('w-full'):
+    
+                month = today().month
+                for event in events:
+    
+                    if event.start.month != month:
+                        month_heading(event.start)
+                    month = event.start.month
+                    create_event_row(event)
 
 def create_event_row(event):
 
@@ -99,7 +99,8 @@ def show_location(event:Event):
                 ui.space()
             case EventLocationType.offline:
                 if event.location.country_code in ('de', 'at', 'ch'):
-                    ui.label(f"{event.location.city}").classes('grow text-right')
+                    text = event.location.city if event.location.city is not None else event.location.name
+                    ui.label(f"{text}").classes('grow text-right')
                 elif not event.location.country_code:
                     ui.space()
                 else:
@@ -115,7 +116,7 @@ def download_button(event:Event):
     """
     ui.button(text='Add to Calendar (.ics)', icon='file_download',
               on_click=lambda: download_ics(
-              f"https://{NC_DOMAIN}/remote.php/dav/public-calendars/{event.category.public_id}/{event.ics_url.split('/')[-1]}?export",
+              f"https://{NC_DOMAIN}/remote.php/dav/public-calendars/{event.category.public_id}/{event.cloud_id}.ics?export",
               f"{slugify(event.summary)}.ics")
           ).props('flat'
     ).classes('font-normal text-secondary normal-case')

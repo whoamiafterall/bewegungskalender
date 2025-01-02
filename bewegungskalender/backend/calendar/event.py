@@ -9,6 +9,7 @@ from sqlmodel import SQLModel, Field, Relationship
 from bewegungskalender.backend.calendar.helper import get_link
 from bewegungskalender.backend.calendar.location import Location, get_location_data
 from bewegungskalender.backend.io.config import TIMEZONE
+from bewegungskalender.libs.nominatim import LOGGER
 
 if TYPE_CHECKING: # Necessary for SQLModel Relationships across Files
     from bewegungskalender.backend.calendar.category import Category
@@ -27,9 +28,8 @@ class Event(SQLModel, table=True):
     location_id: int = Field(foreign_key="location.id")
     recurrence: bool = Field(default=False)
     cloud_id: str = Field(default=None)
-    ics_url: str = Field()
 
-    def update_from_icalendar(self,vevent: Component):
+    def from_icalendar(self,vevent: Component):
         # Make sure all the values are datetime not date in case of all day events
         def to_datetime(dt: date | datetime) -> datetime:
             if isinstance(dt, datetime):
@@ -54,37 +54,8 @@ class Event(SQLModel, table=True):
         self.end=temp_end
         self.duration=temp_end - temp_start
         self.recurrence=True if vevent.get('recurrence-id') else False
-
-
-    @classmethod
-    def from_icalendar(cls, vevent: Component, uid:str, ics_url:URL):
-        # Make sure all the values are datetime not date in case of all day events
-        def to_datetime(dt: date | datetime) -> datetime:
-            if isinstance(dt, datetime):
-                return dt
-            return datetime.combine(dt, time.min).astimezone(TIMEZONE)
-        start = to_datetime(vevent.decoded('dtstart'))
-        end = to_datetime(vevent.decoded('dtend'))
-
-        # Fix Issue with multi-day events by changing 'ends' midnight to 23:59:59 the day before instead of 00:00:00
-        if start.date() != end.date() and end.time() == time.min:
-            end = end - timedelta(seconds=1)
-
-        link = get_link(vevent.get('description'))
-        # Create object
-        event = Event(
-            cloud_id=uid,
-            ics_url=str(ics_url),
-            summary=vevent.get('summary'),
-            description=vevent.get('description'),
-            link = link,
-            location=get_location_data(vevent.get('location')),
-            start=start,
-            end=end,
-            duration=end-start,
-            recurrence=True if vevent.get('recurrence-id') else False,
-        )
-        return event
+        self.cloud_id=vevent.get('UID')
+        return self
 
     @classmethod
     def from_nextcloud_form(cls, row:dict[str,str]):
