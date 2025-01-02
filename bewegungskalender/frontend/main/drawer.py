@@ -20,7 +20,7 @@ def left_drawer() -> LeftDrawer:
 	return ld
 
 async def right_drawer() -> RightDrawer:
-	with ui.right_drawer(value=False, fixed=True, elevated=True, top_corner=False).classes('p-0 m-0').props(
+	with ui.right_drawer(value=False, fixed=True, top_corner=False).classes('p-0 bg-primary m-0').props(
 			'width=auto') as rd:
 		with ui.column(wrap=False, align_items='start').classes('m-0 gap-1 max-w-1/4 pt-5 px-3 shrink text-sm lg:hidden'):
 
