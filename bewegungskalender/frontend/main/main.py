@@ -35,7 +35,7 @@ async def main_page():
 def start_ui():
 
     LOGGER.debug('Finished. Starting UI...')
-    ui.run(title=UI_TITLE, favicon=UI_FAVICON, port=UI_PORT, uvicorn_logging_level='info',storage_secret=UI_STORAGE_SECRET)
+    ui.run(title=UI_TITLE, favicon=UI_FAVICON, language='de', port=UI_PORT, uvicorn_logging_level='info',storage_secret=UI_STORAGE_SECRET)
 
     LOGGER.debug('Successfully started UI.')
 
