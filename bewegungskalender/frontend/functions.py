@@ -27,7 +27,7 @@ def tab_panel(tab:str):
 
 @contextmanager
 def container(classes:str=None):
-    with ui.card().tight().classes(
+    with ui.card().tight().props('flat square').classes(
             'container mx-auto min-h-full overflow-auto px-4 sm:px-10 rounded-none py-5 ' # Layout - Trailing White Space is important!
             'bg-primary text-base font-light max-sm:mb-[50px] text-secondary') as card: # Text
         card.classes(classes) # Add Custom Classes
