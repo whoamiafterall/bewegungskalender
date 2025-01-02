@@ -35,3 +35,12 @@ class LocationTypeFilterController:
 
 
 LOCATION_TYPE_FILTER = LocationTypeFilterController()
+
+
+class OfflineLocationTypeFilterController:
+
+    def apply_filter_to_statement(self,statement: Select):
+        return statement.where(Location.type == EventLocationType.offline)
+
+
+OFFLINE_LOCATION_TYPE_FILTER = OfflineLocationTypeFilterController()
