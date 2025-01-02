@@ -9,13 +9,14 @@ from bewegungskalender.backend.calendar.category import Category
 from bewegungskalender.backend.calendar.event import Event
 from bewegungskalender.backend.calendar.location import Location
 from bewegungskalender.backend.io import db
+from bewegungskalender.frontend.functions import loading
 
 
 def call_refresh_filter_event():
 	ui.run_javascript("emitEvent('refresh_filter');")
 
 def events_using_filters(filters: [],offset: int = 0,limit: int = 25) -> list[Event]:
-
+	loading('Filter...') #TODO this is loading twice for some reason
 	# init select
 	statement = select(Event,Location,Category)
 
