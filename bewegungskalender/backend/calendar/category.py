@@ -130,7 +130,7 @@ class Category(SQLModel, table=True):
 				LOGGER.critical(f"Summary cannot be None: {ics}\nPlease delete or adjust the event - otherwise this script will crash later!")
 				sys.exit(1)
 			for comp in icalendar.Event.from_ical(ics.data).walk(name='VEVENT'):
-				self.events.append(Event.from_icalendar(comp))
+				self.events.append(Event().from_icalendar(comp))
 		if isinstance(cal_data, SynchronizableCalendarObjectCollection):
 			self.sync_token = cal_data.sync_token
 		return self.events
