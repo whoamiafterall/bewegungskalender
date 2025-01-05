@@ -2,33 +2,31 @@ from datetime import datetime, timedelta, time, date
 from typing import TYPE_CHECKING
 
 import icalendar
-from caldav.objects import URL
 from icalendar.cal import Component
 from sqlmodel import SQLModel, Field, Relationship
 
 from bewegungskalender.backend.calendar.helper import get_link
 from bewegungskalender.backend.calendar.location import Location, get_location_data
 from bewegungskalender.backend.io.config import TIMEZONE
-from bewegungskalender.libs.nominatim import LOGGER
 
 if TYPE_CHECKING: # Necessary for SQLModel Relationships across Files
     from bewegungskalender.backend.calendar.category import Category
 
 class Event(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
-    summary: str = Field()
-    start: datetime = Field()
-    end: datetime = Field()
+    summary: str
+    start: datetime
+    end: datetime
     duration: timedelta = Field(index=True)
     category: "Category" = Relationship(back_populates="events",  sa_relationship_kwargs={"lazy": "selectin"})
     category_id: int = Field(foreign_key="category.id", ondelete="CASCADE")
-    description: str | None = Field(default=None)
-    link: str | None = Field(default=None)
+    description: str | None
+    link: str | None
     location: Location = Relationship(back_populates="event",  sa_relationship_kwargs={"lazy": "selectin"})
     location_id: int = Field(foreign_key="location.id")
     recurrence: bool = Field(default=False)
-    cloud_id: str = Field(default=None)
-
+    cloud_id: str
+    
     def from_icalendar(self,vevent: Component):
         # Make sure all the values are datetime not date in case of all day events
         def to_datetime(dt: date | datetime) -> datetime:
@@ -36,12 +34,12 @@ class Event(SQLModel, table=True):
                 return dt
             return datetime.combine(dt, time.min).astimezone(TIMEZONE)
 
-        temp_start = to_datetime(vevent.decoded('dtstart'))
-        temp_end = to_datetime(vevent.decoded('dtend'))
+        start = to_datetime(vevent.decoded('dtstart'))
+        end = to_datetime(vevent.decoded('dtend'))
 
         # Fix Issue with multi-day events by changing 'ends' midnight to 23:59:59 the day before instead of 00:00:00
-        if temp_start.date() != temp_end.date() and temp_end.time() == time.min:
-            end = temp_end - timedelta(seconds=1)
+        if start.date() != end.date() and end.time() == time.min:
+            end = end - timedelta(seconds=1)
 
         self.summary=vevent.get('summary')
         self.description=vevent.get('description')
@@ -50,9 +48,9 @@ class Event(SQLModel, table=True):
         # Todo: prevent this from redoing nominations
         self.location=get_location_data(vevent.get('location'))
 
-        self.start=temp_start
-        self.end=temp_end
-        self.duration=temp_end - temp_start
+        self.start=start
+        self.end=end
+        self.duration=end - start
         self.recurrence=True if vevent.get('recurrence-id') else False
         self.cloud_id=vevent.get('UID')
         return self
