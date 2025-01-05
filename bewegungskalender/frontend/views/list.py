@@ -26,7 +26,7 @@ async def list_view():
     loading(MENU['list']['label'])
     await ui.context.client.connected()
     
-    with container('xl:w-4/5 w-full h-[calc(100vh-55px)] pb-0 pt-0 mb-50px justify-between flex-row'):
+    with container('xl:w-4/5 w-full h-[calc(100vh-55px)] pb-0 mb-50px justify-between flex-row'):
 
         await create_list_ui()
         
@@ -48,7 +48,7 @@ async def create_list_ui():
     # Get filtered Events
     events = events_using_filters([LOCATION_TYPE_FILTER, CATEGORY_FILTER, LOCATION_PROXIMITY_FILTER, DURATION_FILTER])
     with ui.column(wrap=False, align_items='center').classes('h-full w-full m-0 gap-0 sm:px-2'):
-        with ui.scroll_area().classes('grow').props("visible=False"):
+        with ui.scroll_area(on_scroll=lambda e:e).classes('grow').props("visible=False"): #TODO make scroll action load more events
             with ui.list().classes('w-full'):
     
                 month = today().month
