@@ -42,8 +42,8 @@ class Event(SQLModel, table=True):
             end = end - timedelta(seconds=1)
 
         self.summary=vevent.get('summary')
-        self.description=vevent.get('description')
         self.link=get_link(vevent.get('description'))
+        self.description=str(vevent.get('description')).replace(str(self.link), "")
 
         # Todo: prevent this from redoing nominations
         self.location=get_location_data(vevent.get('location'))
