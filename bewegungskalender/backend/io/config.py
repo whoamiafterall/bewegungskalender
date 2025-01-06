@@ -27,15 +27,12 @@ SYNC_DB_FILE: Final[FilePath] = CONFIG['sync_database']
 SEARCH_DB_FILE: Final[FilePath] = CONFIG['search_database']
 TEMPLATING_DIR: Final[str] = CONFIG['templating_dir']
 STATIC_DIR: Final[str] = CONFIG['static_dir']
-ASSETS_DIR: Final[str] = CONFIG['assets']["dir"]
 
 # UI-Section
 UI_PORT: Final[int] = CONFIG['frontend']['port']
 UI_TITLE: Final[str] = CONFIG['frontend']['title']
 UI_FAVICON: Final[str] = CONFIG['frontend']['favicon']
 MENU: Final[dict[str, dict]] = CONFIG['menu']
-ASSETS_URL_PATH: Final[str] = CONFIG['assets']["url_path"]
-
 
 # Map-Section
 MAP_ZOOM: Final[int] = CONFIG['map']['zoom']

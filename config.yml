@@ -49,10 +49,7 @@ footer:
 frontend:
   port: 8081
   title: Bewegungskalender
-  favicon: bewegungskalender/assets/icons/favicon.jpeg
-assets:
-  dir: "bewegungskalender/frontend/assets"
-  url_path: "/assets"
+  favicon: "https://cloud.systemli.org/apps/files_sharing/publicpreview/z7q3Xiz2ytSkb7n?file=/&fileId=7990267&x=3072&y=1728&a=true&etag=d3f5f7f31957abb2d20e28ae27130220"
 menu:
   calendar: {label: 'Monat', icon: 'calendar_month'}
   list: {label: 'Liste', icon: 'event_note'}
