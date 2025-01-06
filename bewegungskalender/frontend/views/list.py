@@ -7,6 +7,7 @@ from slugify import slugify
 
 from bewegungskalender.backend.calendar.event import Event
 from bewegungskalender.backend.calendar.location import EventLocationType
+from bewegungskalender.backend.formatting.format import event_time
 from bewegungskalender.backend.io.config import MENU
 from bewegungskalender.backend.io.credentials import NC_DOMAIN
 from bewegungskalender.frontend.filter.filter import events_using_filters
@@ -15,6 +16,7 @@ from bewegungskalender.frontend.filter.filters.duration_filter import duration_f
 from bewegungskalender.frontend.filter.filters.location_proximitry_filter import location_proximity_filter_ui, \
     LOCATION_PROXIMITY_FILTER
 from bewegungskalender.frontend.filter.filters.location_type_filter import location_type_filter_ui, LOCATION_TYPE_FILTER
+from bewegungskalender.frontend.filter.filters.time_filter import TIME_FILTER
 from bewegungskalender.frontend.functions import loading, container, dropdown_button, icon_link
 from bewegungskalender.frontend.functions import mini_card
 from bewegungskalender.frontend.navigation.router import ROUTER
@@ -60,20 +62,23 @@ async def create_list_ui():
                     create_event_row(event)
 
 def create_event_row(event):
-
     # Create a row for each event
     with ui.row().classes('flex flex-row w-full gap-0 sm:gap-x-3 p-0.5 max-sm:mb-2 items-center text-sm'):
         show_time(event)  # Show Event_Time
         # Create the dropdown button
         with dropdown_button(event.summary, event.category.color, "max-sm:w-full max-sm:order-3"):
             # Create the dropdown content
-            with mini_card('flex-col text-sm w-full'):
-                if event.location.online_link is not None:
-                    icon_link('computer', event.location.name, event.location.online_link)
-                if event.location.type == EventLocationType.offline:
-                    icon_link('map', event.location.name, event.location.osm_link)
+            with mini_card('flex-col p-2 gap-y-1 text-sm w-full'):
+                with ui.row().classes():
+                    icon_link('event', event_time(event.start, event.end))
+                    if event.location.type == EventLocationType.online:
+                        icon_link('computer', "Online")
+                    if event.location.type == EventLocationType.local:
+                        icon_link('map', event.location.name, event.location.osm_link)
                 if event.link:
-                    icon_link('link', event.link, event.link)
+                    icon_link('link', event.link.removeprefix('https://'), event.link)
+                if event.description.strip() != event.link:
+                    ui.label(event.description).classes('text-pretty px-3 shrink mx-auto')
                 download_button(event)
         show_location(event)  # Show Event_Location
 
@@ -93,11 +98,11 @@ def show_time(event:Event):
 def show_location(event:Event):
     with mini_card('max-sm:order-2 sm:align-right order-last'):
         match event.location.type:
-            case EventLocationType.online:
-                ui.label(f"Online").classes('grow text-right')
+            case EventLocationType.online | EventLocationType.worldwide | EventLocationType.national:
+                ui.label(f"{event.location.name}").classes('grow text-right')
             case EventLocationType.undefined:
                 ui.space()
-            case EventLocationType.offline:
+            case EventLocationType.local:
                 if event.location.country_code in ('de', 'at', 'ch'):
                     text = event.location.city if event.location.city is not None else event.location.name
                     ui.label(f"{text}").classes('grow text-right')
@@ -119,4 +124,4 @@ def download_button(event:Event):
               f"https://{NC_DOMAIN}/remote.php/dav/public-calendars/{event.category.public_id}/{event.cloud_id}.ics?export",
               f"{slugify(event.summary)}.ics")
           ).props('flat'
-    ).classes('font-normal text-secondary normal-case')
+    ).classes('font-normal normal-case text-secondary bg-primary')

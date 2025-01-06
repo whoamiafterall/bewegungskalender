@@ -53,10 +53,13 @@ def dropdown_button(name:str, color:str, classes:str=None):
         btn.classes(classes)
         yield btn
 
-def icon_link(icon: str, name: str, url: str):
-    with mini_card('space-x-2'):
+def icon_link(icon: str, name: str, url: str=None):
+    with mini_card('space-x-2 p-1 text-pretty mx-auto'):
         ui.icon(icon, size='20px')
-        ui.link(name, url, new_tab=True)
+        if url is not None:
+            ui.link(name, url, new_tab=True)
+        else:
+            ui.label(name)
 
 def new_tab_icon():
     ui.icon('launch', size='15px').classes('p-[2px]')
