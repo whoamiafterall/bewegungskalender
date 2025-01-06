@@ -19,10 +19,10 @@ def get_args() -> Namespace:
     cli.add_argument("-c", "--config", dest='config_file', type=str, help='specify path to config file, defaults to config.yml', action='store', nargs='?')
 
     cli.add_argument("-cr", "--credentials", dest='credentials_file', type=str, help='specify path to credentials file, defaults to credentials.yml', action='store', nargs='?')
-    cli.add_argument("-db", "--database", dest='db_mode', help='Choose between full (Creates a new database and syncs from Nextcloud), sync (Syncs the existing database with Nextcloud), search (searches in a given time range using -qs and -qe)', action='store', choices=['full', 'sync', 'search'])
+    cli.add_argument("-db", "--database", dest='db_mode', help='Choose between full (Creates a new database and syncs from Nextcloud), sync (Syncs the existing database with Nextcloud), search (searches in a given time range using -qs and -qe)', action='store', choices=['full', 'sync', 'search'], nargs='?')
     cli.add_argument("-dump", "--dump-database", dest='db_dump',
                      help='Dump the Database for debugging. Choose between search and sync db.',
-                     action='store', choices=['sync', 'search'])
+                     action='store', choices=['sync', 'search'], nargs='?')
     cli.add_argument("-g", "--get-telegram-updates", dest='get_telegram_updates', help='get telegram id of channel', action='store_true')
     cli.add_argument("-l", "--loglevel", dest='loglevel', type=str, help='set the log level, defaults to info', choices=['debug', 'error'], action='store', nargs='?')
    # cli.add_argument("-m", "--leaflet", dest='update_map', help='create MapData in geojson from loaction entries of events', action='store_true')
@@ -34,16 +34,14 @@ def get_args() -> Namespace:
     cli.add_argument("--since", dest='last_update', required='--update_ncform' in sys.argv, type=int, action='store', nargs='?',
                         help='Specify how many days in the past you want to consider - defaults to 1 - depends on your cron interval', )
     
-    cli.add_argument("-p", "--print", dest='print', required='--format' in sys.argv, help='print message to stdout - specify format with --format - defaults to plain-text', action='store_true')
-    cli.add_argument("--format", dest='format', required='--print' in sys.argv, type=str, choices=['html','md','txt'], action='store', nargs='?',
-                     help='choose format from html, markdown or plain-txt - defaults to txt')
+    cli.add_argument("-p", "--print", dest='print', help='print message to stdout - choose (html | md | txt)', action='store', choices=['html','md','txt'], nargs='?')
     cli.add_argument("-qs", "--query-start", dest='query_start', type=int, help='starting day to query events from CalDav server, 0 means today, 1 tomorrow - defaults to 1')
     cli.add_argument("-qe", "--query-end", dest='query_end', type=int, help='range of days to query events from CalDav server, starting from query-start - defaults to 14')
     cli.add_argument("-t", "--telegram", dest='telegram', type=str, help='send message to telegram - choose production or test_channel specified in config', choices=['prod', 'test'], action='store')
     cli.add_argument("--edit", dest='telegram_edit', required='--telegram' in sys.argv, help='edit last telegram message instead of sending a new one', action='store_true')
     cli.add_argument("-toot", "--mastodon", dest='send_mastodon', help='send toot to mastodon', action='store_true')
     cli.add_argument("-ui", "--user-interface", dest='user_interface', help='start the user interface', action='store_true')
-    cli.set_defaults(config_file="config.yml", credentials_file="credentials.yml", dbmode=None ,loglevel='info', format='txt', last_update=1, query_start=1, query_end=14)
+    cli.set_defaults(config_file="config.yml", credentials_file="credentials.yml", dbmode=None ,loglevel='info', last_update=1, query_start=0, query_end=14)
     # Show help if no argument specified
     if len(sys.argv) <= 1:
         sys.argv.append('--help')
@@ -59,7 +57,7 @@ START: Final[datetime] = datetime.now() + timedelta(ARGS.query_start)
 END: Final[datetime] = START + timedelta(ARGS.query_end)
 LOGLEVEL: Final[str] = ARGS.loglevel
 LAST_UPDATE: Final[int] = ARGS.last_update # Specifies how many days in the past the Nextcloud Form events shall be considered
-FORMAT: Final[str] = ARGS.format 
+FORMAT: Final[str] = ARGS.print
 MAIL_TO: Final[str] = ARGS.mail_to
 TELEGRAM_CHANNEL: Final[str] = ARGS.telegram
 TELEGRAM_EDIT: Final[bool] = ARGS.telegram_edit
