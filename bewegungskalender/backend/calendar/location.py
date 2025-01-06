@@ -1,5 +1,5 @@
-import enum
 import re
+from enum import StrEnum
 from typing import TYPE_CHECKING
 
 from geopy.exc import GeocoderUnavailable
@@ -8,7 +8,6 @@ from retry import retry
 from sqlmodel import SQLModel, Field, Relationship
 
 from bewegungskalender.backend.calendar.helper import get_link
-from bewegungskalender.backend.io.config import LOCALE
 from bewegungskalender.libs.exceptions import NoResultError
 from bewegungskalender.libs.logger import LOGGER
 from bewegungskalender.libs.nominatim import lookup_entity
@@ -20,10 +19,13 @@ if TYPE_CHECKING: # Necessary for SQLModel Relationships across Files
 OSM_LINK_PATTERN:re.Pattern = re.compile(r"(https?://www.openstreetmap.org/(way|node|relation)/\d{4,15})")
 OSM_LINK:str = "https://www.openstreetmap.org"
 
-class EventLocationType(str, enum.Enum):
+class EventLocationType(StrEnum):
     online = "online"
     offline = "offline"
     undefined = "undefined"
+    local = "local"
+    national = "national"
+    worldwide = "worldwide"
 
 class Location(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
@@ -39,8 +41,8 @@ class Location(SQLModel, table=True):
     country_code: str | None = None
     
     @classmethod
-    def parse_offline(cls, result, location):
-        return Location(type=EventLocationType.offline,
+    def parse_local(cls, result, location):
+        return Location(type=EventLocationType.local,
                         name=location,
                         lat=result['lat'],
                         lon=result['lon'],
@@ -49,53 +51,51 @@ class Location(SQLModel, table=True):
                         country=_catch_key_error(result, 'country'),
                         country_code=_catch_key_error(result, 'country_code'))
 
-    @classmethod
-    def parse_online(cls, result):
-        return Location(type=EventLocationType.online,
-                        name=result,
-                        online_link=result)
-
-@retry(exceptions=GeocoderUnavailable, delay=2, max_delay=8, backoff=2)
-def geocode(location:str) -> Location:
-    try:
-        # Find offline events
-        result = Nominatim(user_agent=__name__).geocode(location, addressdetails=True, language='de').raw
-        return Location.parse_offline(result, location)
-    except AttributeError:  # No offline events found
-        LOGGER.warning(NoResultError(location))
-        return Location(name=location)
-    
 def _catch_key_error(result, key) -> str|None:
     try:
         return str(result['address'][key])
     except KeyError:
         return None
 
-def osm_link(location:str) -> Location:
-    # Try to find osm link
-    try:
-        result = lookup_entity(location)
-        return Location.parse_offline(result, location)
-    except NoResultError:
-        LOGGER.warning(NoResultError(location))
-        return Location()
 
-def get_location_data(location:str) -> Location:
+@retry(exceptions=GeocoderUnavailable, delay=2, max_delay=8, backoff=2)
+def parse_location(location: str | None) -> Location:
+    # If there is a link to OpenStreetMap open it and parse coordinates
+    # (has to be done before checking for other links)
+    if OSM_LINK_PATTERN.match(location):
+        try:
+            result = lookup_entity(location)
+            return Location.parse_local(result, location)
+        except NoResultError:
+            LOGGER.warning(NoResultError(location))
+    
+    # Try to find online link (e.g. to a Videocall)
+    online_link = get_link(location)
+    if online_link is not None:
+        return Location(type=EventLocationType.online, name="Online", online_link=online_link)
 
+    # If the location is None return undefined
+    # (has to be done before matching)
     if location is None:
-        return Location()
-    elif OSM_LINK_PATTERN.match(location):
-        return osm_link(location)
-    else:
-        # Try to find online link
-        location_get_link_result = get_link(location)
-        if location_get_link_result is not None:
-            return Location.parse_online(location_get_link_result)
-        elif "online" in str.lower(location):
-            return Location.parse_online(None)
-        else:
-            # Fallback to geocode
-            return geocode(location)
+        return Location(type=EventLocationType.undefined)
+    
+    # Match the location to some cases
+    match location.lower():
+        case "online":
+            return Location(type=EventLocationType.online, name="Online")
+        case "global"|"weltweit"|"international":
+            return Location(type=EventLocationType.worldwide, name="Weltweit")
+        case "bundesweit"|"deutschland":
+            return Location(type=EventLocationType.national, name="Bundesweit")
+        
+        case _:
+            try:
+                result = Nominatim(user_agent=__name__).geocode(location, addressdetails=True, language='de').raw
+                return Location.parse_local(result, location)
+            except AttributeError:  # No offline events found
+                LOGGER.warning(NoResultError(location))
+                return Location(name=location)
+   
 
 
    

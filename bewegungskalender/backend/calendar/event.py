@@ -6,7 +6,7 @@ from icalendar.cal import Component
 from sqlmodel import SQLModel, Field, Relationship
 
 from bewegungskalender.backend.calendar.helper import get_link
-from bewegungskalender.backend.calendar.location import Location, get_location_data
+from bewegungskalender.backend.calendar.location import Location, parse_location
 from bewegungskalender.backend.io.config import TIMEZONE
 
 if TYPE_CHECKING: # Necessary for SQLModel Relationships across Files
@@ -46,7 +46,7 @@ class Event(SQLModel, table=True):
         self.description=str(vevent.get('description')).replace(str(self.link), "")
 
         # Todo: prevent this from redoing nominations
-        self.location=get_location_data(vevent.get('location'))
+        self.location=parse_location(vevent.get('location'))
 
         self.start=start
         self.end=end
