@@ -14,7 +14,7 @@ from bewegungskalender.backend.calendar.event import Event
 from bewegungskalender.backend.calendar.location import Location
 from bewegungskalender.backend.formatting.message import MultiFormatMessage, create_message
 from bewegungskalender.backend.io import db
-from bewegungskalender.backend.io.cli import FORMAT, ARGS, DB_MODE
+from bewegungskalender.backend.io.cli import FORMAT, ARGS, DB_MODE, DB_DUMP
 from bewegungskalender.backend.io.config import CALENDARS, LOCALE
 from bewegungskalender.backend.io.nextcloud_forms import update_ncform
 from bewegungskalender.backend.output.mail import send_mail
@@ -72,10 +72,10 @@ async def main_async():
 					counter += 1
 					Category.create(configline=line, ref_status={'start_time': start_time, 'current': counter,
 				                                             'complete': len(CALENDARS)})
-			case 'dump':
-				data = db.exe(select(Event,Location,Category).join(Location).join(Category)).all()
-				for event in [n.Event for n in data]:
-					print(event.summary)
+	if DB_DUMP is not None:
+			data = db.dump(select(Event,Location,Category).join(Location).join(Category)).all()
+			for event in [n.Event for n in data]:
+				print(event.location.type)
 
 	
 	# Output Section

@@ -19,7 +19,10 @@ def get_args() -> Namespace:
     cli.add_argument("-c", "--config", dest='config_file', type=str, help='specify path to config file, defaults to config.yml', action='store', nargs='?')
 
     cli.add_argument("-cr", "--credentials", dest='credentials_file', type=str, help='specify path to credentials file, defaults to credentials.yml', action='store', nargs='?')
-    cli.add_argument("-db", "--database", dest='db_mode', help='Choose between full (Creates a new database and syncs from Nextcloud), sync (Syncs the existing database with Nextcloud), search (searches in a given time range using -qs and -qe), dump (dumps the database content for debugging)', action='store', choices=['full', 'sync', 'search', 'dump'])
+    cli.add_argument("-db", "--database", dest='db_mode', help='Choose between full (Creates a new database and syncs from Nextcloud), sync (Syncs the existing database with Nextcloud), search (searches in a given time range using -qs and -qe)', action='store', choices=['full', 'sync', 'search'])
+    cli.add_argument("-dump", "--dump-database", dest='db_dump',
+                     help='Dump the Database for debugging. Choose between search and sync db.',
+                     action='store', choices=['sync', 'search'])
     cli.add_argument("-g", "--get-telegram-updates", dest='get_telegram_updates', help='get telegram id of channel', action='store_true')
     cli.add_argument("-l", "--loglevel", dest='loglevel', type=str, help='set the log level, defaults to info', choices=['debug', 'error'], action='store', nargs='?')
    # cli.add_argument("-m", "--leaflet", dest='update_map', help='create MapData in geojson from loaction entries of events', action='store_true')
@@ -51,6 +54,7 @@ ARGS: Final[Namespace] = get_args()
 CONFIG_FILE: Final[str] = ARGS.config_file
 CREDENTIALS_FILE: Final[str] = ARGS.credentials_file
 DB_MODE: Final[str] = ARGS.db_mode
+DB_DUMP: Final[str] = ARGS.db_dump
 START: Final[datetime] = datetime.now() + timedelta(ARGS.query_start)
 END: Final[datetime] = START + timedelta(ARGS.query_end)
 LOGLEVEL: Final[str] = ARGS.loglevel
