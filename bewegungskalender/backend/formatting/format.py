@@ -89,5 +89,13 @@ def event_time(start: datetime, end: datetime) -> str:
     if start.time() == time.min and start.date() != end.date():
         return f"{start:%d.%m.} - {end:%d.%m.}"
     elif start.time() == time.min and start.date() == end.date():
-        return f"{start:%d.%m.}:"
-    return f"{start:%d.%m.} {start:(%H:%M)}:"
+        return f"{start:%d.%m.}"
+    return f"{start:%d.%m.} {start:(%H:%M)}"
+
+
+def get_link(string: str):
+    try:
+        return re.search("(?P<url>https?://\S+)", string).group('url')
+    except (TypeError, AttributeError):
+        return None
+    

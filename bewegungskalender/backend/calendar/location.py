@@ -7,7 +7,7 @@ from geopy.geocoders.nominatim import Nominatim
 from retry import retry
 from sqlmodel import SQLModel, Field, Relationship
 
-from bewegungskalender.backend.calendar.helper import get_link
+from bewegungskalender.backend.formatting.format import get_link
 from bewegungskalender.libs.exceptions import NoResultError
 from bewegungskalender.libs.logger import LOGGER
 from bewegungskalender.libs.nominatim import lookup_entity

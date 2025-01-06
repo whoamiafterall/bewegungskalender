@@ -5,7 +5,7 @@ import icalendar
 from icalendar.cal import Component
 from sqlmodel import SQLModel, Field, Relationship
 
-from bewegungskalender.backend.calendar.helper import get_link
+from bewegungskalender.backend.formatting.format import get_link
 from bewegungskalender.backend.calendar.location import Location, parse_location
 from bewegungskalender.backend.io.config import TIMEZONE
 
