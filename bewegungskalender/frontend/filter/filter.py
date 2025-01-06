@@ -15,8 +15,8 @@ from bewegungskalender.frontend.functions import loading
 def call_refresh_filter_event():
 	ui.run_javascript("emitEvent('refresh_filter');")
 
-def events_using_filters(filters: [],offset: int = 0,limit: int = 25) -> list[Event]:
-	loading('Filter...') #TODO this is loading twice for some reason
+def events_using_filters(filters: [],offset: int = 0,limit: int = 50) -> list[Event]:
+	loading('Filter...', 0.05)
 	# init select
 	statement = select(Event,Location,Category)
 
