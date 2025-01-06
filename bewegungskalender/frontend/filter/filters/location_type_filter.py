@@ -9,11 +9,15 @@ def location_type_filter_ui() -> Element:
 
 	return (ui.select(
         {EventLocationType.online: 'Online'
-            , EventLocationType.offline: 'Offline'
+            , EventLocationType.local: 'Lokal'
+            , EventLocationType.national: 'Bundesweit'
+            , EventLocationType.worldwide: 'International'
             , EventLocationType.undefined: 'Unbekannt'}
         , label="Ort", value=[
             EventLocationType.online,
-            EventLocationType.offline,
+            EventLocationType.local,
+            EventLocationType.national,
+            EventLocationType.worldwide,
             EventLocationType.undefined
         ],multiple=True, clearable=True)
     .on_value_change(call_refresh_filter_event).bind_value(LOCATION_TYPE_FILTER.state)
@@ -40,7 +44,7 @@ LOCATION_TYPE_FILTER = LocationTypeFilterController()
 class OfflineLocationTypeFilterController:
 
     def apply_filter_to_statement(self,statement: Select):
-        return statement.where(Location.type == EventLocationType.offline)
+        return statement.where(Location.type == EventLocationType.local)
 
 
 OFFLINE_LOCATION_TYPE_FILTER = OfflineLocationTypeFilterController()
