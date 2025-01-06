@@ -75,7 +75,7 @@ def match_and_add_recurring(event: "Event", message: str, frmt: Format) -> str:
     if match is None:  # If it's the first occurrence, add the whole entry of the event and return
         first_date = escape(event_time(event.start, event.end)) if frmt is Format.MD else event_time(event.start,
                                                                                                      event.end)
-        return message + first_date + add_link(event.summary, event.description, frmt) + frmt.newline()
+        return message + first_date + add_link(event.summary, event.link, frmt) + frmt.newline()
     else:  # If it's not the first occurrence add just the date and return
         date_to_add = escape(f"& {event.start:%d.%m.} ") if frmt is Format.MD else f"& {event.start:%d.%m.} "
         if match.group(2) is None:  # If there is no start time add the date after the first date
