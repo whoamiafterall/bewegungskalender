@@ -60,6 +60,10 @@ def _catch_key_error(result, key) -> str|None:
 
 @retry(exceptions=GeocoderUnavailable, delay=2, max_delay=8, backoff=2)
 def parse_location(location: str | None) -> Location:
+     # (has to be done before matching)
+    if location is None:
+        return Location(type=EventLocationType.undefined)
+        
     # If there is a link to OpenStreetMap open it and parse coordinates
     # (has to be done before checking for other links)
     if OSM_LINK_PATTERN.match(location):
@@ -73,13 +77,8 @@ def parse_location(location: str | None) -> Location:
     online_link = get_link(location)
     if online_link is not None:
         return Location(type=EventLocationType.online, name="Online", online_link=online_link)
-
-    # If the location is None return undefined
-    # (has to be done before matching)
-    if location is None:
-        return Location(type=EventLocationType.undefined)
-    
-    # Match the location to some cases
+ 
+     # Match the location to some cases
     match location.lower():
         case "online":
             return Location(type=EventLocationType.online, name="Online")
