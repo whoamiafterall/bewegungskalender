@@ -83,7 +83,7 @@ def parse_location(location: str | None) -> Location:
         case "online":
             return Location(type=EventLocationType.online, name="Online")
         case "global"|"weltweit"|"international":
-            return Location(type=EventLocationType.worldwide, name="Weltweit")
+            return Location(type=EventLocationType.worldwide, name="International")
         case "bundesweit"|"deutschland":
             return Location(type=EventLocationType.national, name="Bundesweit")
         
