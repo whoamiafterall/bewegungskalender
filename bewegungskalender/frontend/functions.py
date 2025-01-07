@@ -49,7 +49,7 @@ def dropdown_button(name:str, color:str, classes:str=None):
             text=name,
             color=opacity(70, color),
             auto_close=True,
-    ).classes(f"font-normal text-secondary text-sm capitalize grow items-start") as btn:
+    ).classes(f"font-normal text-secondary text-sm capitalize grow items-start").props('unelevated') as btn:
         btn.classes(classes)
         yield btn
 
