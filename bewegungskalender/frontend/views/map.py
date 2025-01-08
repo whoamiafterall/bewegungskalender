@@ -26,9 +26,7 @@ async def map_view():
     await ui.context.client.connected()
     LOGGER.debug('Creating the Map to show events...')
     # new leaflet with center set to center of germany
-    with ui.card().tight().classes('container mx-auto flex-row p-0 m-0').props('flat square'):
-
-
+    with ui.card().tight().classes('w-full flex-row p-0 m-0').props('flat square'):
         await create_map_ui()
 
         # Filter

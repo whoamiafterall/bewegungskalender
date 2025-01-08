@@ -6,7 +6,6 @@ from nicegui.page_layout import RightDrawer
 
 from bewegungskalender.frontend.navigation.router import ROUTER
 
-
 class ErrorChecker:
     def __init__(self, *elements: ValidationElement) -> None:
         self.elements = elements
@@ -16,19 +15,9 @@ class ErrorChecker:
         return all(validation(element.value) for element in self.elements for validation in element.validation.values())
 
 @contextmanager
-def heading(md_string:str):
-    with ui.row().classes('justify-center'):
-        ui.markdown(md_string).classes('text-center')
-
-@contextmanager
-def tab_panel(tab:str):
-    with ui.tab_panel(tab).classes('p-0 m-0') as panel:
-        yield panel
-
-@contextmanager
 def container(classes:str=None):
-    with ui.card().tight().props('flat square').classes(
-            'container mx-auto min-h-full overflow-auto px-4 sm:px-10 rounded-none py-5 ' # Layout - Trailing White Space is important!
+    with ui.card(align_items='stretch').tight().props('flat square').classes(
+            'min-h-full w-dvw overflow-auto px-4 sm:px-10 rounded-none py-5 ' # Layout - Trailing White Space is important!
             'bg-primary text-base font-light max-sm:mb-[50px] text-secondary') as card: # Text
         card.classes(classes) # Add Custom Classes
         yield card
@@ -60,9 +49,6 @@ def icon_link(icon: str, name: str, url: str=None):
             ui.link(name, url, new_tab=True)
         else:
             ui.label(name)
-
-def new_tab_icon():
-    ui.icon('launch', size='15px').classes('p-[2px]')
 
 def render_iframe(height:str, width:str, source:str):
     ui.html(f"<iframe src={source} width={width} height={height}></iframe>").classes('w-screen h-screen p-0 m-0')
