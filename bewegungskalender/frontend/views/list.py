@@ -65,7 +65,9 @@ async def create_list_ui():
 
 def create_event_row(event):
     # Create a row for each event
-    with ui.row().classes('flex flex-row w-full gap-0 sm:gap-x-3 p-0.5 max-sm:mb-2 items-center text-sm'):
+    with ui.row().classes('flex flex-row w-full gap-0 sm:gap-x-3 p-0.5 max-sm:mb-2 items-center text-sm') as event_row:
+        if event.start.date() == datetime.today().date():
+            event_row.classes('border-current sm:border sm:rounded')
         show_time(event)  # Show Event_Time
         # Create the dropdown button
         with dropdown_button(event.summary, event.category.color, "max-sm:w-full max-sm:order-3"):
