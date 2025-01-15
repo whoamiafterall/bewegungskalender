@@ -10,13 +10,15 @@ from bewegungskalender.frontend.filter.filter import call_refresh_filter_event
 
 
 def duration_filter_ui() -> Element:
-	return (ui.select({DurationFilterType.Hours.keyword: 'Kurz'
+	return ((ui.select({DurationFilterType.Hours.keyword: 'Kurz'
             , DurationFilterType.OneDay.keyword: 'Ganztags'
             , DurationFilterType.Days.keyword: 'Mehrtägig'}, label="Dauer",
-	           multiple=True, clearable=True).classes("pl-3 w-full my-1")).props("filled color=secondary").on_value_change(call_refresh_filter_event).bind_value(DURATION_FILTER.duration)
+	           multiple=True, clearable=True).classes("pl-3 w-full my-1"))
+            .props("outline dense behavior=menu hide-dropdown-icon color=secondary").on_value_change(call_refresh_filter_event)
+            .bind_value(DURATION_FILTER.duration))
 
 class DurationFilterType(enum.Enum):
-
+    #TODO Move this to backend so we can just check for a value in the db
     Hours = ('Hours', None,timedelta(hours=6))
     OneDay = ('OneDay', timedelta(hours=6),timedelta(hours=36))
     Days = ('Days',timedelta(hours=24),None)
