@@ -10,18 +10,18 @@ def location_type_filter_ui() -> Element:
 	return (ui.select(
         {EventLocationType.online: 'Online'
             , EventLocationType.local: 'Lokal'
-            , EventLocationType.national: 'Bundesweit'
-            , EventLocationType.worldwide: 'International'
+            , EventLocationType.national: 'Überregional'
+            , EventLocationType.international: 'International'
             , EventLocationType.undefined: 'Unbekannt'}
         , label="Ort", value=[
             EventLocationType.online,
             EventLocationType.local,
             EventLocationType.national,
-            EventLocationType.worldwide,
+            EventLocationType.international,
             EventLocationType.undefined
         ],multiple=True, clearable=True)
     .on_value_change(call_refresh_filter_event).bind_value(LOCATION_TYPE_FILTER.state)
-    .classes("pl-3 w-full my-1")).props("filled color=secondary")
+    .classes("pl-3 w-full my-1")).props("filled dense hide-dropdown-icon color=secondary")
 
 class LocationTypeFilterController:
 
