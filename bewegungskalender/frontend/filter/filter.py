@@ -1,9 +1,5 @@
-import math
-from datetime import timedelta
-
 from nicegui import ui
-from slugify import slugify
-from sqlmodel import select, or_, and_
+from sqlmodel import select
 
 from bewegungskalender.backend.calendar.category import Category
 from bewegungskalender.backend.calendar.event import Event
@@ -15,8 +11,8 @@ from bewegungskalender.frontend.functions import loading
 def call_refresh_filter_event():
 	ui.run_javascript("emitEvent('refresh_filter');")
 
-def events_using_filters(filters: [],offset: int = 0,limit: int = 50) -> list[Event]:
-	loading('Filter...', 0.05)
+def events_using_filters(filters: []) -> list[Event]:
+	loading('Filter...', 0.1)
 	# init select
 	statement = select(Event,Location,Category)
 
@@ -24,7 +20,7 @@ def events_using_filters(filters: [],offset: int = 0,limit: int = 50) -> list[Ev
 		statement = single_filter.apply_filter_to_statement(statement)
 
 	# run statement
-	statement = statement.join(Location).join(Category).order_by(Event.start).order_by(Event.start).offset(offset).limit(limit)
+	statement = statement.join(Location).join(Category).order_by(Event.start).order_by(Event.summary)
 	result = db.exe(statement).all()
 
 	# return as array of Events
