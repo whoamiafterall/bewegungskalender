@@ -25,7 +25,7 @@ class EventLocationType(StrEnum):
     undefined = "undefined"
     local = "local"
     national = "national"
-    worldwide = "worldwide"
+    international = "international"
 
 class Location(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
@@ -83,9 +83,9 @@ def parse_location(location: str | None) -> Location:
         case "online":
             return Location(type=EventLocationType.online, name="Online")
         case "global"|"weltweit"|"international":
-            return Location(type=EventLocationType.worldwide, name="International")
+            return Location(type=EventLocationType.international, name="International")
         case "bundesweit"|"deutschland":
-            return Location(type=EventLocationType.national, name="Bundesweit")
+            return Location(type=EventLocationType.national, name="Überregional")
         
         case _:
             try:
