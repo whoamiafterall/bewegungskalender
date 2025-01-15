@@ -16,7 +16,7 @@ from bewegungskalender.frontend.filter.filters.duration_filter import duration_f
 from bewegungskalender.frontend.filter.filters.location_proximitry_filter import location_proximity_filter_ui, \
     LOCATION_PROXIMITY_FILTER
 from bewegungskalender.frontend.filter.filters.location_type_filter import location_type_filter_ui, LOCATION_TYPE_FILTER
-from bewegungskalender.frontend.filter.filters.time_filter import TIME_FILTER
+from bewegungskalender.frontend.filter.filters.time_filter import month_filter_ui, TIME_FILTER
 from bewegungskalender.frontend.functions import loading, container, dropdown_button, icon_link
 from bewegungskalender.frontend.functions import mini_card
 from bewegungskalender.frontend.navigation.router import ROUTER
@@ -35,10 +35,13 @@ async def list_view():
         # Filter
         with ui.column(wrap=False, align_items='start').classes(
                 'gap-1 w-1/4 h-full fixed right-5 px-3 text-sm max-lg:hidden'):
-       
             duration_filter_ui()
             location_type_filter_ui()
-            location_proximity_filter_ui().bind_visibility_from(LOCATION_TYPE_FILTER.state, target_name="value", backward=lambda v: (EventLocationType.offline in v))
+            location_proximity_filter_ui(
+                                ).bind_visibility_from(LOCATION_TYPE_FILTER.state, target_name="value",
+                                backward=lambda v: (EventLocationType.local
+                                                    or EventLocationType.national
+                                                    or EventLocationType.international in v))
             await categories_filters_ui()
     
         ui.on('refresh_filter', lambda: create_list_ui.refresh(), throttle=0.1, leading_events=False)
@@ -49,15 +52,15 @@ async def list_view():
 @ui.refreshable
 async def create_list_ui():
     # Get filtered Events
-    events = events_using_filters([LOCATION_TYPE_FILTER, CATEGORY_FILTER, LOCATION_PROXIMITY_FILTER, DURATION_FILTER])
-    with ui.column(wrap=False, align_items='center').classes('h-full w-full lg:w-3/4 m-0 gap-0 sm:px-2'):
-        with ui.list().classes('w-full'):
-            month = today().month
+    events = events_using_filters([LOCATION_TYPE_FILTER, TIME_FILTER, CATEGORY_FILTER, LOCATION_PROXIMITY_FILTER, DURATION_FILTER])
+    with ui.column(wrap=False, align_items='center').classes('h-full w-full lg:w-3/4 m-0 gap-0 gap-y-1 sm:px-2'):
+        month_filter_ui()
+   #     ui.notify("Wische nach links oder rechts um den vorherigen oder nächsten Monat anzuzeigen!", position="top")
+   #     with ui.carousel(animated=True).classes('h-full w-full bg-primary').props('swipeable infinite') as carousel:
+           # for month in TIME_FILTER.month.value:
+            #    with ui.carousel_slide(name=month):
+        with ui.list().classes('w-full max-sm:divide-y divide-current'):
             for event in events:
-
-                if event.start.month != month:
-                    month_heading(event.start)
-                month = event.start.month
                 create_event_row(event)
 
 def create_event_row(event):
@@ -84,20 +87,17 @@ def create_event_row(event):
 # -----------------
 # Helper Functions
 
-def month_heading(month:datetime=today()):
-    with ui.row().classes('justify-center'):
-        ui.markdown(f"#### {month:%B}").classes('text-center')
-        
 def show_time(event:Event):
     with mini_card('sm:p-1 gap-1 order-first'):
-        ui.label(f"{event.start:%d (%a)}").classes('nowrap')
+        ui.label(f"{event.start:%d (%a)}")
         ui.label(f"{event.start:%H:%M}:") if event.start.time() != datetime.min.time() else None
+        ui.label(f"{event.end:- %d (%a):}") if event.start.date() != event.end.date() else None
     ui.space().classes('grow sm:hidden')
     
 def show_location(event:Event):
     with mini_card('max-sm:order-2 sm:align-right order-last'):
         match event.location.type:
-            case EventLocationType.online | EventLocationType.worldwide | EventLocationType.national:
+            case EventLocationType.online | EventLocationType.international | EventLocationType.national:
                 ui.label(f"{event.location.name}").classes('grow text-right')
             case EventLocationType.undefined:
                 ui.space()
