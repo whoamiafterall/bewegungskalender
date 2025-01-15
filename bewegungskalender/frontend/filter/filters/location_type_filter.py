@@ -21,7 +21,7 @@ def location_type_filter_ui() -> Element:
             EventLocationType.undefined
         ],multiple=True, clearable=True)
     .on_value_change(call_refresh_filter_event).bind_value(LOCATION_TYPE_FILTER.state)
-    .classes("pl-3 w-full my-1")).props("filled dense hide-dropdown-icon color=secondary")
+    .classes("pl-3 w-full my-1")).props("outline behavior=menu dense hide-dropdown-icon color=secondary")
 
 class LocationTypeFilterController:
 

@@ -15,7 +15,7 @@ def month_filter_ui():
     with ui.button_group().classes('h-10 items-stretch'):
         ui.button(icon='navigate_before')
         ui.select(options=TIME_FILTER.month.value, with_input=True,
-                ).props("filled dense autocomplete color=secondary hide-dropdown-icon"
+                ).props("outline dense autocomplete behavior=menu color=secondary hide-dropdown-icon menu-offset=[10,10]"
                 ).classes('font-medium grow'
                 ).bind_value(TIME_FILTER.month,
                 ).on_value_change(call_refresh_filter_event)
@@ -23,7 +23,7 @@ def month_filter_ui():
 
 class TimeFilterController:
     def __init__(self):
-	    # Get first and last event in database so we know which months exist
+        # Get first and last event in database so we know which months exist
         first_event = db.exe(select(Event).order_by(Event.start)).first()
         last_event =  db.exe(select(Event).order_by(desc(Event.start))).first()
         
