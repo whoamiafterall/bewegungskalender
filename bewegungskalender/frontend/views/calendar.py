@@ -3,7 +3,7 @@ from nicegui import ui
 from bewegungskalender.backend.formatting.nextcloud_urls import NC_YEARLY_EMBED
 from bewegungskalender.backend.io.config import MENU
 from bewegungskalender.libs.logger import LOGGER
-from bewegungskalender.frontend.functions import loading, render_iframe
+from bewegungskalender.frontend.helpers.functions import loading, render_iframe
 from bewegungskalender.frontend.navigation.router import ROUTER
 
 # Create Calendar Page

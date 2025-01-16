@@ -2,7 +2,7 @@ from typing import Callable, Dict, Union
 
 from nicegui import binding, background_tasks, helpers, ui
 
-from bewegungskalender.frontend.main.theme import Theme
+from bewegungskalender.frontend.layout.theme import Theme
 
 
 class RouterFrame(ui.element, component='router_frame.js'):

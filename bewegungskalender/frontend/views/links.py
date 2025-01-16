@@ -7,7 +7,7 @@ from slugify import slugify
 
 from bewegungskalender.backend.io.config import MENU, DATADIR, STATIC_DIR
 from bewegungskalender.backend.io.file import safe_open
-from bewegungskalender.frontend.functions import ErrorChecker, loading, container
+from bewegungskalender.frontend.helpers.functions import ErrorChecker, loading, container
 from bewegungskalender.frontend.navigation.router import ROUTER
 
 

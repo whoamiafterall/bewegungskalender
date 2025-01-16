@@ -4,7 +4,7 @@ from slugify import slugify
 
 from bewegungskalender.backend.io.config import MENU, STATIC_DIR
 from bewegungskalender.libs.logger import LOGGER
-from bewegungskalender.frontend.functions import container
+from bewegungskalender.frontend.helpers.functions import container
 from bewegungskalender.frontend.navigation.router import ROUTER
 
 @ROUTER.add(f"/{slugify(str(MENU['about']['label'].lower()))}")
