@@ -43,7 +43,7 @@ async def list_view():
                                                     or EventLocationType.international in v))
             await categories_filters_ui()
     
-        ui.on('refresh_filter', lambda: create_list_ui.refresh(), throttle=0.1, leading_events=False)
+        ui.on('refresh_filter', lambda: create_list_ui.refresh(), throttle=1)
 
 # -----------------
 # Show Events applying current filters
@@ -80,7 +80,7 @@ def create_event_row(event):
                         icon_link('map', event.location.name, event.location.osm_link)
                 if event.link:
                     icon_link('link', event.link.removeprefix('https://'), event.link)
-                if event.description.strip() != event.link:
+                if event.description is not None and event.description.strip() != event.link:
                     ui.label(event.description).classes('text-pretty px-3 shrink mx-auto')
                 download_button(event)
         show_location(event)  # Show Event_Location
