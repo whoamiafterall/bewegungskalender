@@ -5,21 +5,22 @@ import sys
 import time
 from locale import setlocale
 
+import icalendar
 # external imports
-from sqlmodel import select
+from sqlmodel import select, desc
 
 # internal imports
 from bewegungskalender.backend.calendar.category import Category
+from bewegungskalender.backend.calendar.client import get_calendar_by_url, get_all_events, get_upcoming_events
 from bewegungskalender.backend.calendar.event import Event
 from bewegungskalender.backend.calendar.location import Location
 from bewegungskalender.backend.formatting.message import MultiFormatMessage, create_message
-from bewegungskalender.backend.io import db
 from bewegungskalender.backend.io.cli import FORMAT, ARGS, DB_MODE, DB_DUMP
 from bewegungskalender.backend.io.config import CALENDARS, LOCALE
+from bewegungskalender.backend.io.db import DB
 from bewegungskalender.backend.io.nextcloud_forms import update_ncform
 from bewegungskalender.backend.output.mail import send_mail
 from bewegungskalender.backend.output.telegram_bot import get_telegram_updates, send_or_edit_telegram
-from bewegungskalender.frontend.main import start_ui
 from bewegungskalender.libs.logger import LOGGER
 
 # external imports
@@ -31,6 +32,7 @@ setlocale(locale.LC_ALL, LOCALE)
 
 # Main Function if run as standalone program
 def main():
+	from bewegungskalender.frontend.main import start_ui
 	# frontend.run can't be called from async call
 	if ARGS.user_interface:
 		LOGGER.info("Starting User Interface!")
@@ -51,58 +53,44 @@ async def main_async():
 		update_ncform()
 
 	# Update or Create Database
-	if DB_MODE is not None:
-		counter = 0
-		start_time = time.time()
-		match DB_MODE:
-			case 'full':
-				db.create_tables()
-				## Fetch All Events using urls from Config and add them to db
-				for line in CALENDARS:
-					counter += 1
-					Category.create(configline=line, ref_status={'start_time': start_time, 'current': counter,
-					                                             'complete': len(CALENDARS)})
-			case 'sync':
-				## Sync Events using sync token stored in database
-				[Category.sync(category) for category in db.exe(select(Category)).all()]
-			case 'search':
-				## Fetch only upcoming events in the given Timeframe
-				db.recreate_tables()
-				for line in CALENDARS:
-					counter += 1
-					Category.create(configline=line, ref_status={'start_time': start_time, 'current': counter,
-				                                             'complete': len(CALENDARS)})
-	if DB_DUMP is not None:
-			data = db.dump(select(Event,Location,Category).join(Location).join(Category)).all()
-			for event in [n.Event for n in data]:
-				print(event.location.type)
-
+	db = DB()
+	match DB_MODE:
+		# Fetch all Events from Nextcloud and create a new database
+		case 'full':
+			db.drop_tables()
+			db.create_tables()
+			db.populate(get_all_events)
+		
+		case 'sync':
+			## Sync Events using sync token stored in database
+			db.update_events()
+		case 'search':
+			## Fetch Upcoming events in the Timeframe specified in Args
+			db.drop_tables()
+			db.create_tables()
+			db.populate(get_upcoming_events)
 	
 	# Output Section
-	
-	## Deprecated if we keep using leaflet
-	## UMap Output
-#	if ARGS.update_map:
-#		LOGGER.name = __name__
-#		LOGGER.info(f"Creating GeoJSON Data for the map...")
-#		[create_mapdata(category.events) for category in data]
-	
+	## Dump Database
+	if DB_DUMP:
+		for event in [n.Event for n in db.dump()]:
+			print(event.location.type) # TODO Dump DB to Json File
 	## Print Output
 	if ARGS.print:
 		## Create a Message in TXT, MD & HTML
-		message: MultiFormatMessage = create_message()
+		message: MultiFormatMessage = create_message(db)
 		LOGGER.debug(f"Printing message in {FORMAT} Format: \n")
 		print(message.get(FORMAT))
 	## Mail Output
 	if ARGS.send_mail:
 		## Create a Message in TXT, MD & HTML
-		message: MultiFormatMessage = create_message()
+		message: MultiFormatMessage = create_message(db)
 		LOGGER.info('Sending Message per Mail...')
 		send_mail(message)
 	## Send or Edit Telegram Message
 	if ARGS.telegram:
 		## Create a Message in TXT, MD & HTML
-		message: MultiFormatMessage = create_message()
+		message: MultiFormatMessage = create_message(db)
 		await send_or_edit_telegram(message)
 	
 	LOGGER.info('Finished all Tasks - Quitting.\n')

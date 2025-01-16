@@ -20,9 +20,7 @@ def get_args() -> Namespace:
 
     cli.add_argument("-cr", "--credentials", dest='credentials_file', type=str, help='specify path to credentials file, defaults to credentials.yml', action='store', nargs='?')
     cli.add_argument("-db", "--database", dest='db_mode', help='Choose between full (Creates a new database and syncs from Nextcloud), sync (Syncs the existing database with Nextcloud), search (searches in a given time range using -qs and -qe)', action='store', choices=['full', 'sync', 'search'], nargs='?')
-    cli.add_argument("-dump", "--dump-database", dest='db_dump',
-                     help='Dump the Database for debugging. Choose between search and sync db.',
-                     action='store', choices=['sync', 'search'], nargs='?')
+    cli.add_argument("-dump", "--dump-database", dest='db_dump', help='Dump the Database for debugging.', action='store_true')
     cli.add_argument("-g", "--get-telegram-updates", dest='get_telegram_updates', help='get telegram id of channel', action='store_true')
     cli.add_argument("-l", "--loglevel", dest='loglevel', type=str, help='set the log level, defaults to info', choices=['debug', 'error'], action='store', nargs='?')
    # cli.add_argument("-m", "--leaflet", dest='update_map', help='create MapData in geojson from loaction entries of events', action='store_true')
@@ -41,7 +39,7 @@ def get_args() -> Namespace:
     cli.add_argument("--edit", dest='telegram_edit', required='--telegram' in sys.argv, help='edit last telegram message instead of sending a new one', action='store_true')
     cli.add_argument("-toot", "--mastodon", dest='send_mastodon', help='send toot to mastodon', action='store_true')
     cli.add_argument("-ui", "--user-interface", dest='user_interface', help='start the user interface', action='store_true')
-    cli.set_defaults(config_file="config.yml", credentials_file="credentials.yml", dbmode=None ,loglevel='info', last_update=1, query_start=0, query_end=14)
+    cli.set_defaults(config_file="config.yml", credentials_file="credentials.yml", dbmode='sync' ,loglevel='info', last_update=1, query_start=0, query_end=14)
     # Show help if no argument specified
     if len(sys.argv) <= 1:
         sys.argv.append('--help')

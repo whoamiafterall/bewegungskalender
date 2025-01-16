@@ -1,15 +1,12 @@
-import sys
-
 from sqlmodel import select
 
-from bewegungskalender.backend.calendar.category import Category
-from bewegungskalender.backend.formatting.style import Style, style
-from bewegungskalender.backend.io import db
-from bewegungskalender.backend.io.cli import START, END
 from bewegungskalender.backend.calendar.event import Event
-from bewegungskalender.backend.io.config import FOOTER
-from bewegungskalender.libs.logger import LOGGER
 from bewegungskalender.backend.formatting.format import add_link, escape, Format, match_and_add_recurring, event_time
+from bewegungskalender.backend.formatting.style import Style, style
+from bewegungskalender.backend.io.cli import START, END
+from bewegungskalender.backend.io.config import FOOTER
+from bewegungskalender.backend.io.db import DB
+from bewegungskalender.libs.logger import LOGGER
 
 
 class MultiFormatMessage:
@@ -87,12 +84,12 @@ class MultiFormatMessage:
 			self.html += add_link(escape(item['link']['text']), item['link']['url'], Format.HTML)
 			self.newline()
 
-def create_message() -> MultiFormatMessage:
+def create_message(database:DB) -> MultiFormatMessage:
 	message = MultiFormatMessage()
 	message.header()
 	message.newline()
 	
-	events:list[Event] = db.exe(
+	events:list[Event] = database.exe(
 		select(Event)
 		.where(Event.start > START, Event.start <  END)
 		.order_by(Event.category_id, Event.start)

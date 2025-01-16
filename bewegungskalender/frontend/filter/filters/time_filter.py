@@ -1,5 +1,4 @@
 import calendar
-import locale
 from datetime import datetime
 
 from nicegui import ui, binding
@@ -8,7 +7,6 @@ from sqlmodel import select, desc, or_, and_
 
 from bewegungskalender.backend.calendar.event import Event
 from bewegungskalender.backend.io import db
-from bewegungskalender.backend.io.config import LOCALE
 from bewegungskalender.frontend.filter.filter import call_refresh_filter_event
 
 
@@ -19,7 +17,7 @@ def month_filter_ui():
         for i in range(1, 13):
             months_list[i] = calendar.month_name[i]
         years_list = {}
-        for i in range(TIME_FILTER.first_event_year, TIME_FILTER.last_event_year+1):
+        for i in range(datetime.now().year-1, datetime.now().year+1):
             years_list[i] = i
 
         ui.button(icon='navigate_before',on_click=TIME_FILTER.decrement_month)
@@ -36,23 +34,15 @@ def month_filter_ui():
         ui.button(icon='navigate_next',on_click=TIME_FILTER.increment_month)
 
 
-
 class TimeFilterController:
     def __init__(self):
         # Get first and last event in database so we know which months exist
-        first_event = db.exe(select(Event).order_by(Event.start)).first()
-        last_event = db.exe(select(Event).order_by(desc(Event.start))).first()
-
-
-        self.first_event_year = first_event.start.year
-        self.last_event_year = last_event.end.year
-
         self.month = binding.BindableProperty()
         self.month.value = datetime.now().month
 
         self.year = binding.BindableProperty()
 
-        self.year.value = max(min(datetime.now().year,self.last_event_year),self.first_event_year)
+        self.year.value = datetime.now().year
 
     def decrement_month(self):
         if self.month.value > 1:
@@ -75,6 +65,6 @@ class TimeFilterController:
         return statement.where(
             or_(and_(Event.start > month_begin,Event.start < month_end)
                 ,and_(Event.end > month_begin,Event.end < month_end))
-        ) #statement.where(Event.start == self.month).where(Event.start == self.month)
+        )
 
 TIME_FILTER = TimeFilterController()

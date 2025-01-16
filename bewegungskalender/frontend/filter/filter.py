@@ -5,7 +5,7 @@ from sqlmodel import select
 from bewegungskalender.backend.calendar.category import Category
 from bewegungskalender.backend.calendar.event import Event
 from bewegungskalender.backend.calendar.location import Location
-from bewegungskalender.backend.io import db
+from bewegungskalender.backend.io.db import DB
 from bewegungskalender.frontend.helpers.functions import loading
 from bewegungskalender.frontend.navigation.router import ROUTER
 
@@ -14,7 +14,6 @@ def call_refresh_filter_event():
     ui.run_javascript("emitEvent('refresh_filter');")
 
 def events_using_filters(filters: []) -> list[Event]:
-    loading('Filter...', 0.1)
     # init select
     statement = select(Event,Location,Category)
 
@@ -23,7 +22,8 @@ def events_using_filters(filters: []) -> list[Event]:
 
     # run statement
     statement = statement.join(Location).join(Category).order_by(Event.start).order_by(Event.summary)
-    result = db.exe(statement).all()
+    database = DB()
+    result = database.exe(statement).all()
 
     # return as array of Events
     return [n.Event for n in result]
