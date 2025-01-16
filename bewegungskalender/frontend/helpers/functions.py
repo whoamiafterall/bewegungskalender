@@ -40,6 +40,7 @@ def icon_link(icon: str, name: str, url: str=None):
     with mini_card('space-x-2 p-1 text-pretty mx-auto'):
         ui.icon(icon, size='20px')
         if url is not None:
+            #Todo: Warning: This line takes quite a bit to execute sometimes and with a lot of events (calls of it) it freezes the browser
             ui.link(name, url, new_tab=True)
         else:
             ui.label(name)
