@@ -5,8 +5,8 @@ from sqlalchemy import Select
 from sqlmodel import select
 
 from bewegungskalender.backend.calendar.category import Category
-from bewegungskalender.backend.io import db
 from bewegungskalender.backend.io.config import CALENDARS
+from bewegungskalender.backend.io.db import DB
 from bewegungskalender.frontend.filter.filter import call_refresh_filter_event
 from bewegungskalender.frontend.helpers.functions import mini_card, dropdown_button
 
@@ -16,7 +16,8 @@ async def categories_filters_ui() -> Element:
     with holder:
 
         await ui.context.client.connected()
-        categories = db.exe(select(Category)).all()
+        database = DB()
+        categories = database.exe(select(Category)).all()
 
         # Create Buttons with useful Information and Links for each Category
         for category in categories:

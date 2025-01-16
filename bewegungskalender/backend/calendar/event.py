@@ -5,8 +5,8 @@ import icalendar
 from icalendar.cal import Component
 from sqlmodel import SQLModel, Field, Relationship
 
-from bewegungskalender.backend.formatting.format import get_link
 from bewegungskalender.backend.calendar.location import Location, parse_location
+from bewegungskalender.backend.formatting.format import get_link
 from bewegungskalender.backend.io.config import TIMEZONE
 
 if TYPE_CHECKING: # Necessary for SQLModel Relationships across Files
@@ -14,8 +14,8 @@ if TYPE_CHECKING: # Necessary for SQLModel Relationships across Files
 
 class Event(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
-    summary: str
-    start: datetime
+    summary: str = Field(index=True)
+    start: datetime = Field(index=True)
     end: datetime
     duration: timedelta = Field(index=True)
     category: "Category" = Relationship(back_populates="events",  sa_relationship_kwargs={"lazy": "selectin"})
@@ -25,7 +25,7 @@ class Event(SQLModel, table=True):
     location: Location = Relationship(back_populates="event",  sa_relationship_kwargs={"lazy": "selectin"})
     location_id: int = Field(foreign_key="location.id")
     recurrence: bool = Field(default=False)
-    cloud_id: str
+    cloud_id: str = Field(index=True)
     
     def from_icalendar(self,vevent: Component):
         # Make sure all the values are datetime not date in case of all day events
@@ -45,7 +45,7 @@ class Event(SQLModel, table=True):
         self.link=get_link(vevent.get('description'))
         self.description=str(vevent.get('description')).replace(str(self.link), "")
 
-        # Todo: prevent this from redoing nominations
+        # TODO: prevent this from searching for locations twice by checking db first
         self.location=parse_location(vevent.get('location'))
 
         self.start=start
@@ -106,3 +106,4 @@ class Event(SQLModel, table=True):
         event.add('recurrence', self.recurrence)
         return event
 
+ 
