@@ -6,7 +6,7 @@ from nicegui.page_layout import LeftDrawer, RightDrawer
 
 from bewegungskalender.backend.formatting.nextcloud_urls import NC_MONTH_VIEW, NC_YEAR_VIEW
 from bewegungskalender.backend.io.config import MENU
-from bewegungskalender.frontend.main.theme import Theme
+from bewegungskalender.frontend.layout.theme import Theme
 from bewegungskalender.frontend.navigation.router import ROUTER
 from bewegungskalender.frontend.views.about import about_view
 from bewegungskalender.frontend.views.form import form_view

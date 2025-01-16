@@ -8,7 +8,7 @@ from bewegungskalender.backend.calendar.category import Category
 from bewegungskalender.backend.io import db
 from bewegungskalender.backend.io.config import CALENDARS
 from bewegungskalender.frontend.filter.filter import call_refresh_filter_event
-from bewegungskalender.frontend.functions import mini_card, dropdown_button
+from bewegungskalender.frontend.helpers.functions import mini_card, dropdown_button
 
 
 async def categories_filters_ui() -> Element:

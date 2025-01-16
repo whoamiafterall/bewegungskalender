@@ -2,9 +2,7 @@ from contextlib import contextmanager
 
 from nicegui import ui
 from nicegui.elements.mixins.validation_element import ValidationElement
-from nicegui.page_layout import RightDrawer
 
-from bewegungskalender.frontend.navigation.router import ROUTER
 
 class ErrorChecker:
     def __init__(self, *elements: ValidationElement) -> None:
@@ -22,10 +20,6 @@ def container(classes:str=None):
         card.classes(classes) # Add Custom Classes
         yield card
 
-def page_sticky(right_drawer: RightDrawer):
-    with ui.page_sticky(x_offset=18, y_offset=18).style("z-index: 1000;").bind_visibility_from(ROUTER,"show_filter"):
-        ui.button(icon="filter_alt", on_click=lambda:right_drawer.toggle()).props('fab color=accent').classes('sm:hidden')
-        
 @contextmanager
 def mini_card(classes:str=None):
     with ui.card().tight().classes('m-0 p-2 flex-row bg-primary text-secondary shadow-none items-center ') as card:

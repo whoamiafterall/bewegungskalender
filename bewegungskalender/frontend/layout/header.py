@@ -3,7 +3,7 @@ from contextlib import contextmanager
 from nicegui import ui
 from nicegui.page_layout import LeftDrawer, RightDrawer
 
-from bewegungskalender.frontend.main.menu import main_menu, secondary_menu
+from bewegungskalender.frontend.layout.menu import main_menu, secondary_menu
 from bewegungskalender.frontend.navigation.router import Router, ROUTER
 
 

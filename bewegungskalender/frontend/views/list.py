@@ -1,7 +1,6 @@
 from datetime import datetime
 
 import requests
-from dateutil.utils import today
 from nicegui import ui
 from slugify import slugify
 
@@ -17,8 +16,8 @@ from bewegungskalender.frontend.filter.filters.location_proximitry_filter import
     LOCATION_PROXIMITY_FILTER
 from bewegungskalender.frontend.filter.filters.location_type_filter import location_type_filter_ui, LOCATION_TYPE_FILTER
 from bewegungskalender.frontend.filter.filters.time_filter import month_filter_ui, TIME_FILTER
-from bewegungskalender.frontend.functions import loading, container, dropdown_button, icon_link
-from bewegungskalender.frontend.functions import mini_card
+from bewegungskalender.frontend.helpers.functions import loading, container, dropdown_button, icon_link
+from bewegungskalender.frontend.helpers.functions import mini_card
 from bewegungskalender.frontend.navigation.router import ROUTER
 
 

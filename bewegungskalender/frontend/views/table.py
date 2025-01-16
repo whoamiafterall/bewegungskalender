@@ -3,8 +3,7 @@ from slugify import slugify
 
 from bewegungskalender.backend.formatting.format import event_time
 from bewegungskalender.backend.io.config import MENU
-from bewegungskalender.frontend.filter.filter import FilterController
-from bewegungskalender.frontend.functions import loading, opacity
+from bewegungskalender.frontend.helpers.functions import loading, opacity
 from bewegungskalender.frontend.navigation.router import ROUTER
 
 

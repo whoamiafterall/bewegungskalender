@@ -13,7 +13,7 @@ from bewegungskalender.frontend.filter.filters.duration_filter import duration_f
 from bewegungskalender.frontend.filter.filters.location_proximitry_filter import location_proximity_filter_ui, \
     LOCATION_PROXIMITY_FILTER
 from bewegungskalender.frontend.filter.filters.location_type_filter import OFFLINE_LOCATION_TYPE_FILTER
-from bewegungskalender.frontend.functions import loading
+from bewegungskalender.frontend.helpers.functions import loading
 from bewegungskalender.frontend.navigation.router import ROUTER
 from bewegungskalender.frontend.templates.templater import render_map_template
 from bewegungskalender.libs.logger import LOGGER

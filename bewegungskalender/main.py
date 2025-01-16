@@ -19,7 +19,7 @@ from bewegungskalender.backend.io.config import CALENDARS, LOCALE
 from bewegungskalender.backend.io.nextcloud_forms import update_ncform
 from bewegungskalender.backend.output.mail import send_mail
 from bewegungskalender.backend.output.telegram_bot import get_telegram_updates, send_or_edit_telegram
-from bewegungskalender.frontend.main.main import start_ui
+from bewegungskalender.frontend.main import start_ui
 from bewegungskalender.libs.logger import LOGGER
 
 # external imports
