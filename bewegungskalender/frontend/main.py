@@ -33,6 +33,9 @@ async def main_page():
 
 def start_ui():
     LOGGER.debug('Starting UI...')
+    ui.add_head_html('<link rel="manifest" href="/manifest.json">')
+    ui.add_head_html(
+        '<script>if("serviceWorker" in navigator) { navigator.serviceWorker.register("/service_worker.js"); };</script>')
     ui.run(title=UI_TITLE, favicon=UI_FAVICON, language='de', port=UI_PORT, uvicorn_logging_level='info',storage_secret=UI_STORAGE_SECRET)
     LOGGER.debug('Successfully started UI.')
 
