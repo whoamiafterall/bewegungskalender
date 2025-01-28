@@ -51,3 +51,4 @@ CALENDARS: Final[list[dict]] = CONFIG['calendars']
 FOOTER: Final[list[dict]] = CONFIG['footer']
 LOCALE: Final[str] = CONFIG['format']['locale']
 TIMEZONE: Final[StaticTzInfo] = pytz.timezone(CONFIG['format']['timezone'])
+LOCAL_COUNTRIES: Final[list] = CONFIG['format']['local_countries']

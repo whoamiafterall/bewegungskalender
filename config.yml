@@ -36,6 +36,7 @@ calendars: # list of calendars to use from your caldav server (URL)
 format:
   locale: "de_DE.UTF-8"
   timezone: "Europe/Berlin"
+  local_countries: ['de', 'fr', 'ch', 'nl', 'be', 'pl', 'cz', 'li', 'at', 'dk'] # List of ISO 3166-1 alpha-2 country codes: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
 footer:
   - link: {text: '❓ FAQ', url: 'https://pad.kanthaus.online/s/Bewegungskalender'}
   - link: {text: '🔎 Weitere Kalender', url: 'https://pad.kanthaus.online/s/Bewegungskalender#Weitere-Kalender'}
