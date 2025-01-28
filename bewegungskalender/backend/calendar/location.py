@@ -8,6 +8,7 @@ from retry import retry
 from sqlmodel import SQLModel, Field, Relationship
 
 from bewegungskalender.backend.formatting.format import get_link
+from bewegungskalender.backend.io.config import LOCAL_COUNTRIES
 from bewegungskalender.libs.exceptions import NoResultError
 from bewegungskalender.libs.logger import LOGGER
 from bewegungskalender.libs.nominatim import lookup_entity
@@ -42,14 +43,17 @@ class Location(SQLModel, table=True):
     
     @classmethod
     def parse_local(cls, result, location):
-        return Location(type=EventLocationType.local,
-                        name=location,
-                        lat=result['lat'],
-                        lon=result['lon'],
-                        osm_link=f"{OSM_LINK}/{result['osm_type']}/{result['osm_id']}",
-                        city=_catch_key_error(result, 'city'),
-                        country=_catch_key_error(result, 'country'),
-                        country_code=_catch_key_error(result, 'country_code'))
+        return Location(
+            type=EventLocationType.local
+                if _catch_key_error(result,'country_code')
+                    in LOCAL_COUNTRIES else EventLocationType.international,
+            name=location,
+            lat=result['lat'],
+            lon=result['lon'],
+            osm_link=f"{OSM_LINK}/{result['osm_type']}/{result['osm_id']}",
+            city=_catch_key_error(result, 'city'),
+            country=_catch_key_error(result, 'country'),
+            country_code=_catch_key_error(result, 'country_code'))
 
 def _catch_key_error(result, key) -> str|None:
     try:
@@ -57,7 +61,7 @@ def _catch_key_error(result, key) -> str|None:
     except KeyError:
         return None
 
-
+# This is the main function in this file
 @retry(exceptions=GeocoderUnavailable, delay=2, max_delay=8, backoff=2)
 def parse_location(location: str | None) -> Location:
      # (has to be done before matching)

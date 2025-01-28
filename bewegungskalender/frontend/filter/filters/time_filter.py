@@ -3,10 +3,9 @@ from datetime import datetime
 
 from nicegui import ui, binding
 from sqlalchemy import Select
-from sqlmodel import select, desc, or_, and_
+from sqlmodel import or_, and_
 
 from bewegungskalender.backend.calendar.event import Event
-from bewegungskalender.backend.io import db
 from bewegungskalender.frontend.filter.filter import call_refresh_filter_event
 
 
@@ -20,18 +19,18 @@ def month_filter_ui():
         for i in range(datetime.now().year-1, datetime.now().year+1):
             years_list[i] = i
 
-        ui.button(icon='navigate_before',on_click=TIME_FILTER.decrement_month)
+        ui.button(icon='navigate_before',on_click=TIME_FILTER.decrement_month).props('dense text-color=secondary')
         ui.select(options=months_list,
-                ).props("outline dense behavior=menu color=secondary hide-dropdown-icon menu-offset=[10,10]"
-                ).classes('font-medium grow'
+                ).props("dense behavior=menu color=secondary hide-dropdown-icon menu-offset=[10,10]"
+                ).classes('font-medium grow bg-primary'
                 ).bind_value(TIME_FILTER.month,
                 ).on_value_change(call_refresh_filter_event)
+        ui.button(icon='navigate_next', on_click=TIME_FILTER.increment_month).props('dense text-color=secondary')
         ui.select(options=years_list,
-                ).props("outline dense behavior=menu color=secondary hide-dropdown-icon menu-offset=[10,10]"
-                ).classes('font-medium grow'
+                ).props("dense behavior=menu color=secondary hide-dropdown-icon menu-offset=[10,10]"
+                ).classes('font-medium pr-3 grow bg-primary rounded-r-sm'
                 ).bind_value(TIME_FILTER.year,
                 ).on_value_change(call_refresh_filter_event)
-        ui.button(icon='navigate_next',on_click=TIME_FILTER.increment_month)
 
 
 class TimeFilterController:
