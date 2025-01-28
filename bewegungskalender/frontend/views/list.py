@@ -1,4 +1,5 @@
-from datetime import datetime
+from contextlib import contextmanager
+from datetime import datetime, timedelta
 
 import requests
 from nicegui import ui
@@ -14,8 +15,8 @@ from bewegungskalender.frontend.filter.filters.category_filter import categories
 from bewegungskalender.frontend.filter.filters.duration_filter import duration_filter_ui, DURATION_FILTER
 from bewegungskalender.frontend.filter.filters.location_proximitry_filter import location_proximity_filter_ui, \
     LOCATION_PROXIMITY_FILTER
-from bewegungskalender.frontend.filter.filters.location_type_filter import location_type_filter_ui, LOCATION_TYPE_FILTER
-from bewegungskalender.frontend.filter.filters.time_filter import month_filter_ui, TIME_FILTER
+from bewegungskalender.frontend.filter.filters.location_type_filter import LOCATION_TYPE_FILTER, location_type_filter_ui
+from bewegungskalender.frontend.filter.filters.time_filter import TIME_FILTER
 from bewegungskalender.frontend.helpers.functions import loading, container, dropdown_button, icon_link
 from bewegungskalender.frontend.helpers.functions import mini_card
 from bewegungskalender.frontend.navigation.router import ROUTER
@@ -24,8 +25,8 @@ from bewegungskalender.frontend.navigation.router import ROUTER
 # Create List Page
 @ROUTER.add('/')
 async def list_view():
-    loading(MENU['list']['label'])
     await ui.context.client.connected()
+    loading(MENU['list']['label'])
     
     with container('h-[calc(100vh-55px)] pb-0 mb-50px justify-between flex-row'):
 
@@ -53,20 +54,31 @@ async def create_list_ui():
     # Get filtered Events
     events = events_using_filters([LOCATION_TYPE_FILTER, TIME_FILTER, CATEGORY_FILTER, LOCATION_PROXIMITY_FILTER, DURATION_FILTER])
     with ui.column(wrap=False, align_items='center').classes('h-full w-full lg:w-3/4 m-0 gap-0 gap-y-1 sm:px-2'):
-        month_filter_ui()
-   #     ui.notify("Wische nach links oder rechts um den vorherigen oder nächsten Monat anzuzeigen!", position="top")
+        with ui.row().classes('gap-0'):
+            with ui.element().classes('max-sm:hidden'):
+                location_types()
+        
+        #     ui.notify("Wische nach links oder rechts um den vorherigen oder nächsten Monat anzuzeigen!", position="top")
    #     with ui.carousel(animated=True).classes('h-full w-full bg-primary').props('swipeable infinite') as carousel:
            # for month in TIME_FILTER.month.value:
             #    with ui.carousel_slide(name=month):
-        with ui.list().classes('w-full max-sm:divide-y divide-current'):
+        with ui.list().classes('w-full max-sm:divide-y divide-current scroll'):
             for event in events:
-                create_event_row(event)
+                today = datetime.today().date()
+                if event.start.date() <= today <= event.start.date() + event.duration:
+                    today_label(today)
+                    event_row(event, classes='border-current sm:border sm:rounded')
+                elif event.start.date() - timedelta(days=1) == today:
+                    today_label(today)
+                elif event.end.date() + timedelta(days=1) == today:
+                    today_label(today)
+                else:
+                    event_row(event)
 
-def create_event_row(event):
+@contextmanager
+def event_row(event:Event, classes:str=None) -> ui.row:
     # Create a row for each event
-    with ui.row().classes('flex flex-row w-full gap-0 sm:gap-x-3 p-0.5 max-sm:mb-2 items-center text-sm') as event_row:
-        if event.start.date() == datetime.today().date():
-            event_row.classes('border-current sm:border sm:rounded')
+    with ui.row().classes('flex flex-row w-full gap-0 sm:gap-x-3 p-0.5 max-sm:mb-2 items-center text-sm') as row:
         show_time(event)  # Show Event_Time
         # Create the dropdown button
         with dropdown_button(event.summary, event.category.color, "max-sm:w-full max-sm:order-3"):
@@ -84,9 +96,23 @@ def create_event_row(event):
                     ui.label(event.description).classes('text-pretty px-3 shrink mx-auto')
                 download_button(event)
         show_location(event)  # Show Event_Location
+        row.classes(classes)
+    return row
 
 # -----------------
 # Helper Functions
+
+def location_types():
+    chip(EventLocationType.local)
+    chip(EventLocationType.online)
+    chip(EventLocationType.national)
+    chip(EventLocationType.international)
+
+def chip(location_type:EventLocationType):
+    ui.chip(text=location_type.keyword, icon=location_type.icon, color='secondary', selectable=True).props('outline icon-selected=highlight_off')
+
+def today_label(today):
+    ui.markdown(f"Heute: {today:%A, %x}").classes('mx-auto font-medium text-sm w-full text-center')
 
 def show_time(event:Event):
     with mini_card('sm:p-1 gap-1 order-first'):
@@ -99,17 +125,11 @@ def show_location(event:Event):
     with mini_card('max-sm:order-2 sm:align-right order-last'):
         match event.location.type:
             case EventLocationType.online | EventLocationType.international | EventLocationType.national:
-                ui.label(f"{event.location.name}").classes('grow text-right')
-            case EventLocationType.undefined:
-                ui.space()
+                ui.icon(name=event.location.type.icon).classes('grow text-right')
             case EventLocationType.local:
-                if event.location.country_code in ('de', 'at', 'ch'):
-                    text = event.location.city if event.location.city is not None else event.location.name
-                    ui.label(f"{text}").classes('grow text-right')
-                elif not event.location.country_code:
-                    ui.space()
-                else:
-                    ui.label(f"{event.location.country}").classes('grow text-right')
+                text = event.location.city if event.location.city is not None else event.location.name
+                ui.label(f"{text}").classes('grow text-right')
+               
    
 def download_ics(url, name):
         ui.download(str.encode(requests.get(url).text), name)
