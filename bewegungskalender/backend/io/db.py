@@ -6,7 +6,7 @@ import icalendar
 from caldav.objects import Calendar, CalendarObjectResource, SynchronizableCalendarObjectCollection
 from icalendar.cal import Component
 from sqlalchemy import Engine
-from sqlalchemy.exc import NoResultFound
+from sqlalchemy.exc import NoResultFound, MultipleResultsFound
 from sqlmodel import create_engine, SQLModel, Session, select, desc
 
 from bewegungskalender.backend.calendar.category import Category
@@ -88,8 +88,12 @@ class DB:
         for category in self.exe(select(Category)).all():
             changed_events = Category.sync(category)
             
-            def compare_event(compo: Component):
-                return self.exe(select(Event).where(Event.cloud_id == str(compo.get('UID')))).one()
+            def compare_event(compo: Component): #TODO fix problem with recurring events
+                print(str(compo.get('UID')))
+                try:
+                    return self.exe(select(Event).where(Event.cloud_id == str(compo.get('UID')))).one()
+                except MultipleResultsFound:
+                    raise MultipleResultsFound(f"Found multiple events with this cloud_id: {str(compo.get('UID'))}, corresponding to: {comp}.\n\nPlease repopulate your DB with -db full.")
             
             # For each changed event
             for ics in changed_events:
