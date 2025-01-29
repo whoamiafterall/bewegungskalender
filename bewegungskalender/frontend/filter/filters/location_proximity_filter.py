@@ -4,7 +4,7 @@ from nicegui import ui, binding
 from nicegui.element import Element
 from sqlalchemy import Select, or_
 
-from bewegungskalender.backend.calendar.location import Location, EventLocationType
+from bewegungskalender.backend.calendar.location import Location, LocationType
 from bewegungskalender.frontend.filter.filter import call_refresh_filter_event
 from bewegungskalender.libs.exceptions import NoResultError
 from bewegungskalender.libs.nominatim import search_city
@@ -61,7 +61,7 @@ class LocationProximityFilterController:
             return statement.where(
                 or_(
                     # Only apply filter if Event is local
-                    Location.type != EventLocationType.local,
+                    Location.type != LocationType.local,
                     # Distance calculation sr(lat1-lat2) * modifier + sr(lon1-lon2) * modifier
                     ((Location.lat - float(lat)) * (Location.lat - float(lat)) * modifier_lat_sq)
                     + ((Location.lon - float(lon)) * (Location.lon - float(lon)) * modifier_lon_sq)
