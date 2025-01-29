@@ -10,10 +10,11 @@ from bewegungskalender.backend.io.config import MENU, MAP_CENTER_LAT, MAP_CENTER
 from bewegungskalender.frontend.filter.filter import events_using_filters
 from bewegungskalender.frontend.filter.filters.category_filter import categories_filters_ui, CATEGORY_FILTER
 from bewegungskalender.frontend.filter.filters.duration_filter import duration_filter_ui, DURATION_FILTER
-from bewegungskalender.frontend.filter.filters.location_proximitry_filter import location_proximity_filter_ui, \
+from bewegungskalender.frontend.filter.filters.location_proximity_filter import location_proximity_filter_ui, \
     LOCATION_PROXIMITY_FILTER
-from bewegungskalender.frontend.filter.filters.location_type_filter import OFFLINE_LOCATION_TYPE_FILTER
-from bewegungskalender.frontend.helpers.functions import loading
+from bewegungskalender.frontend.filter.filters.location_type_filter import LOCAL_LOCATION_TYPE_FILTER
+from bewegungskalender.frontend.filter.filters.time_filter import FROM_TODAY_FILTER
+from bewegungskalender.frontend.helpers.functions import loading, icon_link
 from bewegungskalender.frontend.navigation.router import ROUTER
 from bewegungskalender.frontend.templates.templater import render_map_template
 from bewegungskalender.libs.logger import LOGGER
@@ -75,7 +76,7 @@ async def create_map_ui():
                                                                 'radius': LOCATION_PROXIMITY_FILTER.distance.value * 1000}])
 
         # get cached data
-        events = events_using_filters([CATEGORY_FILTER, OFFLINE_LOCATION_TYPE_FILTER, LOCATION_PROXIMITY_FILTER, DURATION_FILTER])
+        events = events_using_filters([CATEGORY_FILTER, LOCAL_LOCATION_TYPE_FILTER, FROM_TODAY_FILTER, LOCATION_PROXIMITY_FILTER, DURATION_FILTER])
 
         LOGGER.info(f"Got {events.__len__()} locations to display...")
 
