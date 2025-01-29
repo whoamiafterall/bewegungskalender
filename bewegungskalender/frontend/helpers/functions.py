@@ -32,12 +32,12 @@ def dropdown_button(name:str, color:str, classes:str=None):
             text=name,
             color=opacity(70, color),
             auto_close=True,
-    ).classes(f"font-normal text-secondary text-sm capitalize grow items-start").props('unelevated') as btn:
+    ).classes(f"font-normal text-secondary text-sm capitalize grow items-center").props('unelevated') as btn:
         btn.classes(classes)
         yield btn
 
-def icon_link(icon: str, name: str, url: str=None):
-    with mini_card('space-x-2 p-1 text-pretty mx-auto'):
+def icon_link(icon: str, name:str=None, url:str=None, card_classes:str='space-x-2 p-1 text-pretty mx-auto'):
+    with mini_card(card_classes):
         ui.icon(icon, size='20px')
         if url is not None:
             #Todo: Warning: This line takes quite a bit to execute sometimes and with a lot of events (calls of it) it freezes the browser
