@@ -53,21 +53,23 @@ def single_category_filter_ui(category: Category):
                           ).props('flat color=secondary').classes(
                     'font-normal hover:font-medium normal-case')
 
-
 class CategoryFilterController:
     def __init__(self):
         self.categories = {}
 
         for calendar in CALENDARS:
-            self.categories[f"{slugify(str(calendar['calendar']['internal']))}"] = binding.BindableProperty()
+            self.categories[get_internal(calendar)] = binding.BindableProperty()
 
     def apply_filter_to_statement(self,statement: Select):
         for calendar in CALENDARS:
-            if self.categories[f"{slugify(str(calendar['calendar']['internal']))}"].value is False:
+            if self.categories[get_internal(calendar)].value is False:
                 statement = statement.where(
                     Category.internal != calendar['calendar']['internal']
                 )
         return statement
+
+def get_internal(calendar:dict):
+    return f"{slugify(str(calendar['calendar']['internal']))}"
 
 
 CATEGORY_FILTER = CategoryFilterController()
