@@ -36,6 +36,7 @@ async def map_view():
             duration_filter_ui()
             location_proximity_filter_ui()
             await categories_filters_ui()
+            icon_link('question_mark', "Die Karte zeigt nur lokale Events, die in der Zukunft liegen!")
 
         ui.on('refresh_filter', lambda: create_map_ui.refresh(), throttle=0.5, leading_events=False)
 
