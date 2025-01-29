@@ -35,17 +35,16 @@ class NavigateButton(Button):
 
 
 def main_menu(left_drawer:LeftDrawer, classes:str=None, props:str='color=accent text-color=white'):
-    ui.button(on_click=lambda: left_drawer.toggle(), icon='menu').classes(classes).props(props).tailwind('lg:hidden')
     MenuButton(MENU['list'], list_view).classes(classes).props(props)
-    NavigateButton('calendar_month', 'Monat', NC_MONTH_VIEW).classes(classes).props(props)
-    NavigateButton('grid_on', 'Jahr', NC_YEAR_VIEW).classes(classes).props(props)
     MenuButton(MENU['map'], map_view).classes(classes).props(props)
+    MenuButton(MENU['form'], form_view, left_drawer).classes(classes).props(props)
+   # NavigateButton('calendar_month', 'Monat', NC_MONTH_VIEW).classes(classes).props(props)
+    NavigateButton('grid_on', 'Jahr', NC_YEAR_VIEW).classes(classes).props(props)
   #  MenuButton(MENU['calendar'], calendar_view).classes(classes).props(props)
 #    MenuButton(MENU['calendar'], custom_calendar_view).props(props)
   #  MenuButton(MENU['table'], table_view).props(props)
 
 def secondary_menu(left_drawer:LeftDrawer, classes:str=None, props:str='color=accent text-color=white'):
-    MenuButton(MENU['form'], form_view, left_drawer).classes(classes).props(props)
     MenuButton(MENU['about'], about_view, left_drawer).classes(classes).props(props)
     #MenuButton(MENU['FAQ'], faq_view, left_drawer).classes(classes).props(props)
     MenuButton(MENU['links'], links_view, left_drawer).classes(classes).props(props)
