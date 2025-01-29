@@ -116,9 +116,7 @@ def today_label(today):
 
 def show_time(event:Event):
     with mini_card('sm:p-1 gap-1 order-first'):
-        ui.label(f"{event.start:%d (%a)}")
-        ui.label(f"{event.start:%H:%M}:") if event.start.time() != datetime.min.time() else None
-        ui.label(f"{event.end:- %d (%a):}") if event.start.date() != event.end.date() else None
+        ui.label(event_time(event.start, event.end, '%d (%a)')).classes('mr-auto')
     ui.space().classes('grow sm:hidden')
     
 def show_location(event:Event):

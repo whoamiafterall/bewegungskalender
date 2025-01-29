@@ -68,9 +68,9 @@ class MultiFormatMessage:
 		self.html = match_and_add_recurring(event, self.html, Format.HTML)
 	
 	def add_event(self, event:Event):
-		self.txt += event_time(event.start, event.end) + add_link(event.summary, event.link, Format.TXT)
-		self.markdown += escape(event_time(event.start, event.end)) + add_link(event.summary, event.link, Format.MD)
-		self.html += event_time(event.start, event.end) + add_link(event.summary, event.link, Format.HTML)
+		self.txt += event_time(event.start, event.end, '%d.%m.') + add_link(event.summary, event.link, Format.TXT)
+		self.markdown += escape(event_time(event.start, event.end, '%d.%m.')) + add_link(event.summary, event.link, Format.MD)
+		self.html += event_time(event.start, event.end, '%d.%m.') + add_link(event.summary, event.link, Format.HTML)
 	
 	def footer(self):  # Displayed as End of the Message (List of links)
 		footer_title:str =  "🌐 Weiterführende Links:"

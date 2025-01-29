@@ -85,12 +85,12 @@ def match_and_add_recurring(event: "Event", message: str, frmt: Format) -> str:
         return message[:match.span()[0]] + substitute + message[match.span()[1]:]
 
 
-def event_time(start: datetime, end: datetime) -> str:
+def event_time(start: datetime, end: datetime, date_format:str) -> str:
     if start.time() == time.min and start.date() != end.date():
-        return f"{start:%d.%m.} - {end:%d.%m.}"
+        return f"{start:{date_format}} - {end:{date_format}}"
     elif start.time() == time.min and start.date() == end.date():
-        return f"{start:%d.%m.}"
-    return f"{start:%d.%m.} {start:(%H:%M)}"
+        return f"{start:{date_format}}"
+    return f"{start:{date_format}} {start:(%H:%M)}"
 
 
 def get_link(string: str):
