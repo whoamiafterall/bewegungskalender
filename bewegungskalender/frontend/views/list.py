@@ -6,7 +6,7 @@ from nicegui import ui
 from slugify import slugify
 
 from bewegungskalender.backend.calendar.event import Event
-from bewegungskalender.backend.calendar.location import EventLocationType
+from bewegungskalender.backend.calendar.location import LocationType
 from bewegungskalender.backend.formatting.format import event_time
 from bewegungskalender.backend.io.config import MENU
 from bewegungskalender.backend.io.credentials import NC_DOMAIN
@@ -39,9 +39,9 @@ async def list_view():
             location_type_filter_ui()
             location_proximity_filter_ui(
                                 ).bind_visibility_from(LOCATION_TYPE_FILTER.state, target_name="value",
-                                backward=lambda v: (EventLocationType.local
-                                                    or EventLocationType.national
-                                                    or EventLocationType.international in v))
+                                                       backward=lambda v: (LocationType.local
+                                                                           or LocationType.national
+                                                                           or LocationType.international in v))
             await categories_filters_ui()
     
         ui.on('refresh_filter', lambda: create_list_ui.refresh(), throttle=1)
@@ -54,9 +54,11 @@ async def create_list_ui():
     # Get filtered Events
     events = events_using_filters([LOCATION_TYPE_FILTER, MONTH_FILTER, CATEGORY_FILTER, LOCATION_PROXIMITY_FILTER, DURATION_FILTER])
     with ui.column(wrap=False, align_items='center').classes('h-full w-full lg:w-3/4 m-0 gap-0 gap-y-1 sm:px-2'):
-        with ui.row().classes('gap-0'):
-            with ui.element().classes('max-sm:hidden'):
-                location_types()
+        with ui.row(align_items='start').classes('gap-0 w-full'):
+            month_filter_ui()
+            ui.space()
+            with ui.element().classes('row flex-row flex-nowrap h-10 float-right overflow-x-auto no-scrollbar'):
+               location_types()
         
         #     ui.notify("Wische nach links oder rechts um den vorherigen oder nächsten Monat anzuzeigen!", position="top")
    #     with ui.carousel(animated=True).classes('h-full w-full bg-primary').props('swipeable infinite') as carousel:
@@ -85,11 +87,12 @@ def event_row(event:Event, classes:str=None) -> ui.row:
             # Create the dropdown content
             with mini_card('flex-col p-2 gap-y-1 text-sm w-full'):
                 with ui.row().classes():
-                    icon_link('event', event_time(event.start, event.end))
-                    if event.location.type == EventLocationType.online:
-                        icon_link('computer', "Online")
-                    if event.location.type == EventLocationType.local:
-                        icon_link('map', event.location.name, event.location.osm_link)
+                    icon_link('event', event_time(event.start, event.end, '%A, %d.%m.'))
+                    match event.location.type:
+                        case LocationType.local:
+                            icon_link(event.location.type.icon, event.location.name, event.location.osm_link)
+                        case _:
+                            icon_link(event.location.type.icon, event.location.name)
                 if event.link:
                     icon_link('link', event.link.removeprefix('https://'), event.link)
                 if event.description is not None and event.description.strip() != event.link:
@@ -103,12 +106,12 @@ def event_row(event:Event, classes:str=None) -> ui.row:
 # Helper Functions
 
 def location_types():
-    chip(EventLocationType.local)
-    chip(EventLocationType.online)
-    chip(EventLocationType.national)
-    chip(EventLocationType.international)
+    chip(LocationType.local)
+    chip(LocationType.national)
+    chip(LocationType.international)
+    chip(LocationType.online)
 
-def chip(location_type:EventLocationType):
+def chip(location_type:LocationType):
     ui.chip(text=location_type.keyword, icon=location_type.icon, color='secondary', selectable=True).props('outline icon-selected=highlight_off')
 
 def today_label(today):
@@ -122,11 +125,11 @@ def show_time(event:Event):
 def show_location(event:Event):
     with mini_card('max-sm:order-2 sm:align-right order-last'):
         match event.location.type:
-            case EventLocationType.online | EventLocationType.international | EventLocationType.national:
-                ui.icon(name=event.location.type.icon).classes('grow text-right')
-            case EventLocationType.local:
+            case LocationType.online | LocationType.international | LocationType.national:
+                icon_link(event.location.type.icon, card_classes='py-0 px-0')
+            case LocationType.local:
                 text = event.location.city if event.location.city is not None else event.location.name
-                ui.label(f"{text}").classes('grow text-right')
+                ui.label(text).classes('grow text-right')
                
    
 def download_ics(url, name):
