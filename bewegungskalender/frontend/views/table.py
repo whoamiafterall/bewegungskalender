@@ -23,7 +23,7 @@ def table_view():
 
         table = ui.table(title="Termine",
          columns=columns,
-         rows=[{'start': event_time(event.start, event.end), 'title': event.summary, 'link': event.link, 'color': opacity(50, event.category.color)} for event in events],
+         rows=[{'start': event_time(event.start, event.end, date_format='%d.%m.'), 'title': event.summary, 'link': event.link, 'color': opacity(50, event.category.color)} for event in events],
         ).classes('bg-black text-white')
         table.add_slot('body-cell-title', '''
             <q-td :props="props">

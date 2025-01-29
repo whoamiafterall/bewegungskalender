@@ -22,8 +22,8 @@ from bewegungskalender.libs.logger import LOGGER
 # Create Map View
 @ROUTER.add(f"/{slugify(str(MENU['map']['label'].lower()))}")
 async def map_view():
-    loading(MENU['map']['label'])
     await ui.context.client.connected()
+    loading(MENU['map']['label'])
     LOGGER.debug('Creating the Map to show events...')
     # new leaflet with center set to center of germany
     with ui.card().tight().classes('w-full flex-row p-0 m-0').props('flat square'):
@@ -99,7 +99,7 @@ async def create_map_ui():
 
             # use template html file and replace variables TODO: use a proper templating language like Jinja? (Didn't want to setup a templating environment just for one file though)
             # it might also a be an option to be generate all the html popups and store them as properties themselves also.
-            context = {"summary": event.summary, "event_time": event_time(event.start, event.end),
+            context = {"summary": event.summary, "event_time": event_time(event.start, event.end, '%A, %d.%m.%y'),
                        "location": location.name, "link": event.link}
             bind_popup(leaflet, marker, context)
 
