@@ -13,10 +13,10 @@ from bewegungskalender.backend.io.credentials import NC_DOMAIN
 from bewegungskalender.frontend.filter.filter import events_using_filters
 from bewegungskalender.frontend.filter.filters.category_filter import categories_filters_ui, CATEGORY_FILTER
 from bewegungskalender.frontend.filter.filters.duration_filter import duration_filter_ui, DURATION_FILTER
-from bewegungskalender.frontend.filter.filters.location_proximitry_filter import location_proximity_filter_ui, \
+from bewegungskalender.frontend.filter.filters.location_proximity_filter import location_proximity_filter_ui, \
     LOCATION_PROXIMITY_FILTER
 from bewegungskalender.frontend.filter.filters.location_type_filter import LOCATION_TYPE_FILTER, location_type_filter_ui
-from bewegungskalender.frontend.filter.filters.time_filter import TIME_FILTER
+from bewegungskalender.frontend.filter.filters.time_filter import MONTH_FILTER, month_filter_ui
 from bewegungskalender.frontend.helpers.functions import loading, container, dropdown_button, icon_link
 from bewegungskalender.frontend.helpers.functions import mini_card
 from bewegungskalender.frontend.navigation.router import ROUTER
@@ -52,7 +52,7 @@ async def list_view():
 @ui.refreshable
 async def create_list_ui():
     # Get filtered Events
-    events = events_using_filters([LOCATION_TYPE_FILTER, TIME_FILTER, CATEGORY_FILTER, LOCATION_PROXIMITY_FILTER, DURATION_FILTER])
+    events = events_using_filters([LOCATION_TYPE_FILTER, MONTH_FILTER, CATEGORY_FILTER, LOCATION_PROXIMITY_FILTER, DURATION_FILTER])
     with ui.column(wrap=False, align_items='center').classes('h-full w-full lg:w-3/4 m-0 gap-0 gap-y-1 sm:px-2'):
         with ui.row().classes('gap-0'):
             with ui.element().classes('max-sm:hidden'):
@@ -60,7 +60,7 @@ async def create_list_ui():
         
         #     ui.notify("Wische nach links oder rechts um den vorherigen oder nächsten Monat anzuzeigen!", position="top")
    #     with ui.carousel(animated=True).classes('h-full w-full bg-primary').props('swipeable infinite') as carousel:
-           # for month in TIME_FILTER.month.value:
+           # for month in MONTH_FILTER.month.value:
             #    with ui.carousel_slide(name=month):
         with ui.list().classes('w-full max-sm:divide-y divide-current scroll'):
             for event in events:

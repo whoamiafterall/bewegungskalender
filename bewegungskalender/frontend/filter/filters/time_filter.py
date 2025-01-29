@@ -10,7 +10,7 @@ from bewegungskalender.frontend.filter.filter import call_refresh_filter_event
 
 
 def month_filter_ui():
-    with ui.button_group().classes('h-10 items-stretch'):
+    with ui.button_group().classes('h-10 items-stretch').props('dense flat'):
 
         months_list = {}
         for i in range(1, 13):
@@ -19,28 +19,25 @@ def month_filter_ui():
         for i in range(datetime.now().year-1, datetime.now().year+1):
             years_list[i] = i
 
-        ui.button(icon='navigate_before',on_click=TIME_FILTER.decrement_month).props('dense text-color=secondary')
+        ui.button(icon='navigate_before', on_click=MONTH_FILTER.decrement_month).props('dense text-color=secondary')
         ui.select(options=months_list,
-                ).props("dense behavior=menu color=secondary hide-dropdown-icon menu-offset=[10,10]"
-                ).classes('font-medium grow bg-primary'
-                ).bind_value(TIME_FILTER.month,
-                ).on_value_change(call_refresh_filter_event)
-        ui.button(icon='navigate_next', on_click=TIME_FILTER.increment_month).props('dense text-color=secondary')
+                ).props("dense outlined behavior=menu hide-dropdown-icon color=secondary menu-offset=[10,10]"
+                ).classes('font-medium'
+                ).bind_value(MONTH_FILTER.month,
+                             ).on_value_change(call_refresh_filter_event)
+        ui.button(icon='navigate_next', on_click=MONTH_FILTER.increment_month).props('dense text-color=secondary')
         ui.select(options=years_list,
-                ).props("dense behavior=menu color=secondary hide-dropdown-icon menu-offset=[10,10]"
-                ).classes('font-medium pr-3 grow bg-primary rounded-r-sm'
-                ).bind_value(TIME_FILTER.year,
-                ).on_value_change(call_refresh_filter_event)
+                ).props("dense outlined behavior=menu hide-dropdown-icon color=secondary menu-offset=[10,10]"
+                ).classes('font-medium pr-3 rounded-r-sm'
+                ).bind_value(MONTH_FILTER.year,
+                             ).on_value_change(call_refresh_filter_event)
 
-
-class TimeFilterController:
+class MonthFilterController:
     def __init__(self):
         # Get first and last event in database so we know which months exist
         self.month = binding.BindableProperty()
         self.month.value = datetime.now().month
-
         self.year = binding.BindableProperty()
-
         self.year.value = datetime.now().year
 
     def decrement_month(self):
@@ -65,5 +62,13 @@ class TimeFilterController:
             or_(and_(Event.start > month_begin,Event.start < month_end)
                 ,and_(Event.end > month_begin,Event.end < month_end))
         )
+   
+MONTH_FILTER = MonthFilterController()
 
-TIME_FILTER = TimeFilterController()
+
+class FromTodayFilterController:
+
+    def apply_filter_to_statement(self,statement: Select):
+        return statement.where(Event.start > datetime.now())
+
+FROM_TODAY_FILTER = FromTodayFilterController()
