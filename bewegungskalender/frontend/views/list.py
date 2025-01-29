@@ -92,7 +92,7 @@ def event_row(event:Event, classes:str=None) -> ui.row:
                         case LocationType.local:
                             icon_link(event.location.type.icon, event.location.name, event.location.osm_link)
                         case _:
-                            icon_link(event.location.type.icon, event.location.name)
+                            icon_link(event.location.type.icon, event.location.type.keyword)
                 if event.link:
                     icon_link('link', event.link.removeprefix('https://'), event.link)
                 if event.description is not None and event.description.strip() != event.link:
