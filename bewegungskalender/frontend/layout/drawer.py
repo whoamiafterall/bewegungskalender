@@ -25,13 +25,12 @@ async def right_drawer() -> RightDrawer:
 		with ui.column(wrap=False, align_items='stretch').classes('m-0 gap-1 pt-5 px-3 shrink text-sm'):
 			
 			duration_filter_ui()
-			location_type_filter_ui().bind_visibility_from(ROUTER,"current_page",lambda e: e is not None and (e.path == "/"))
 
 			# temporary workaround due to nice gui not having the option to bind visibility from multiple attributes
 			with ui.list().classes("w-full").bind_visibility_from(ROUTER, 'current_page',lambda e: e is not None and (e.path == "/karte")):
 				location_proximity_filter_ui()
 			with ui.list().classes("w-full").bind_visibility_from(ROUTER, 'current_page',lambda e: e is not None and (e.path == "/")):
-				location_proximity_filter_ui().bind_visibility_from(LOCATION_TYPE_FILTER.state, target_name="value", backward=lambda v: (LocationType.international or LocationType.national or LocationType.local in v))
+				location_proximity_filter_ui()#.bind_visibility_from(LOCATION_TYPE_FILTER.state, target_name="value", backward=lambda v: (LocationType.international or LocationType.national or LocationType.local in v))
 
 			await categories_filters_ui()
 			ui.button(icon='close', on_click=lambda: rd.hide()).props('flat color=white align=center').classes(
