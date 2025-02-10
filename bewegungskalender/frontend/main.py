@@ -17,6 +17,7 @@ from bewegungskalender.libs.logger import LOGGER
 @ui.page('/{_:path}')
 async def main_page():
 	await ui.context.client.connected()
+	ui.add_css(Path("/helpers/custom.css"))
 	
 	# Load the theme from browser storage
 	Theme.init_theme()
