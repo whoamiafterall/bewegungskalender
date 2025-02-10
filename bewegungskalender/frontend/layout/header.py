@@ -4,6 +4,7 @@ from nicegui import ui
 from nicegui.page_layout import LeftDrawer, RightDrawer
 
 from bewegungskalender.frontend.filter.filters.time_filter import month_filter_ui
+from bewegungskalender.frontend.helpers.functions import filter_visibility
 from bewegungskalender.frontend.layout.menu import main_menu, secondary_menu
 from bewegungskalender.frontend.navigation.router import ROUTER
 
@@ -14,19 +15,9 @@ def header(ld: LeftDrawer, rd: RightDrawer):
 		with ui.button_group().props('flat dense'):
 			main_menu(ld, rd, props='flat')
 		ui.space().classes()
-		with filter_visibility(''):
+		with filter_visibility(paths='/'):
 			month_filter_ui()
 		ui.space().classes('max-lg:hidden')
 		with ui.row().classes('max-lg:hidden'):
 			with ui.button_group().props('flat'):
 				secondary_menu(ld)
-
-
-@contextmanager
-def filter_visibility(classes: str = ''):
-	with ui.element().bind_visibility_from(ROUTER, "current_page",
-	                                       backward=lambda
-			                                       e: e is not None and (
-			                                       e.path == "/")) as wrapper:
-		wrapper.classes(classes)
-		yield wrapper
