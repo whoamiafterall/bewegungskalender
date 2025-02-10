@@ -1,10 +1,10 @@
 from nicegui import ui
-from nicegui.page_layout import LeftDrawer
+from nicegui.page_layout import LeftDrawer, RightDrawer
 
 from bewegungskalender.frontend.layout.menu import main_menu
 
 
-def footer(ld:LeftDrawer):
+def footer(ld: LeftDrawer, rd: RightDrawer):
 	# Footer is only shown on small screens
 	with ui.footer(bordered=True).classes('sm:hidden h-50px flex flex-nowrap items-center fixed p-0 gap-0'):
-		main_menu(ld, props='label="" text-color=contrast square', classes='flex-auto bg-accent m-0 p-4')
+		main_menu(ld, rd, props='label="" text-color=contrast square', classes='flex-auto bg-accent m-0 p-4')
