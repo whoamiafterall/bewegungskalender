@@ -29,7 +29,7 @@ class Event(SQLModel, table=True):
 	cloud_id: str = Field(index=True)
 	ics_url: str
 	
-	def from_icalendar(self, vevent: Component, ics_url: str):
+	def from_icalendar(self, vevent: Component, ics_url):
 		# Make sure all the values are datetime not date in case of all day events
 		def to_datetime(dt: date | datetime) -> datetime:
 			if isinstance(dt, datetime):
@@ -55,7 +55,7 @@ class Event(SQLModel, table=True):
 		self.duration = end - start
 		self.recurrence = True if vevent.get('recurrence-id') else False
 		self.cloud_id = vevent.get('UID')
-		self.ics_url = ics_url
+		self.ics_url = str(ics_url)
 		return self
 	
 	@classmethod
