@@ -131,7 +131,6 @@ def download_button(event: Event):
 	In order to download we first fetch the ics contents and then serve them to the client.
 	We need to do it this way because else nice gui passes some headers that mess with next cloud authentication
 	"""
-	print(f"https://{NC_DOMAIN}/remote.php/dav/public-calendars/{event.category.public_id}/{event.cloud_id}.ics?export")
 	ui.button(text='Add to Calendar (.ics)', icon='file_download',
 	          on_click=lambda: download_ics(
 		          f"https://{NC_DOMAIN}/remote.php/dav/public-calendars/{event.category.public_id}/{event.ics_url.split('/')[-1]}?export",
