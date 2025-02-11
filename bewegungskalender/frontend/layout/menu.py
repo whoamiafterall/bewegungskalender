@@ -34,18 +34,18 @@ class NavigateButton(Button):
 
 
 def main_menu(left_drawer: LeftDrawer, right_drawer: RightDrawer, classes: str = None,
-              props: str = 'flat dense color=accent text-color=white'):
-	ui.button(on_click=lambda: left_drawer.toggle(), icon='menu').classes(classes).props(props).tailwind('lg:hidden')
-	MenuButton(MENU['list'], list_view).classes(classes).props(props)
-	MenuButton(MENU['map'], map_view).classes(classes).props(props)
-	MenuButton(MENU['form'], form_view, left_drawer).classes(classes).props(props)
-	ui.button(icon='filter_alt', on_click=lambda: right_drawer.toggle()).props(props).classes(classes).tailwind(
-		'sm:hidden')
+              props: str = 'flat color=accent text-color=contrast'):
+	with ui.button_group().classes(classes).props(props):
+		ui.button(on_click=lambda: left_drawer.toggle(), icon='menu').classes(classes).props(props).tailwind('lg:hidden')
+		MenuButton(MENU['list'], list_view).classes(classes).props(props)
+		MenuButton(MENU['map'], map_view).classes(classes).props(props)
+		MenuButton(MENU['form'], form_view, left_drawer).classes(classes).props(props)
+		ui.button(icon='filter_alt', on_click=lambda: right_drawer.toggle()).props(props).classes(classes).tailwind('sm:hidden')
 
 
-def secondary_menu(left_drawer: LeftDrawer, classes: str = None, props: str = 'color=accent text-color=white'):
+def secondary_menu(left_drawer: LeftDrawer, classes: str = None, props: str = 'color=accent text-color=contrast'):
 	MenuButton(MENU['about'], about_view, left_drawer).classes(classes).props(props)
 	MenuButton(MENU['links'], links_view, left_drawer).classes(classes).props(props)
 	ui.button(on_click=lambda: Theme.toggle_dark()).classes(classes).props(props).bind_icon_from(app.storage.user,
 	                                                                                             "dark_mode", lambda
-		                                                                                             v: 'dark_mode' if v == False else 'light_mode')  # .bind_text_from(Theme,"dark_mode", lambda v: 'Darkmode' if v == False else 'Lightmode')
+	                                                                                             v: 'dark_mode' if v == False else 'light_mode').bind_text_from(Theme,"dark_mode", lambda v: 'Darkmode' if v == False else 'Lightmode')

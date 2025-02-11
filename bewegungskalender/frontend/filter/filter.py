@@ -33,4 +33,4 @@ def events_using_filters(filters: []) -> list[Event]:
 def filter_sticky(right_drawer: RightDrawer):
 	with ui.page_sticky(x_offset=18, y_offset=18).style("z-index: 1000;").bind_visibility_from(ROUTER, "show_filter"):
 		ui.button(icon="filter_alt", on_click=lambda: right_drawer.toggle()).props('fab color=accent').classes(
-			'max-sm:hidden lg:hidden')
+			'max-sm:hidden md:hidden')

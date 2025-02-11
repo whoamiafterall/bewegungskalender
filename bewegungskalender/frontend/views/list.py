@@ -28,13 +28,12 @@ async def list_view():
 	loading(MENU['list']['label'])
 	
 	# Main Container
-	with container('h-[calc(100vh-55px)] pb-0 mb-50px justify-between flex-row'):
-
+	with container('pb-1 max-sm:pt-2 justify-between flex-row'):
 		# Left (Main) Column for Events and the Filters above
-		with ui.column(wrap=False, align_items='center').classes(
-				'h-full w-full m-0 gap-0 gap-y-1 md:px-2 overflow-x-auto'):
+		with ui.element().classes(
+				'h-full flex items-center w-full m-0 gap-0 gap-y-1 md:px-2 overflow-x-auto'):
 			with ui.row(align_items='center').classes('gap-0 w-full'):
-				with ui.element().classes('sm:hidden mx-auto my-2'):
+				with ui.element().classes('md:hidden mx-auto my-2'):
 					month_filter_ui()
 				with ui.element().classes('row flex-row mx-auto flex-nowrap h-10 float-right overflow-x-auto'):
 					location_type_filter_ui()
@@ -46,7 +45,6 @@ async def list_view():
 			duration_filter_ui()
 			location_proximity_filter_ui()
 			await categories_filters_ui()
-		
 		ui.on('refresh_filter', lambda: create_list_ui.refresh(), throttle=1)
 
 
@@ -99,7 +97,6 @@ def event_row(event: Event, classes: str = None) -> ui.row:
 				if event.description is not None and event.description.strip() != event.link:
 					ui.label(event.description).classes('text-pretty px-3 shrink mx-auto')
 				download_button(event)
-		#  show_location(event)  # Show Event_Location
 		row.classes(classes)
 	return row
 
@@ -107,7 +104,7 @@ def event_row(event: Event, classes: str = None) -> ui.row:
 # -----------------
 # Helper Functions
 def today_label(today):
-	ui.markdown(f"Heute: {today:%A, %x}").classes('mx-auto font-medium text-sm w-full border-current sm:border sm:rounded text-center').mark('today')
+	ui.markdown(f"Heute: {today:%A, %x}").classes('mx-auto font-medium text-sm w-full border-current border rounded text-center').mark('today')
 
 def show_time(event: Event):
 	with mini_card('sm:p-1 gap-1 order-last'):
