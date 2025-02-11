@@ -59,6 +59,7 @@ class CategoryFilterController:
 
         for calendar in CALENDARS:
             self.categories[get_internal(calendar)] = binding.BindableProperty()
+            self.categories[get_internal(calendar)].value = True
 
     def apply_filter_to_statement(self,statement: Select):
         for calendar in CALENDARS:
