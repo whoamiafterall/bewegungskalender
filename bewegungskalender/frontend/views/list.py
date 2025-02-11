@@ -28,7 +28,15 @@ async def list_view():
 	loading(MENU['list']['label'])
 	
 	with container('h-[calc(100vh-55px)] pb-0 mb-50px justify-between flex-row'):
-		await create_list_ui()
+
+		with ui.column(wrap=False, align_items='center').classes(
+				'h-full w-full m-0 gap-0 gap-y-1 md:px-2 overflow-x-auto'):
+			with ui.row(align_items='center').classes('gap-0 w-full'):
+				with ui.element().classes('sm:hidden mx-auto my-2'):
+					month_filter_ui()
+				with ui.element().classes('row flex-row mx-auto flex-nowrap h-10 float-right overflow-x-auto'):
+					location_type_filter_ui()
+			await create_list_ui()
 		
 		# Filter
 		with ui.column(wrap=False, align_items='start').classes(
@@ -49,24 +57,18 @@ async def create_list_ui():
 	# Get filtered Events
 	events = events_using_filters(
 		[LOCATION_TYPE_FILTER, MONTH_FILTER, CATEGORY_FILTER, LOCATION_PROXIMITY_FILTER, DURATION_FILTER])
-	with ui.column(wrap=False, align_items='center').classes('h-full w-full m-0 gap-0 gap-y-1 md:px-2 overflow-x-auto'):
-		with ui.row(align_items='center').classes('gap-0 w-full'):
-			with ui.element().classes('sm:hidden mx-auto my-2'):
-				month_filter_ui()
-			with ui.element().classes('row flex-row mx-auto flex-nowrap h-10 float-right overflow-x-auto'):
-				location_type_filter_ui()
-		
-		with ui.list().classes('w-full scroll'):
-			for event in events:
-				today = datetime.today().date()
-				if event.start.date() <= today <= event.start.date() + event.duration:
-					today_label(today)
-					event_row(event).classes('border-current sm:border sm:rounded')
-				elif event.start.date() - timedelta(days=1) == today or event.end.date() + timedelta(days=1) == today:
-					today_label(today)
-					event_row(event)
-				else:
-					event_row(event)
+
+	with ui.list().classes('w-full scroll'):
+		for event in events:
+			today = datetime.today().date()
+			if event.start.date() <= today <= event.start.date() + event.duration:
+				today_label(today)
+				event_row(event).classes('border-current sm:border sm:rounded')
+			elif event.start.date() - timedelta(days=1) == today or event.end.date() + timedelta(days=1) == today:
+				today_label(today)
+				event_row(event)
+			else:
+				event_row(event)
 
 
 def event_row(event: Event, classes: str = None) -> ui.row:
