@@ -88,11 +88,11 @@ def parse_location(location: str | None) -> Location:
      # Match the location to some cases
     match location.lower():
         case "online":
-            return Location(type=LocationType.online)
+            return Location(type=LocationType.online, name=LocationType.online.keyword)
         case "global"|"weltweit"|"international":
-            return Location(type=LocationType.international)
+            return Location(type=LocationType.international, name=LocationType.international.keyword)
         case "bundesweit"|"deutschland":
-            return Location(type=LocationType.national)
+            return Location(type=LocationType.national, name=LocationType.national.keyword)
         case _:
             try:
                 result = Nominatim(user_agent=__name__).geocode(location, addressdetails=True, language='de').raw
