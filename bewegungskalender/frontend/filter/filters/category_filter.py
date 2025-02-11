@@ -14,16 +14,16 @@ from bewegungskalender.frontend.helpers.functions import mini_card, dropdown_but
 async def categories_filters_ui() -> Element:
     holder = ui.list().classes("w-full")
     with holder:
-
         await ui.context.client.connected()
         database = DB()
         categories = database.exe(select(Category)).all()
-
+        
         # Create Buttons with useful Information and Links for each Category
         for category in categories:
             single_category_filter_ui(category)
-
+    
     return holder
+
 
 def single_category_filter_ui(category: Category):
     with mini_card('w-full py-0 px-0 m-0'):
@@ -35,7 +35,7 @@ def single_category_filter_ui(category: Category):
             ui.tooltip(category.description).classes(
                 'text-balance text-sm font-medium text-center sm:w-[300px]').style(
                 f"background-color:{category.color}").props('delay=150 hide-delay=200')
-
+        
         # Dropdown Button
         with dropdown_button(category.name, category.color):
             # Create the dropdown content
@@ -53,6 +53,7 @@ def single_category_filter_ui(category: Category):
                           ).props('flat color=secondary').classes(
                     'font-normal hover:font-medium normal-case')
 
+
 class CategoryFilterController:
     def __init__(self):
         self.categories = {}
@@ -61,7 +62,7 @@ class CategoryFilterController:
             self.categories[get_internal(calendar)] = binding.BindableProperty()
             self.categories[get_internal(calendar)].value = True
 
-    def apply_filter_to_statement(self,statement: Select):
+    def apply_filter_to_statement(self, statement: Select):
         for calendar in CALENDARS:
             if self.categories[get_internal(calendar)].value is False:
                 statement = statement.where(
@@ -69,7 +70,8 @@ class CategoryFilterController:
                 )
         return statement
 
-def get_internal(calendar:dict):
+
+def get_internal(calendar: dict):
     return f"{slugify(str(calendar['calendar']['internal']))}"
 
 
