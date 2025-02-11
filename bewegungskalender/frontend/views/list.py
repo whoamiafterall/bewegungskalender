@@ -27,8 +27,10 @@ async def list_view():
 	await ui.context.client.connected()
 	loading(MENU['list']['label'])
 	
+	# Main Container
 	with container('h-[calc(100vh-55px)] pb-0 mb-50px justify-between flex-row'):
 
+		# Left (Main) Column for Events and the Filters above
 		with ui.column(wrap=False, align_items='center').classes(
 				'h-full w-full m-0 gap-0 gap-y-1 md:px-2 overflow-x-auto'):
 			with ui.row(align_items='center').classes('gap-0 w-full'):
@@ -38,11 +40,10 @@ async def list_view():
 					location_type_filter_ui()
 			await create_list_ui()
 		
-		# Filter
+		# Right Column for the Filters that disappear into drawer
 		with ui.column(wrap=False, align_items='start').classes(
 				'gap-1 h-full w-66 px-3 text-sm max-md:hidden'):
 			duration_filter_ui()
-		#	location_type_filter_ui()
 			location_proximity_filter_ui()
 			await categories_filters_ui()
 		
@@ -57,18 +58,21 @@ async def create_list_ui():
 	# Get filtered Events
 	events = events_using_filters(
 		[LOCATION_TYPE_FILTER, MONTH_FILTER, CATEGORY_FILTER, LOCATION_PROXIMITY_FILTER, DURATION_FILTER])
-
+	
 	with ui.list().classes('w-full scroll'):
+		today = datetime.today().date()
+		prev_event = events[0]
 		for event in events:
-			today = datetime.today().date()
-			if event.start.date() <= today <= event.start.date() + event.duration:
-				today_label(today)
-				event_row(event).classes('border-current sm:border sm:rounded')
-			elif event.start.date() - timedelta(days=1) == today or event.end.date() + timedelta(days=1) == today:
-				today_label(today)
-				event_row(event)
+			if MONTH_FILTER.month.value == today.month:
+				# If today is between the previous event's start and this event's start or during this event insert today_label()
+				if event.start.date() + event.duration >= today >= event.start.date() or event.start.date() >= today >= prev_event.start.date():
+					today_label(today)
+					event_row(event)
+				else:
+					event_row(event)
 			else:
 				event_row(event)
+			prev_event = event
 
 
 def event_row(event: Event, classes: str = None) -> ui.row:
@@ -103,8 +107,7 @@ def event_row(event: Event, classes: str = None) -> ui.row:
 # -----------------
 # Helper Functions
 def today_label(today):
-	ui.markdown(f"Heute: {today:%A, %x}").classes('mx-auto font-medium text-sm w-full text-center')
-
+	ui.markdown(f"Heute: {today:%A, %x}").classes('mx-auto font-medium text-sm w-full border-current sm:border sm:rounded text-center').mark('today')
 
 def show_time(event: Event):
 	with mini_card('sm:p-1 gap-1 order-last'):
