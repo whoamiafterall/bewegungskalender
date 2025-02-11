@@ -31,8 +31,6 @@ class LocationTypeFilterController:
 		
 		if len(self.location_types) > 0:
 			for location_type in LocationType:
-				print(self.location_types[location_type.keyword].selected)
-				print(location_type.keyword)
 				if self.location_types[location_type.keyword].selected:
 					statement = statement.where(Location.type != location_type)
 		
