@@ -32,7 +32,7 @@ async def map_view():
 
         # Filter
         with ui.column(wrap=False, align_items='start').classes(
-                'm-0 gap-1 px-5 max-w-1/4 pt-5 bg-primary h-[calc(100vh-55px)] grow text-sm max-lg:hidden'):
+                'm-0 gap-1 px-5 max-w-1/4 pt-5 bg-primary h-[calc(100vh-55px)] grow text-sm max-md:hidden'):
             duration_filter_ui()
             location_proximity_filter_ui()
             await categories_filters_ui()

@@ -23,9 +23,9 @@ async def main_page():
 	Theme.init_theme()
 	
 	# Modify default page container
-	ui.query('.nicegui-content').classes('p-0 min-h-full overflow-hidden')
+	ui.query('.nicegui-content').classes('p-0 min-h-full')
 	# Create an Invisible frame that shows different views and fits underneath the header / above the footer
-	ROUTER.frame().classes('w-screen h-[calc(100vh-55px)]')
+	ROUTER.frame().classes('w-screen sm:h-[calc(100vh-56px)] h-[calc(100vh-52px)]')
 	
 	# Create visible Layout
 	ld = left_drawer()

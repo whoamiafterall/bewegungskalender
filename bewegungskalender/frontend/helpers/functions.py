@@ -19,8 +19,8 @@ class ErrorChecker:
 @contextmanager
 def container(classes: str = None):
 	with ui.card(align_items='stretch').tight().props('flat square').classes(
-			'min-h-full w-dvw overflow-auto px-4 sm:px-10 rounded-none py-5 '  # Layout - Trailing White Space is important!
-			'bg-primary text-base font-light max-sm:mb-[50px] text-secondary') as card:  # Text
+			'min-h-full w-dvw overflow-hidden px-4 sm:px-10 border-none rounded-none py-5 '  # Layout - Trailing White Space is important!
+			'bg-primary text-base font-light text-secondary') as card:  # Text
 		card.classes(classes)  # Add Custom Classes
 		yield card
 
