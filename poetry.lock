@@ -416,6 +416,18 @@ files = [
     {file = "decorator-5.1.1.tar.gz", hash = "sha256:637996211036b6385ef91435e4fae22989472f9d571faba8927ba8253acbc330"},
 ]
 
+[[package]]
+name = "django"
+version = "5.1.6"
+description = "A high-level Python web framework that encourages rapid development and clean, pragmatic design."
+category = "main"
+optional = false
+python-versions = ">=3.10"
+files = [
+    {file = "Django-5.1.6-py3-none-any.whl", hash = "sha256:8d203400bc2952fbfb287c2bbda630297d654920c72a73cc82a9ad7926feaad5"},
+    {file = "Django-5.1.6.tar.gz", hash = "sha256:1e39eafdd1b185e761d9fab7a9f0b9fa00af1b37b25ad980a8aa0dac13535690"},
+]
+
 [package.dependencies]
 asgiref = ">=3.8.1,<4"
 sqlparse = ">=0.3.1"
@@ -424,6 +436,27 @@ tzdata = {version = "*", markers = "sys_platform == \"win32\""}
 [package.extras]
 argon2 = ["argon2-cffi (>=19.1.0)"]
 bcrypt = ["bcrypt"]
+
+[[package]]
+name = "django-scheduler"
+version = "0.10.1"
+description = "A calendaring app for Django."
+category = "main"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "django-scheduler-0.10.1.tar.gz", hash = "sha256:f319bad4ea30791b83f8d4eecbf4b3091b3aad52aba8080861fa979164a2ab6a"},
+    {file = "django_scheduler-0.10.1-py3-none-any.whl", hash = "sha256:b3eb31217cc2f29c582389ad3f69436176fee75088f477f81c68603fec063f95"},
+]
+
+[package.dependencies]
+Django = ">=3.2"
+icalendar = ">=3.8.4"
+python-dateutil = ">=2.1"
+pytz = ">=2013.9"
+
+[package.extras]
+dev = ["black", "coverage (>=3.7.1)", "flake8", "isort"]
 
 [[package]]
 name = "docutils"
@@ -1252,14 +1285,14 @@ typing-extensions = {version = ">=4.1.0", markers = "python_version < \"3.11\""}
 
 [[package]]
 name = "nicegui"
-version = "2.11.0"
+version = "2.11.1"
 description = "Create web-based user interfaces with Python. The nice way."
 category = "main"
 optional = false
 python-versions = "<4.0,>=3.8"
 files = [
-    {file = "nicegui-2.11.0-py3-none-any.whl", hash = "sha256:f18cdaf83cee90efe46ea2e21413150c8c00c30324f2025394ab983ff8256618"},
-    {file = "nicegui-2.11.0.tar.gz", hash = "sha256:455ae73d21795add23134268d22a6aebed3f012fd5412482d0ed840026bed534"},
+    {file = "nicegui-2.11.1-py3-none-any.whl", hash = "sha256:5c1d99e2728b8493696703e5e50355c4523901e7b81abcc98cf5b895c9fcb7f9"},
+    {file = "nicegui-2.11.1.tar.gz", hash = "sha256:9628d76a4a5e7a88629eda6bca9f9baae10a37d8b94c63d99e1af94bb5bc9c05"},
 ]
 
 [package.dependencies]
@@ -1851,14 +1884,14 @@ files = [
 
 [[package]]
 name = "recurring-ical-events"
-version = "3.4.1"
+version = "3.5.0"
 description = "Calculate recurrence times of events, todos, alarms and journals based on icalendar RFC5545."
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "recurring_ical_events-3.4.1-py3-none-any.whl", hash = "sha256:971bc3be38c03f208e6ad8956adda45227ce8122b63da9457c3a1cf125a56204"},
-    {file = "recurring_ical_events-3.4.1.tar.gz", hash = "sha256:fb94c5caeccb71e776f5f30b95ed90562ababaa3beac0334df87426b2b90c898"},
+    {file = "recurring_ical_events-3.5.0-py3-none-any.whl", hash = "sha256:ea5f0e11f85eaa38050a07c77ab11d481711fdfbbdd95da3949bdea6f1aaeae5"},
+    {file = "recurring_ical_events-3.5.0.tar.gz", hash = "sha256:8f6012b4a8ab80f66132f38cc9c4dec69385d504ff1a5acf1f6eda602da71546"},
 ]
 
 [package.dependencies]
