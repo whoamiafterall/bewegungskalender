@@ -10,10 +10,8 @@ def location_type_filter_ui():
 		(ui.chip(text=location_type.keyword, icon=location_type.icon, color='secondary', text_color='primary',
 		         selectable=True).props('outline icon-selected=highlight_off')
 		 .bind_selected(LOCATION_TYPE_FILTER.location_types[location_type.keyword])
-	#	 .on_selection_change(call_refresh_filter_event())
-		 )
-		 
-	
+		 .on_selection_change(call_refresh_filter_event))
+
 """	return (ui.select(
 		{location_type: location_type.keyword for location_type in LocationType}
 		, label="Ort", value=[location_type for location_type in LocationType], multiple=True, clearable=True)
@@ -26,15 +24,17 @@ class LocationTypeFilterController:
 	def __init__(self):
 		self.location_types = {}
 		for location_type in LocationType:
-			self.location_types[location_type.keyword] =  binding.BindableProperty()
+			self.location_types[location_type.keyword] = binding.BindableProperty()
+			self.location_types[location_type.keyword].selected = False
 	
 	def apply_filter_to_statement(self, statement: Select):
 		
 		if len(self.location_types) > 0:
-			for location_type, value in self.location_types.items():
-				#print(location_type, str(value))
-				if value is None:
-					statement = statement.where(Location.type.keyword != location_type)
+			for location_type in LocationType:
+				print(self.location_types[location_type.keyword].selected)
+				print(location_type.keyword)
+				if self.location_types[location_type.keyword].selected:
+					statement = statement.where(Location.type != location_type)
 		
 		return statement
 
