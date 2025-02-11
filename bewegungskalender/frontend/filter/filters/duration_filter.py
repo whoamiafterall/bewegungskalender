@@ -10,28 +10,29 @@ from bewegungskalender.frontend.filter.filter import call_refresh_filter_event
 
 
 def duration_filter_ui() -> Element:
-	return ((ui.select({DurationFilterType.Hours.keyword: 'Kurz'
-            , DurationFilterType.OneDay.keyword: 'Ganztags'
-            , DurationFilterType.Days.keyword: 'Mehrtägig'}, label="Dauer",
-	           multiple=True, clearable=True).classes("pl-3 w-full my-1"))
-            .props("outline dense behavior=menu hide-dropdown-icon color=secondary").on_value_change(call_refresh_filter_event)
-            .bind_value(DURATION_FILTER.duration))
+    return ((ui.select([duration_type.keyword for duration_type in DurationFilterType], value=DurationFilterType.All.keyword, label="Dauer",
+        ).classes("pl-3 w-full my-1"))
+        .props("outline dense behavior=menu hide-dropdown-icon color=secondary").on_value_change(call_refresh_filter_event)
+        .bind_value(DURATION_FILTER.duration))
+
 
 class DurationFilterType(enum.Enum):
     #TODO Move this to backend so we can just check for a value in the db
-    Hours = ('Hours', None,timedelta(hours=6))
-    OneDay = ('OneDay', timedelta(hours=6),timedelta(hours=36))
-    Days = ('Days',timedelta(hours=24),None)
+    Hours = ('Kurz-Events (<8 Stunden)', None, timedelta(hours=8))
+    OneDay = ('Ganz-Tages-Events', timedelta(hours=8), timedelta(hours=24))
+    Days = ('Mehrtägige Events', timedelta(hours=24), None)
+    All = ('Alle', None, None)
 
     def __init__(self, keyword, min_dur, max_dur):
         self.keyword = keyword
         self.min_dur = min_dur
         self.max_dur = max_dur
+        
 
 class DurationFilterController:
     def __init__(self):
         self.duration = binding.BindableProperty()
-        self.duration.value = [DurationFilterType.Days.keyword,DurationFilterType.OneDay.keyword,DurationFilterType.Hours.keyword]
+        self.duration.value = [DurationFilterType.All.keyword, DurationFilterType.Days.keyword,DurationFilterType.OneDay.keyword,DurationFilterType.Hours.keyword]
 
     def apply_filter_to_statement(self,statement: Select):
 

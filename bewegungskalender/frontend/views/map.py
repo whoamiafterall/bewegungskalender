@@ -29,15 +29,15 @@ async def map_view():
     # new leaflet with center set to center of germany
     with ui.card().tight().classes('w-full flex-row p-0 m-0').props('flat square'):
         await create_map_ui()
-
+        
         # Filter
         with ui.column(wrap=False, align_items='start').classes(
                 'm-0 gap-1 px-5 max-w-1/4 pt-5 bg-primary h-[calc(100vh-55px)] grow text-sm max-md:hidden'):
+            icon_link('question_mark', "Die Karte zeigt nur lokale Events, die in der Zukunft liegen!")
             duration_filter_ui()
             location_proximity_filter_ui()
             await categories_filters_ui()
-            icon_link('question_mark', "Die Karte zeigt nur lokale Events, die in der Zukunft liegen!")
-
+        
         ui.on('refresh_filter', lambda: create_map_ui.refresh(), throttle=0.5, leading_events=False)
 
 @ui.refreshable
