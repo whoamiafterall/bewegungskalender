@@ -74,7 +74,7 @@ async def main_async():
 	## Dump Database
 	if DB_DUMP:
 		for event in [n.Event for n in db.dump()]:
-			print(event.location.type) # TODO Dump DB to Json File
+			print(event.recurrence) # TODO Dump DB to Json File
 	## Print Output
 	if ARGS.print:
 		## Create a Message in TXT, MD & HTML

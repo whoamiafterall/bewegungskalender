@@ -53,7 +53,7 @@ class Event(SQLModel, table=True):
 		self.start = start
 		self.end = end
 		self.duration = end - start
-		self.recurrence = True if vevent.get('recurrence-id') else False
+		self.recurrence = False if vevent.get('RECURRENCE-ID') is None and vevent.get('RRULE') is None else True
 		self.cloud_id = vevent.get('UID')
 		self.ics_url = str(ics_url)
 		return self

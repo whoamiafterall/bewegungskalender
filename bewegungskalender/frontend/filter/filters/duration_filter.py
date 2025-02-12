@@ -11,7 +11,7 @@ from bewegungskalender.frontend.filter.filter import call_refresh_filter_event
 
 def duration_filter_ui() -> Element:
     return ((ui.select([duration_type.keyword for duration_type in DurationFilterType], value=DurationFilterType.All.keyword, label="Dauer",
-        ).classes("pl-3 w-full my-1"))
+        ).classes("pl-3 w-1/2 my-1"))
         .props("outline dense behavior=menu hide-dropdown-icon color=secondary").on_value_change(call_refresh_filter_event)
         .bind_value(DURATION_FILTER.duration))
 
