@@ -64,7 +64,6 @@ async def create_list_ui():
         today = datetime.today().date()
         prev_event = None; checked = False
         for count, event in enumerate(events):
-            print(count, len(events)-1)
             prev_start = today if not prev_event else prev_event.start.date()
             if MONTH_FILTER.month.value == today.month:
                 # If today is between the previous event's start and this event's start or during this event insert today_label()
