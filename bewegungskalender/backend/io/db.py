@@ -110,7 +110,7 @@ class DB:
                             self.add(event)
                             LOGGER.info(f"| changed 1 Event")
                     except NoResultFound:  # Add the event if there is no such event in the database
-                        category.events.append(Event().from_icalendar(comp))
+                        category.events.append(Event().from_icalendar(comp, ics.url))
                         self.add(category)
                         LOGGER.info(f"| added 1 Event")
         
