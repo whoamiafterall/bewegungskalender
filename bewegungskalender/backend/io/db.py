@@ -100,7 +100,7 @@ class DB:
                 if ics.data is None:
                     continue
                 for comp in icalendar.Event.from_ical(ics.data).walk(name='VEVENT'):
-                    LOGGER.info(Event().from_icalendar(comp))
+                    LOGGER.info(Event().from_icalendar(comp, ics.url))
                     try: # Try to update the event in the database
                         event = compare_event(comp)
                         if "EXDATE" in comp:   # Check if event is being deleted
