@@ -13,8 +13,9 @@ from bewegungskalender.frontend.filter.filters.duration_filter import duration_f
 from bewegungskalender.frontend.filter.filters.location_proximity_filter import location_proximity_filter_ui, \
     LOCATION_PROXIMITY_FILTER
 from bewegungskalender.frontend.filter.filters.location_type_filter import LOCAL_LOCATION_TYPE_FILTER
+from bewegungskalender.frontend.filter.filters.recurring_filter import recurring_filter_ui, RECURRING_FILTER
 from bewegungskalender.frontend.filter.filters.time_filter import FROM_TODAY_FILTER
-from bewegungskalender.frontend.helpers.functions import loading, icon_link
+from bewegungskalender.frontend.helpers.functions import loading, icon_link, mini_card
 from bewegungskalender.frontend.navigation.router import ROUTER
 from bewegungskalender.frontend.templates.templater import render_map_template
 from bewegungskalender.libs.logger import LOGGER
@@ -34,7 +35,9 @@ async def map_view():
         with ui.column(wrap=False, align_items='start').classes(
                 'm-0 gap-1 px-5 max-w-1/4 pt-5 bg-primary h-[calc(100vh-55px)] grow text-sm max-md:hidden'):
             icon_link('question_mark', "Die Karte zeigt nur lokale Events, die in der Zukunft liegen!")
-            duration_filter_ui()
+            with mini_card('w-full p-0'):
+                duration_filter_ui()
+                recurring_filter_ui()
             location_proximity_filter_ui()
             await categories_filters_ui()
         
@@ -77,7 +80,7 @@ async def create_map_ui():
                                                                 'radius': LOCATION_PROXIMITY_FILTER.distance.value * 1000}])
 
         # get cached data
-        events = events_using_filters([CATEGORY_FILTER, LOCAL_LOCATION_TYPE_FILTER, FROM_TODAY_FILTER, LOCATION_PROXIMITY_FILTER, DURATION_FILTER])
+        events = events_using_filters([CATEGORY_FILTER, RECURRING_FILTER, LOCAL_LOCATION_TYPE_FILTER, FROM_TODAY_FILTER, LOCATION_PROXIMITY_FILTER, DURATION_FILTER])
 
         LOGGER.info(f"Got {events.__len__()} locations to display...")
 

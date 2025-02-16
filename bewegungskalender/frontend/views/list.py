@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import requests
 from nicegui import ui
@@ -15,6 +15,7 @@ from bewegungskalender.frontend.filter.filters.duration_filter import duration_f
 from bewegungskalender.frontend.filter.filters.location_proximity_filter import location_proximity_filter_ui, \
     LOCATION_PROXIMITY_FILTER
 from bewegungskalender.frontend.filter.filters.location_type_filter import LOCATION_TYPE_FILTER, location_type_filter_ui
+from bewegungskalender.frontend.filter.filters.recurring_filter import RECURRING_FILTER, recurring_filter_ui
 from bewegungskalender.frontend.filter.filters.time_filter import MONTH_FILTER, month_filter_ui
 from bewegungskalender.frontend.helpers.functions import loading, container, icon_link, opacity
 from bewegungskalender.frontend.helpers.functions import mini_card
@@ -42,7 +43,9 @@ async def list_view():
         # Right Column for the Filters that disappear into drawer
         with ui.column(wrap=False, align_items='start').classes(
                 'gap-1 h-full w-66 px-3 text-sm max-md:hidden'):
-            duration_filter_ui()
+            with mini_card('w-full p-0'):
+                duration_filter_ui()
+                recurring_filter_ui()
             location_proximity_filter_ui()
             await categories_filters_ui()
         ui.on('refresh_filter', lambda: create_list_ui.refresh(), throttle=1)
@@ -55,17 +58,22 @@ async def list_view():
 async def create_list_ui():
     # Get filtered Events
     events = events_using_filters(
-        [LOCATION_TYPE_FILTER, MONTH_FILTER, CATEGORY_FILTER, LOCATION_PROXIMITY_FILTER, DURATION_FILTER])
+        [LOCATION_TYPE_FILTER, MONTH_FILTER, RECURRING_FILTER, CATEGORY_FILTER, LOCATION_PROXIMITY_FILTER, DURATION_FILTER])
     
     with ui.list().classes('lg:w-4/5 w-full mx-auto scroll'):
         today = datetime.today().date()
-        prev_event = events[0]
-        for event in events:
+        prev_event = None; checked = False
+        for count, event in enumerate(events):
+            prev_start = today if not prev_event else prev_event.start.date()
             if MONTH_FILTER.month.value == today.month:
                 # If today is between the previous event's start and this event's start or during this event insert today_label()
-                if event.start.date() + event.duration >= today >= event.start.date() or event.start.date() >= today >= prev_event.start.date():
+                if event.start.date() + event.duration >= today >= event.start.date() or event.start.date() >= today >= prev_start:
                     today_label(today)
+                    checked = True
                     event_row(event)
+                elif count == len(events)-1 and not checked:
+                    event_row(event)
+                    today_label(today)
                 else:
                     event_row(event)
             else:
@@ -107,22 +115,6 @@ def event_row(event: Event, classes: str = None) -> ui.row:
 # Helper Functions
 def today_label(today):
     ui.markdown(f"Heute: {today:%A, %x}").classes('mx-auto font-medium text-sm w-full border-current border rounded text-center').mark('today')
-
-def show_time(event: Event):
-    with mini_card('sm:p-1 gap-1 order-last'):
-        ui.label(event_time(event.start, event.end, '%d (%a)')).classes('mr-auto')
-    ui.space().classes('grow sm:hidden')
-
-
-def show_location(event: Event):
-    with mini_card('max-sm:order-2 sm:align-right order-last'):
-        match event.location.type:
-            case LocationType.online | LocationType.international | LocationType.national:
-                icon_link(event.location.type.icon, card_classes='py-0 px-0')
-            case LocationType.local:
-                text = event.location.city if event.location.city is not None else event.location.name
-                ui.label(text).classes('grow text-right')
-
 
 def download_ics(url, name):
     ui.download(requests.get(url).text, name)

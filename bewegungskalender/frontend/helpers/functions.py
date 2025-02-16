@@ -27,7 +27,7 @@ def container(classes: str = None):
 
 @contextmanager
 def mini_card(classes: str = None):
-	with ui.card().tight().classes('m-0 p-2 flex-row bg-primary text-secondary shadow-none items-center ') as card:
+	with ui.card().tight().classes('m-0 p-2 flex-row bg-primary text-secondary items-center').props('flat square') as card:
 		card.classes(classes)
 		yield card
 
