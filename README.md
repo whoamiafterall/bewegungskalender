@@ -7,11 +7,14 @@ This has been a fork of <https://gitlab.com/iexos/caldav2telegram> but can be se
 This script does several things (most of them optional) interacting with Nextcloud Calendars via caldav:
 
 - Get Events submitted through a Form and automatically add them to a calendar
-- Fetch all the Events from multiple Calendars in a given timeframe.
-- Locate those Events on Openstreetmap using Nominatim, producing GeoJSON files for a [Map](https://umap.openstreetmap.fr/en/map/bewegungskalender-karte_1048275)
+- Fetch all the Events from multiple Calendars, locate those Events on Openstreetmap using Nominatim and store the information in a database
+- Sync Changes regularly (through cron jobs) to keep the database up to date with the CalDav backend
+- Display Events in a nice Web-App with a Map and List View with lots of filters
+- Add an "About" Page to the Web-App
+- Add a "Links" Page to the Web-App
 - Write a Message listing the Events in MarkDown, HTML, or Plain Text.
-- Send the message to a Mailing List in HTML: <bewegungskalender@lists.riseup.net>
-- Post the message to a Telegram channel in MarkDown: <https://t.me/bewegungskalender>
+- Send the message via Mail in HTML/Plaintext.
+- Post the message to a Telegram channel in MarkDown
 - Write the Message to StdOut in Plain Text
 
 ### Roadmap
@@ -19,6 +22,7 @@ This script does several things (most of them optional) interacting with Nextclo
 - Form for submitting events to the Caldav backend
 - Moderation tool for the caldav backend
 - Api
+- Automated Message to Signal
 - Personalized newsletter
 - Search feature
 
@@ -30,15 +34,15 @@ This is a Work in Progress, it should be installable via `pip` in the future.
 
 ### Setup in Virtual Environment
 
-1) `python3 -m venv <directory>`
-2) `source <directory>/bin/activate`
-3) `cd <directory>`
-4) `git clone https://github.com/whoamiafterall/bewegungskalender2telegram.git`
-5) `pip install --upgrade pip`
-6) `pip install -r requirements.txt`
-
-You need to create a config file. You can specify the path using `--config CONFIG_PATH` or use the default `config.yml`.
-Just copy `config.example.yml` and change it to your needs.
+1) `git clone https://github.com/whoamiafterall/bewegungskalender2telegram.git <directory>`
+2) `cd <directory>`
+3) `python3.11 -m venv .venv` # Should be python3.10 or higher
+4) `source <directory>/bin/activate`
+5) `pip3 install --upgrade pip`
+6) `pip install poetry`
+7) `poetry install`
+8) `nano config.yml` # Edit Config and change it to your needs
+9) `cp credentials.example.yml credentials.yml && nano credentials.yml` # Copy Credentials file and add your credentials
 
 ### Setup Telegram
 
@@ -53,16 +57,15 @@ For the telegram output, you will need to setup a telegram bot:
 
 ## Running
 
-Run the script via
+See the help information with this command:
 
 ``` cd bewegungskalender
     python3 -m bewegungskalender.main
 ```
 
-Use -h flag for more information
+You need to either run with -db full to fetch and store all events existing in your calendars, 
+or -db search with -qe and -qs to search for events in a given timeframe (defaults to next 14 days)
 
-To make it post regular updates with Events, schedule it via cron or similar.
+To make it post regular updates with Events, schedule -n or -t via cron or similar.
 
-## Dev testing
-
-This is a work in progress. You will need `pytest` and `podman-compose` to run tests.
+There are plans to make this more comprehensible and easier with typer, but we're not there yet.
