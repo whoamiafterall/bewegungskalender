@@ -12,8 +12,6 @@ from bewegungskalender.backend.io.credentials import NC_DOMAIN
 from bewegungskalender.frontend.filter.filter import events_using_filters
 from bewegungskalender.frontend.filter.filters.category_filter import categories_filters_ui, CATEGORY_FILTER
 from bewegungskalender.frontend.filter.filters.duration_filter import duration_filter_ui, DURATION_FILTER
-from bewegungskalender.frontend.filter.filters.location_proximity_filter import location_proximity_filter_ui, \
-    LOCATION_PROXIMITY_FILTER
 from bewegungskalender.frontend.filter.filters.location_type_filter import LOCATION_TYPE_FILTER, location_type_filter_ui
 from bewegungskalender.frontend.filter.filters.recurring_filter import RECURRING_FILTER, recurring_filter_ui
 from bewegungskalender.frontend.filter.filters.time_filter import MONTH_FILTER, month_filter_ui
@@ -37,7 +35,7 @@ async def list_view():
                 with ui.element().classes('md:hidden mx-auto my-2'):
                     month_filter_ui()
                 with ui.element().classes('row flex-row mx-auto flex-nowrap h-10 float-right overflow-x-auto'):
-                    location_type_filter_ui()
+                        location_type_filter_ui()
             await create_list_ui()
         
         # Right Column for the Filters that disappear into drawer
@@ -46,7 +44,6 @@ async def list_view():
             with mini_card('w-full p-0'):
                 duration_filter_ui()
                 recurring_filter_ui()
-            location_proximity_filter_ui()
             await categories_filters_ui()
         ui.on('refresh_filter', lambda: create_list_ui.refresh(), throttle=1)
 
@@ -58,7 +55,7 @@ async def list_view():
 async def create_list_ui():
     # Get filtered Events
     events = events_using_filters(
-        [LOCATION_TYPE_FILTER, MONTH_FILTER, RECURRING_FILTER, CATEGORY_FILTER, LOCATION_PROXIMITY_FILTER, DURATION_FILTER])
+        [LOCATION_TYPE_FILTER, MONTH_FILTER, RECURRING_FILTER, CATEGORY_FILTER, DURATION_FILTER])
     
     with ui.list().classes('lg:w-4/5 w-full mx-auto scroll'):
         today = datetime.today().date()
@@ -68,12 +65,15 @@ async def create_list_ui():
             if MONTH_FILTER.month.value == today.month:
                 # If today is between the previous event's start and this event's start or during this event insert today_label()
                 if event.start.date() + event.duration >= today >= event.start.date() or event.start.date() >= today >= prev_start:
-                    today_label(today)
-                    checked = True
+                    if not checked:
+                        today_label(today)
+                        checked = True
                     event_row(event)
-                elif count == len(events)-1 and not checked:
+                elif count == len(events)-1:
+                    if not checked:
+                        today_label(today)
+                        checked = True
                     event_row(event)
-                    today_label(today)
                 else:
                     event_row(event)
             else:
