@@ -1,8 +1,9 @@
 from datetime import datetime, timedelta, time, date
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 import icalendar
 from icalendar.cal import Component
+from icalendar.prop import vRecur
 from sqlmodel import SQLModel, Field, Relationship
 
 from bewegungskalender.backend.calendar.location import Location, parse_location
@@ -25,7 +26,19 @@ class Event(SQLModel, table=True):
 	link: str | None
 	location: Location = Relationship(back_populates="event", sa_relationship_kwargs={"lazy": "selectin"})
 	location_id: int = Field(foreign_key="location.id")
+
+	# Recurrence fields
 	recurrence: bool = Field(default=False)
+	recurrence_id: Optional[int] = None
+	recurrence_rule_freq: Optional[str] = None
+	recurrence_rule_interval: Optional[int] = None
+	recurrence_rule_byday: Optional[str] = None  # e.g., 'MO,TU'
+	recurrence_rule_bymonthday: Optional[str] = None  # e.g., '15'
+	recurrence_rule_bymonth: Optional[str] = None  # e.g., '1,3,5'
+	recurrence_rule_until: Optional[str] = None  # e.g., '20251231T000000Z'
+	recurrence_rule_count: Optional[int] = None  # e.g., '10'
+	recurrence_rule_bysetpos: Optional[str] = None  # e.g., '1'
+
 	cloud_id: str = Field(index=True)
 	ics_url: str
 	
@@ -49,11 +62,49 @@ class Event(SQLModel, table=True):
 		
 		# TODO: prevent this from searching for locations twice by checking db first
 		self.location = parse_location(vevent.get('location'))
+
 		
 		self.start = start
 		self.end = end
 		self.duration = end - start
-		self.recurrence = False if vevent.get('RECURRENCE-ID') is None and vevent.get('RRULE') is None else True
+		rrule = vevent.get('RRULE')
+		if rrule:
+			self.recurrence = True
+
+			# Handle FREQ
+			freq_value = rrule.get('FREQ')
+			self.recurrence_rule_freq = freq_value[0] if isinstance(freq_value, list) else freq_value
+
+			# Handle INTERVAL
+			interval_value = rrule.get('INTERVAL')
+			self.recurrence_rule_interval = int(interval_value[0]) if isinstance(interval_value, list) else int(
+				interval_value) if interval_value else 1
+
+			# Handle BYDAY
+			byday_value = rrule.get('BYDAY', [])
+			self.recurrence_rule_byday = ','.join(byday_value) if isinstance(byday_value, list) else byday_value
+
+			# Handle BYMONTHDAY
+			bymonthday_value = rrule.get('BYMONTHDAY', [])
+			self.recurrence_rule_bymonthday = ','.join(map(str, bymonthday_value)) if isinstance(bymonthday_value,
+																								 list) else bymonthday_value
+			# Handle BYMONTH
+			bymonth_value = rrule.get('BYMONTH', [])
+			self.recurrence_rule_bymonth = ','.join(map(str, bymonth_value)) if isinstance(bymonth_value,
+																						   list) else bymonth_value
+			# Handle UNTIL
+			until_value = rrule.get('UNTIL')
+			self.recurrence_rule_until = until_value[0] if isinstance(until_value, list) else until_value
+
+			# Handle COUNT
+			count_value = rrule.get('COUNT')
+			self.recurrence_rule_count = int(count_value[0]) if isinstance(count_value, list) and count_value else int(
+				count_value) if count_value else None
+
+			# Handle BYSETPOS
+			bysetpos_value = rrule.get('BYSETPOS')
+			self.recurrence_rule_bysetpos = bysetpos_value[0] if isinstance(bysetpos_value, list) else bysetpos_value
+
 		self.cloud_id = vevent.get('UID')
 		self.ics_url = str(ics_url)
 		return self
@@ -106,5 +157,23 @@ class Event(SQLModel, table=True):
 		event.add('location', self.location)
 		event.add('dtstart', self.start)
 		event.add('dtend', self.end)
-		event.add('recurrence', self.recurrence)
+
+		if self.recurrence:
+			rrule = f"FREQ={self.recurrence_rule_freq};"
+			if self.recurrence_rule_interval:
+				rrule += f"INTERVAL={self.recurrence_rule_interval};"
+			if self.recurrence_rule_byday:
+				rrule += f"BYDAY={self.recurrence_rule_byday};"
+			if self.recurrence_rule_bymonthday:
+				rrule += f"BYMONTHDAY={self.recurrence_rule_bymonthday};"
+			if self.recurrence_rule_bymonth:
+				rrule += f"BYMONTH={self.recurrence_rule_bymonth};"
+			if self.recurrence_rule_until:
+				rrule += f"UNTIL={self.recurrence_rule_until};"
+			if self.recurrence_rule_count:
+				rrule += f"COUNT={self.recurrence_rule_count};"
+			if self.recurrence_rule_bysetpos:
+				rrule += f"BYSETPOS={self.recurrence_rule_bysetpos};"
+			event.add('RRULE', rrule)
+
 		return event
