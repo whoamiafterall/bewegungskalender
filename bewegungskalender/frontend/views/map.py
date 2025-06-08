@@ -79,7 +79,7 @@ async def create_map_ui():
             leaflet.generic_layer(name='circle', args=[center, {'color': 'grey', 'opacity': 0.02,
                                                                 'radius': LOCATION_PROXIMITY_FILTER.distance.value * 1000}])
 
-        # get cached data
+        # get cached data. recurring is set to true for testing TODO: Merge r events with normal events
         events = events_using_filters([CATEGORY_FILTER, RECURRING_FILTER, LOCAL_LOCATION_TYPE_FILTER, FROM_TODAY_FILTER, LOCATION_PROXIMITY_FILTER, DURATION_FILTER],True)
 
         LOGGER.info(f"Got {events.__len__()} locations to display...")
