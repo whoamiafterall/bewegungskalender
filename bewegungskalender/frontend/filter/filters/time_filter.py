@@ -101,7 +101,14 @@ MONTH_FILTER = MonthFilterController()
 class FromTodayFilterController:
 	
 	def apply_filter_to_statement(self, statement: Select,recurring: bool):
-		return statement if recurring else statement.where(Event.start > datetime.now())
+		return statement.where(and_(
+			Event.recurrence == True,
+			or_(
+				Event.recurrence_rule_until == None,
+				Event.recurrence_rule_until > datetime.now()
+			)
+		)
+		if recurring else and_(Event.recurrence == False,Event.start > datetime.now()))
 
 
 FROM_TODAY_FILTER = FromTodayFilterController()
