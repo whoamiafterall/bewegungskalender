@@ -80,7 +80,12 @@ async def create_map_ui():
                                                                 'radius': LOCATION_PROXIMITY_FILTER.distance.value * 1000}])
 
         # get cached data. recurring is set to true for testing TODO: Merge r events with normal events
-        events = events_using_filters([CATEGORY_FILTER, RECURRING_FILTER, LOCAL_LOCATION_TYPE_FILTER, FROM_TODAY_FILTER, LOCATION_PROXIMITY_FILTER, DURATION_FILTER],True)
+        filters = [CATEGORY_FILTER, RECURRING_FILTER, LOCAL_LOCATION_TYPE_FILTER, FROM_TODAY_FILTER, LOCATION_PROXIMITY_FILTER, DURATION_FILTER]
+
+        s_events = events_using_filters(filters, False)
+        r_events = events_using_filters(filters, True)
+
+        events = s_events + r_events
 
         LOGGER.info(f"Got {events.__len__()} locations to display...")
 
