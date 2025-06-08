@@ -56,8 +56,11 @@ async def list_view():
 async def create_list_ui():
     # Get filtered Events
     filters = [LOCATION_TYPE_FILTER, MONTH_FILTER, RECURRING_FILTER, CATEGORY_FILTER, DURATION_FILTER]
-    events = events_using_filters(filters,True) # Set to true for testing TODO: Merge r events with normal events
-    # r_events = events_using_filters(filters,True)
+
+    s_events = events_using_filters(filters,False)
+    r_events = events_using_filters(filters,True)
+
+    events = s_events + r_events
 
     with ui.list().classes('lg:w-4/5 w-full mx-auto scroll'):
         today = datetime.today().date()
