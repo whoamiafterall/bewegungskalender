@@ -34,7 +34,7 @@ class DurationFilterController:
         self.duration = binding.BindableProperty()
         self.duration.value = [DurationFilterType.All.keyword, DurationFilterType.Days.keyword,DurationFilterType.OneDay.keyword,DurationFilterType.Hours.keyword]
 
-    def apply_filter_to_statement(self,statement: Select):
+    def apply_filter_to_statement(self,statement: Select,recurring: bool):
 
         # duration filtering
         duration_args = []

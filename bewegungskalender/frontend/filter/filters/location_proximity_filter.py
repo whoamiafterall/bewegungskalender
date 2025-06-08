@@ -46,7 +46,7 @@ class LocationProximityFilterController:
         self.location = LocationSearchController()
         self.distance = binding.BindableProperty()
 
-    def apply_filter_to_statement(self,statement: Select):
+    def apply_filter_to_statement(self,statement: Select,recurring: bool):
         if self.location.result is not None:
             distance = self.distance.value
 

@@ -3,6 +3,7 @@ from datetime import datetime
 import requests
 from nicegui import ui
 from slugify import slugify
+from sqlalchemy import false
 
 from bewegungskalender.backend.calendar.event import Event
 from bewegungskalender.backend.calendar.location import LocationType
@@ -54,9 +55,10 @@ async def list_view():
 @ui.refreshable
 async def create_list_ui():
     # Get filtered Events
-    events = events_using_filters(
-        [LOCATION_TYPE_FILTER, MONTH_FILTER, RECURRING_FILTER, CATEGORY_FILTER, DURATION_FILTER])
-    
+    filters = [LOCATION_TYPE_FILTER, MONTH_FILTER, RECURRING_FILTER, CATEGORY_FILTER, DURATION_FILTER]
+    events = events_using_filters(filters,True)
+    r_events = events_using_filters(filters,True)
+
     with ui.list().classes('lg:w-4/5 w-full mx-auto scroll'):
         today = datetime.today().date()
         prev_event = None; checked = False

@@ -80,7 +80,7 @@ async def create_map_ui():
                                                                 'radius': LOCATION_PROXIMITY_FILTER.distance.value * 1000}])
 
         # get cached data
-        events = events_using_filters([CATEGORY_FILTER, RECURRING_FILTER, LOCAL_LOCATION_TYPE_FILTER, FROM_TODAY_FILTER, LOCATION_PROXIMITY_FILTER, DURATION_FILTER])
+        events = events_using_filters([CATEGORY_FILTER, RECURRING_FILTER, LOCAL_LOCATION_TYPE_FILTER, FROM_TODAY_FILTER, LOCATION_PROXIMITY_FILTER, DURATION_FILTER],True)
 
         LOGGER.info(f"Got {events.__len__()} locations to display...")
 

@@ -35,7 +35,7 @@ class Event(SQLModel, table=True):
 	recurrence_rule_byday: Optional[str] = None  # e.g., 'MO,TU'
 	recurrence_rule_bymonthday: Optional[str] = None  # e.g., '15'
 	recurrence_rule_bymonth: Optional[str] = None  # e.g., '1,3,5'
-	recurrence_rule_until: Optional[str] = None  # e.g., '20251231T000000Z'
+	recurrence_rule_until: Optional[datetime] = None  # e.g., '20251231T000000Z'
 	recurrence_rule_count: Optional[int] = None  # e.g., '10'
 	recurrence_rule_bysetpos: Optional[str] = None  # e.g., '1'
 
@@ -94,7 +94,11 @@ class Event(SQLModel, table=True):
 																						   list) else bymonth_value
 			# Handle UNTIL
 			until_value = rrule.get('UNTIL')
-			self.recurrence_rule_until = until_value[0] if isinstance(until_value, list) else until_value
+			print(until_value)
+			if until_value:
+				until_actual_value = until_value[0] if isinstance(until_value, list) else until_value
+				self.recurrence_rule_until = until_actual_value if isinstance(until_actual_value,datetime) else to_datetime(until_actual_value)
+
 
 			# Handle COUNT
 			count_value = rrule.get('COUNT')

@@ -60,7 +60,6 @@ async def main_async():
 			db.drop_tables()
 			db.create_tables()
 			db.populate(get_all_events)
-		
 		case 'sync':
 			## Sync Events using sync token stored in database
 			db.update_events()

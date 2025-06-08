@@ -2,7 +2,7 @@ import calendar
 from datetime import datetime
 
 from nicegui import ui, binding
-from sqlalchemy import Select
+from sqlalchemy import Select, extract, func
 from sqlmodel import or_, and_
 
 from bewegungskalender.backend.calendar.event import Event
@@ -56,15 +56,18 @@ class MonthFilterController:
 			self.month.value = 1
 			self.year.value = self.year.value + 1
 	
-	# TODO implement a proper where statement
-	
-	def apply_filter_to_statement(self, statement: Select):
+
+	def apply_filter_to_statement(self, statement: Select,recurring: bool):
 		month_begin = datetime(self.year.value, self.month.value, 1)
 		month_end = datetime(self.year.value, self.month.value + 1, 1) if self.month.value + 1 <= 12 else datetime(
 			self.year.value + 1, 1, 1)
 		
 		return statement.where(
-			or_(and_(Event.start > month_begin, Event.start < month_end)
+			and_(Event.start < month_end,or_(Event.recurrence_rule_until == None,Event.recurrence_rule_until > month_begin),or_(
+				and_(Event.recurrence_rule_freq == "MONTHLY",
+					 func.mod(func.abs((self.year.value - extract('year', Event.start))*12+(self.month.value-extract('month', Event.start))),Event.recurrence_rule_interval) == 0),
+				and_(Event.recurrence_rule_freq == "YEARLY",func.mod(func.abs(extract('year', Event.start) - self.year.value),Event.recurrence_rule_interval) == 0,self.month.value == extract('month', Event.start))
+			)) if recurring else or_(and_(Event.start > month_begin, Event.start < month_end)
 			    , and_(Event.end > month_begin, Event.end < month_end))
 		)
 
@@ -74,8 +77,8 @@ MONTH_FILTER = MonthFilterController()
 
 class FromTodayFilterController:
 	
-	def apply_filter_to_statement(self, statement: Select):
-		return statement.where(Event.start > datetime.now())
+	def apply_filter_to_statement(self, statement: Select,recurring: bool):
+		return statement if recurring else statement.where(Event.start > datetime.now())
 
 
 FROM_TODAY_FILTER = FromTodayFilterController()

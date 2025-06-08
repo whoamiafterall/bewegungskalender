@@ -13,13 +13,13 @@ def call_refresh_filter_event():
 	ui.run_javascript("emitEvent('refresh_filter');")
 
 
-def events_using_filters(filters: []) -> list[Event]:
+def events_using_filters(filters: [],recurring: bool) -> list[Event]:
 	# init select
-	statement = select(Event, Location, Category)
+	statement = select(Event, Location, Category).where(Event.recurrence == recurring)
 	
 	# Add where clauses from filters
 	for single_filter in filters:
-		statement = single_filter.apply_filter_to_statement(statement)
+		statement = single_filter.apply_filter_to_statement(statement,recurring)
 	
 	# run statement
 	statement = statement.join(Location).join(Category).order_by(Event.start).order_by(Event.summary)

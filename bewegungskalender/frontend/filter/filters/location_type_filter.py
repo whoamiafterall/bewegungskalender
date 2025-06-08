@@ -27,7 +27,7 @@ class LocationTypeFilterController:
 			self.location_types[location_type.keyword] = binding.BindableProperty()
 			self.location_types[location_type.keyword].selected = False
 	
-	def apply_filter_to_statement(self, statement: Select):
+	def apply_filter_to_statement(self, statement: Select,recurring: bool):
 		
 		if len(self.location_types) > 0:
 			for location_type in LocationType:
@@ -42,7 +42,7 @@ LOCATION_TYPE_FILTER = LocationTypeFilterController()
 
 class LocalLocationTypeFilterController:
 	
-	def apply_filter_to_statement(self, statement: Select):
+	def apply_filter_to_statement(self, statement: Select,recurring: bool):
 		return statement.where(Location.type == LocationType.local)
 
 

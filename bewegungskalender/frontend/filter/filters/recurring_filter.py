@@ -19,7 +19,7 @@ class RecurringFilterController:
 		self.show_recurring = binding.BindableProperty()
 		self.show_recurring.value = True
 	
-	def apply_filter_to_statement(self, statement: Select):
+	def apply_filter_to_statement(self, statement: Select,recurring: bool):
 		if self.show_recurring.value is False:
 			statement = statement.where(Event.recurrence == self.show_recurring.value)
 		return statement

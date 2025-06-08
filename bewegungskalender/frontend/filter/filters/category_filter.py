@@ -62,7 +62,7 @@ class CategoryFilterController:
             self.categories[get_internal(calendar)] = binding.BindableProperty()
             self.categories[get_internal(calendar)].value = True
 
-    def apply_filter_to_statement(self, statement: Select):
+    def apply_filter_to_statement(self, statement: Select,recurring: bool):
         for calendar in CALENDARS:
             if self.categories[get_internal(calendar)].value is False:
                 statement = statement.where(
@@ -73,6 +73,5 @@ class CategoryFilterController:
 
 def get_internal(calendar: dict):
     return f"{slugify(str(calendar['calendar']['internal']))}"
-
 
 CATEGORY_FILTER = CategoryFilterController()
