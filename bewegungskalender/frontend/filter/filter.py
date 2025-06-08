@@ -21,7 +21,7 @@ def events_using_filters(filters: [],recurring: bool) -> list[Event]:
 	for single_filter in filters:
 		statement = single_filter.apply_filter_to_statement(statement,recurring)
 	
-	# run statement
+	# run statement TODO: For recurring events order by next occurrence.
 	statement = statement.join(Location).join(Category).order_by(Event.start).order_by(Event.summary)
 	database = DB()
 	result = database.exe(statement).all()
