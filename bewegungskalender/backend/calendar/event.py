@@ -5,6 +5,7 @@ import icalendar
 from icalendar.cal import Component
 from sqlmodel import SQLModel, Field, Relationship
 
+from bewegungskalender.backend.calendar.event_instance import EventInstance
 from bewegungskalender.backend.calendar.location import Location, parse_location
 from bewegungskalender.backend.formatting.format import get_link
 from bewegungskalender.backend.io.config import TIMEZONE
@@ -16,6 +17,9 @@ if TYPE_CHECKING:  # Necessary for SQLModel Relationships across Files
 class Event(SQLModel, table=True):
 	id: int = Field(default=None, primary_key=True)
 	summary: str = Field(index=True)
+	event_instances: list[EventInstance] = Relationship(back_populates="event",
+	                                   sa_relationship_kwargs={"lazy": "selectin"},
+	                                   cascade_delete=True)
 	start: datetime = Field(index=True)
 	end: datetime
 	duration: timedelta = Field(index=True)
@@ -26,6 +30,8 @@ class Event(SQLModel, table=True):
 	location: Location = Relationship(back_populates="event", sa_relationship_kwargs={"lazy": "selectin"})
 	location_id: int = Field(foreign_key="location.id")
 	recurrence: bool = Field(default=False)
+	recurrence_id: int = Field(default=None)
+	recurrence_rule: str = Field(default=None)
 	cloud_id: str = Field(index=True)
 	ics_url: str
 	
