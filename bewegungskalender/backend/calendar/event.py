@@ -2,7 +2,9 @@ from datetime import datetime, timedelta, time, date
 from typing import TYPE_CHECKING
 
 import icalendar
+import pytz
 from icalendar.cal import Component
+from icalendar.prop import vRecur, vDDDTypes
 from sqlmodel import SQLModel, Field, Relationship
 
 from bewegungskalender.backend.calendar.event_instance import EventInstance
@@ -30,17 +32,18 @@ class Event(SQLModel, table=True):
 	location: Location = Relationship(back_populates="event", sa_relationship_kwargs={"lazy": "selectin"})
 	location_id: int = Field(foreign_key="location.id")
 	recurrence: bool = Field(default=False)
-	recurrence_id: int = Field(default=None)
-	recurrence_rule: str = Field(default=None)
+	recurrence_id: int | None = Field(default=None)
+	recurrence_rule: str | None = Field(default=None)
 	cloud_id: str = Field(index=True)
 	ics_url: str
-	
+
+
 	def from_icalendar(self, vevent: Component, ics_url):
 		# Make sure all the values are datetime not date in case of all day events
 		def to_datetime(dt: date | datetime) -> datetime:
 			if isinstance(dt, datetime):
-				return dt
-			return datetime.combine(dt, time.min).astimezone(TIMEZONE)
+				return (dt if dt.tzinfo else dt.replace(tzinfo=TIMEZONE)).astimezone(pytz.utc)
+			return datetime.combine(dt, time.min).astimezone(TIMEZONE).astimezone(pytz.utc)
 		
 		start = to_datetime(vevent.decoded('dtstart'))
 		end = to_datetime(vevent.decoded('dtend'))
@@ -60,6 +63,19 @@ class Event(SQLModel, table=True):
 		self.end = end
 		self.duration = end - start
 		self.recurrence = False if vevent.get('RECURRENCE-ID') is None and vevent.get('RRULE') is None else True
+
+		if (vevent.get('RRULE') is not None):
+			rrule = vevent.get('RRULE')
+			until = rrule.get('UNTIL') if rrule else None
+			if until is not None:
+				until_actual_value = to_datetime(until[0] if isinstance(until, list) else until)
+				rrule['UNTIL'] = until_actual_value
+				print(until_actual_value)
+				print(rrule.to_ical().decode('utf-8'))
+			self.recurrence_rule = rrule.to_ical().decode('utf-8')
+
+		if (vevent.get('RECURRENCE-ID') is not None):
+			self.recurrence_id = vevent.get('RECURRENCE-ID').to_ical().decode('utf-8')
 		self.cloud_id = vevent.get('UID')
 		self.ics_url = str(ics_url)
 		return self
