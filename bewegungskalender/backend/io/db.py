@@ -1,9 +1,12 @@
 import time
 from collections.abc import Callable
+from datetime import timedelta, datetime
 from typing import Literal
 
 import icalendar
+import pytz
 from caldav.objects import Calendar, CalendarObjectResource, SynchronizableCalendarObjectCollection
+from dateutil.rrule import rrulestr
 from icalendar.cal import Component
 from sqlalchemy import Engine
 from sqlalchemy.exc import NoResultFound, MultipleResultsFound
@@ -12,9 +15,10 @@ from sqlmodel import create_engine, SQLModel, Session, select, desc
 from bewegungskalender.backend.calendar.category import Category
 from bewegungskalender.backend.calendar.client import get_calendar_by_url
 from bewegungskalender.backend.calendar.event import Event
+from bewegungskalender.backend.calendar.event_instance import EventInstance
 from bewegungskalender.backend.calendar.location import Location
 from bewegungskalender.backend.io.cli import DB_MODE
-from bewegungskalender.backend.io.config import DATADIR, SYNC_DB_FILE, SEARCH_DB_FILE, CALENDARS
+from bewegungskalender.backend.io.config import DATADIR, SYNC_DB_FILE, SEARCH_DB_FILE, CALENDARS, TIMEZONE
 from bewegungskalender.libs.exceptions import DatabaseError
 from bewegungskalender.libs.nominatim import LOGGER
 
@@ -81,7 +85,52 @@ class DB:
         except AttributeError:
             raise DatabaseError(f"get first and last event. Database seems to be empty!")
        # return self.FIRST_EVENT.start.date(), self.LAST_EVENT.end.date()
-        
+
+    def update_event_instances(self):
+        with Session(self._ENGINE) as sess:
+
+            for event in sess.exec(select(Event)).all():
+                existing_instances = event.event_instances
+                existing_start_times = {instance.start for instance in existing_instances}
+                last_event_time:datetime = max((instance.start for instance in existing_instances), default=event.start).astimezone(pytz.utc)
+                end_date = (event.start + timedelta(days=730)).astimezone(pytz.utc)  # 2 years
+
+                if event.recurrence_rule:
+                    rule = rrulestr(event.recurrence_rule, dtstart=last_event_time)
+
+                    for occurrence in rule:
+                        if occurrence < end_date:
+                            if occurrence in existing_start_times:
+                                instance = next(instance for instance in existing_instances if instance.start == occurrence)
+                                instance.end = occurrence + event.duration
+                            else:
+                                event_instance = EventInstance(
+                                    event=event,
+                                    start=occurrence,
+                                    end=occurrence + event.duration,
+                                    duration=event.duration
+                                )
+                                sess.add(event_instance)
+                                sess.commit()
+                                sess.refresh(event_instance)
+                        else:
+                            break
+                else:
+                    if last_event_time in existing_start_times:
+                        instance = next(instance for instance in existing_instances if instance.start == last_event_time)
+                        instance.end = event.end
+                    else:
+                        event_instance = EventInstance(
+                            event=event,
+                            start=event.start,
+                            end=event.end,
+                            duration=event.duration
+                        )
+                        sess.add(event_instance)
+                        sess.commit()
+                        sess.refresh(event_instance)
+
+
     def update_events(self):
         if DB_MODE != "sync":
             raise DatabaseError(f"sync the database. Database of type {DB_MODE} cannot be synced!")
