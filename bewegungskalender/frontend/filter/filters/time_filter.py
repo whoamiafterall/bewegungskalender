@@ -5,7 +5,7 @@ from nicegui import ui, binding
 from sqlalchemy import Select
 from sqlmodel import or_, and_
 
-from bewegungskalender.backend.calendar.event import Event
+from bewegungskalender.backend.calendar.event_instance import EventInstance
 from bewegungskalender.frontend.filter.filter import call_refresh_filter_event
 
 
@@ -55,17 +55,15 @@ class MonthFilterController:
 		else:
 			self.month.value = 1
 			self.year.value = self.year.value + 1
-	
-	# TODO implement a proper where statement
-	
+
 	def apply_filter_to_statement(self, statement: Select):
 		month_begin = datetime(self.year.value, self.month.value, 1)
 		month_end = datetime(self.year.value, self.month.value + 1, 1) if self.month.value + 1 <= 12 else datetime(
 			self.year.value + 1, 1, 1)
 		
 		return statement.where(
-			or_(and_(Event.start > month_begin, Event.start < month_end)
-			    , and_(Event.end > month_begin, Event.end < month_end))
+			or_(and_(EventInstance.start > month_begin, EventInstance.start < month_end)
+			    , and_(EventInstance.end > month_begin, EventInstance.end < month_end))
 		)
 
 
@@ -73,9 +71,9 @@ MONTH_FILTER = MonthFilterController()
 
 
 class FromTodayFilterController:
-	
+
 	def apply_filter_to_statement(self, statement: Select):
-		return statement.where(Event.start > datetime.now())
+		return statement.where(and_(EventInstance.start > datetime.now()))
 
 
 FROM_TODAY_FILTER = FromTodayFilterController()

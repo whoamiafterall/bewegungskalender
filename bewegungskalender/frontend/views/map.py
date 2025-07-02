@@ -80,16 +80,17 @@ async def create_map_ui():
                                                                 'radius': LOCATION_PROXIMITY_FILTER.distance.value * 1000}])
 
         # get cached data
-        events = events_using_filters([CATEGORY_FILTER, RECURRING_FILTER, LOCAL_LOCATION_TYPE_FILTER, FROM_TODAY_FILTER, LOCATION_PROXIMITY_FILTER, DURATION_FILTER])
+        event_instances = events_using_filters([CATEGORY_FILTER, RECURRING_FILTER, LOCAL_LOCATION_TYPE_FILTER, FROM_TODAY_FILTER, LOCATION_PROXIMITY_FILTER, DURATION_FILTER],True)
 
-        LOGGER.info(f"Got {events.__len__()} locations to display...")
+        LOGGER.info(f"Got {event_instances.__len__()} locations to display...")
 
         # wait for leaflet to be initialized
         LOGGER.debug("Waiting for Leaflet to be initialized...")
         await leaflet.initialized()
 
         # loop trough Locations
-        for event in events:
+        for event_instance in event_instances:
+            event = event_instance.event
             location = event.location
             marker = leaflet.marker(latlng=(location.lat, location.lon))
             LOGGER.debug(f"Created marker for {event.summary}.")
@@ -104,7 +105,7 @@ async def create_map_ui():
 
             # use template html file and replace variables TODO: use a proper templating language like Jinja? (Didn't want to setup a templating environment just for one file though)
             # it might also a be an option to be generate all the html popups and store them as properties themselves also.
-            context = {"summary": event.summary, "event_time": event_time(event.start, event.end, '%A, %d.%m.%y'),
+            context = {"summary": event.summary, "event_time": event_time(event_instance.start, event_instance.end, '%A, %d.%m.%y'),
                        "location": location.name, "link": event.link}
             bind_popup(leaflet, marker, context)
 

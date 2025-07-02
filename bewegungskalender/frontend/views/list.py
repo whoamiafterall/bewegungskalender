@@ -5,6 +5,7 @@ from nicegui import ui
 from slugify import slugify
 
 from bewegungskalender.backend.calendar.event import Event
+from bewegungskalender.backend.calendar.event_instance import EventInstance
 from bewegungskalender.backend.calendar.location import LocationType
 from bewegungskalender.backend.formatting.format import event_time
 from bewegungskalender.backend.io.config import MENU
@@ -54,59 +55,59 @@ async def list_view():
 @ui.refreshable
 async def create_list_ui():
     # Get filtered Events
-    events = events_using_filters(
-        [LOCATION_TYPE_FILTER, MONTH_FILTER, RECURRING_FILTER, CATEGORY_FILTER, DURATION_FILTER])
+    event_instances = events_using_filters(
+        [LOCATION_TYPE_FILTER, MONTH_FILTER, RECURRING_FILTER, CATEGORY_FILTER, DURATION_FILTER],False)
     
     with ui.list().classes('lg:w-4/5 w-full mx-auto scroll'):
         today = datetime.today().date()
         prev_event = None; checked = False
-        for count, event in enumerate(events):
+        for count, event_instance in enumerate(event_instances):
             prev_start = today if not prev_event else prev_event.start.date()
             if MONTH_FILTER.month.value == today.month:
                 # If today is between the previous event's start and this event's start or during this event insert today_label()
-                if event.start.date() + event.duration >= today >= event.start.date() or event.start.date() >= today >= prev_start:
+                if event_instance.start.date() + event_instance.duration >= today >= event_instance.start.date() or event_instance.start.date() >= today >= prev_start:
                     if not checked:
                         today_label(today)
                         checked = True
-                    event_row(event)
-                elif count == len(events)-1:
+                    event_row(event_instance)
+                elif count == len(event_instances)-1:
                     if not checked:
                         today_label(today)
                         checked = True
-                    event_row(event)
+                    event_row(event_instance)
                 else:
-                    event_row(event)
+                    event_row(event_instance)
             else:
-                event_row(event)
-            prev_event = event
+                event_row(event_instance)
+            prev_event = event_instance
 
 
-def event_row(event: Event, classes: str = None) -> ui.row:
+def event_row(event_instance: EventInstance, classes: str = None) -> ui.row:
     # Create a row for each event
     with (ui.row().classes('flex flex-row w-full gap-0 p-0.5 items-center text-sm') as row):
         # Create the expansion item
-        caption = f"{event_time(event.start, event.end, '%d.%m.')} {event.location.name}"
-        with ui.expansion(event.summary, caption=caption, icon=event.location.type.icon, group='events'
+        caption = f"{event_time(event_instance.start, event_instance.end, '%d.%m.')} {event_instance.event.location.name}"
+        with ui.expansion(event_instance.event.summary, caption=caption, icon=event_instance.event.location.type.icon, group='events'
                           ).props(
             'hide-expand-icon dense switch-toggle-side label-lines=1 caption-lines=1 header-class=font-normal'
-        ).style(f"background-color:{opacity(event.category.color)}"
+        ).style(f"background-color:{opacity(event_instance.event.category.color)}"
                 ).classes('grow max-w-full rounded'):
             # Create the dropdown content
             with mini_card('flex-col p-2 gap-y-1 text-sm w-full'):
                 with ui.row().classes():
-                    icon_link('event', event_time(event.start, event.end, '%A, %d.%m.'))
-                    match event.location.type:
+                    icon_link('event', event_time(event_instance.start, event_instance.end, '%A, %d.%m.'))
+                    match event_instance.event.location.type:
                         case LocationType.local:
-                            icon_link(event.location.type.icon, event.location.name, event.location.osm_link)
+                            icon_link(event_instance.event.location.type.icon, event_instance.event.location.name, event_instance.event.location.osm_link)
                         case LocationType.undefined:
-                            icon_link(event.location.type.icon, event.location.name)
+                            icon_link(event_instance.event.location.type.icon, event_instance.event.location.name)
                         case _:
-                            icon_link(event.location.type.icon, event.location.type.keyword)
-                if event.link:
-                    icon_link('link', event.link.removeprefix('https://'), event.link)
-                if event.description is not None and event.description.strip() != event.link:
-                    ui.label(event.description).classes('text-pretty px-3 shrink mx-auto')
-                download_button(event)
+                            icon_link(event_instance.event.location.type.icon, event_instance.event.location.type.keyword)
+                if event_instance.event.link:
+                    icon_link('link', event_instance.event.link.removeprefix('https://'), event_instance.event.link)
+                if event_instance.event.description is not None and event_instance.event.description.strip() != event_instance.event.link:
+                    ui.label(event_instance.event.description).classes('text-pretty px-3 shrink mx-auto')
+                download_button(event_instance.event)
         row.classes(classes)
     return row
 
