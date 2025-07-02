@@ -69,7 +69,9 @@ async def main_async():
 			db.drop_tables()
 			db.create_tables()
 			db.populate(get_upcoming_events)
-	
+
+	db.update_event_instances()
+
 	# Output Section
 	## Dump Database
 	if DB_DUMP:
